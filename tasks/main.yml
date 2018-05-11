@@ -1,2 +1,7 @@
 ---
 # Role tasks
+
+- name: dummy task
+  copy:
+    content: dummy
+    dest: /tmp/dummy
