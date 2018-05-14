@@ -57,3 +57,5 @@ GNU General Public License for more details or European Union Public License for
 ## Author Information
 
 - Juan Antonio Valiño García.
+- Partially based on [daniel-rhoades.tomcat role](https://galaxy.ansible.com/daniel-rhoades/tomcat).
+- Partially based on [groover.tomcat role](https://galaxy.ansible.com/groover/tomcat).
