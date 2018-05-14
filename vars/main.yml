@@ -1,2 +1,64 @@
 ---
 # Role variables
+
+# Supported distributions
+
+tomcat_supported_distributions:
+  - centos
+  - fedora
+  - rhel
+
+# Supported distributions versions
+
+tomcat_supported_versions:
+  centos: 6
+  fedora: 26
+  rhel: 7
+
+# Required packages
+
+tomcat_packages:
+  centos_6:
+    - tar
+
+  centos_7:
+    - tar
+
+  fedora_26:
+    - tar
+
+  fedora_27:
+    - tar
+
+  rhel_6:
+    - tar
+
+  rhel_7:
+    - tar
+
+# Download variables
+
+tomcat_download_dist_url: >-
+  {{ tomcat_download_mirror
+     ~ "/dist/tomcat"
+     ~ "/tomcat-"
+     ~ tomcat_version_major
+     ~ "/v"
+     ~ tomcat_version_major
+     ~ "."
+     ~ tomcat_version_minor
+     ~ "."
+     ~ tomcat_version_patch
+     ~ "/bin/" }}
+
+tomcat_download_tarball: >-
+  {{ "apache-tomcat-"
+     ~ tomcat_version_major
+     ~ "."
+     ~ tomcat_version_minor
+     ~ "."
+     ~ tomcat_version_patch
+     ~ ".tar.gz" }}
+
+tomcat_download_url: >-
+  {{ tomcat_download_dist_url }}/{{ tomcat_download_tarball }}
