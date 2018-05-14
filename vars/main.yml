@@ -38,7 +38,7 @@ tomcat_packages:
 
 # Download variables
 
-tomcat_download_dist_url: >-
+tomcat_default_download_dist_url: >-
   {{ tomcat_download_mirror
      ~ "/dist/tomcat"
      ~ "/tomcat-"
@@ -51,7 +51,7 @@ tomcat_download_dist_url: >-
      ~ tomcat_version_patch
      ~ "/bin/" }}
 
-tomcat_download_tarball: >-
+tomcat_default_download_tarball: >-
   {{ "apache-tomcat-"
      ~ tomcat_version_major
      ~ "."
@@ -60,5 +60,17 @@ tomcat_download_tarball: >-
      ~ tomcat_version_patch
      ~ ".tar.gz" }}
 
-tomcat_download_url: >-
-  {{ tomcat_download_dist_url }}/{{ tomcat_download_tarball }}
+tomcat_default_download_url: >-
+  {{ tomcat_default_download_dist_url }}/{{ tomcat_default_download_tarball }}
+
+tomcat_download_tarball: >-
+  {{ tomcat_download_url
+     | default(tomcat_default_download_url)
+     | urlsplit('path')
+     | basename }}
+
+# Tomcat home directory
+
+tomcat_home: >-
+  {{ tomcat_base_path }}/{{ tomcat_download_tarball
+                            | regex_replace("(.*)\.tar\.gz", "\1") }}
