@@ -1,2 +1,44 @@
 ---
 # Role default lower priority variables
+
+# System user
+
+tomcat_user: tomcat
+
+# System group
+
+tomcat_group: tomcat
+
+# Server home
+
+tomcat_path: "/opt/tomcat"
+
+# Version to setup
+
+tomcat_version_major: 8
+tomcat_version_minor: 0
+tomcat_version_patch: 9
+
+# Where to dowload tomcat redistributable package from
+
+tomcat_download_mirror: http://archive.apache.org
+
+# Where to download tomcat redistributable
+
+tomcat_download_path: /tmp
+
+#
+# Pproxy settings
+#
+
+# IP address and port, or URL, for using an http_proxy.
+
+#tomcat_http_proxy:
+
+# IP address and port, or URL, for using an https_proxy.
+
+#tomcat_https_proxy:
+
+# Exclude IP address or URL from the proxy.
+
+#tomcat_no_proxy:

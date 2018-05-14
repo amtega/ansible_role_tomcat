@@ -1,7 +1,14 @@
 ---
 # Role tasks
 
-- name: dummy task
-  copy:
-    content: dummy
-    dest: /tmp/dummy
+- name: check for supported distribution
+  import_tasks: check.yml
+  tags:
+    - role::tomcat
+    - role::tomcat::check
+
+- name: install tomcat
+  import_tasks: install.yml
+  tags:
+    - role::tomcat
+    - role::tomcat::install
