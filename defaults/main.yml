@@ -9,9 +9,10 @@ tomcat_user: tomcat
 
 tomcat_group: tomcat
 
-# Server home
+# Server base path. Within this path a subdirectory will be created for the
+# specific version to deploy
 
-tomcat_path: "/opt/tomcat"
+tomcat_base_path: "/opt"
 
 # Version to setup
 
@@ -19,9 +20,15 @@ tomcat_version_major: 8
 tomcat_version_minor: 0
 tomcat_version_patch: 9
 
-# Where to dowload tomcat redistributable package from
+# Te mirror to dowload tomcat redistributable package from if an specific url
+# is specified. See tomcat_download_url variable.
 
 tomcat_download_mirror: http://archive.apache.org
+
+# Use this variable to use an sepecific url to the redistributable tarball.
+# If not defined it will be guessed from tomcat version specified before
+
+# tomcat_download_url:
 
 # Where to download tomcat redistributable
 
