@@ -17,7 +17,8 @@
     - block:
         - name: download tomcat tarball
           get_url:
-            url: "{{ tomcat_download_url | default(tomcat_default_download_url) }}"
+            url: >-
+              {{ tomcat_download_url | default(tomcat_default_download_url) }}
             dest: "{{ tomcat_download_path }}"
           environment:
             http_proxy: "{{ tomcat_http_proxy }}"
@@ -29,6 +30,24 @@
             src: "{{ tomcat_download_path }}/{{ tomcat_download_tarball }}"
             dest: "{{ tomcat_base_path }}"
             copy: no
+
+        - name: create symlink to the installation directory
+          file:
+            src: "{{ tomcat_home }}"
+            dest: "{{ tomcat_link }}"
+            state: link
+            mode: "u=rwx,go=rx"
+
+        - name: create custom fact directory
+          file:
+            path: /etc/ansible/facts.d
+            state: "directory"
+
+        - name: insert custom fact file
+          template:
+            src: tomcat.fact.j2
+            dest: /etc/ansible/facts.d/tomcat.fact
+            mode: 0640
       when: >-
         ansible_local.tomcat is undefined
         or tomcat_version is version(ansible_local.tomcat.version, ">")
@@ -38,13 +57,6 @@
         path: "{{ tomcat_download_path }}/{{ tomcat_download_tarball }}"
         state: absent
       when: tomcat_download_remove
-
-    - name: create symlink to the installation directory
-      file:
-        src: "{{ tomcat_home }}"
-        dest: "{{ tomcat_link }}"
-        state: link
-        mode: "u=rwx,go=rx"
 
     - name: "setup group {{ tomcat_group }}"
       group:
@@ -62,17 +74,6 @@
         owner: "{{ tomcat_user }}"
         group: "{{ tomcat_group }}"
         mode: "u=rwx,go=rx"
-
-    - name: create custom fact directory
-      file:
-        path: /etc/ansible/facts.d
-        state: "directory"
-
-    - name: insert custom fact file
-      template:
-        src: tomcat.fact.j2
-        dest: /etc/ansible/facts.d/tomcat.fact
-        mode: 0640
   tags:
     - role::tomcat
     - role::tomcat::install

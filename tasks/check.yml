@@ -1,15 +1,20 @@
 ---
 # Role check tasks
 
-- name: assert platform is supported
-  assert:
-    that:
-      - distribution in tomcat_supported_distributions
-      - >-
-        ansible_facts.distribution_version
-        is version(tomcat_supported_versions[distribution], ">=")
-  vars:
-    distribution: "{{ ansible_facts.distribution | lower }}"
+- block:
+    - name: assert platform is supported
+      assert:
+        that:
+          - distribution in tomcat_supported_distributions
+          - >-
+            ansible_facts.distribution_version
+            is version(tomcat_supported_versions[distribution], ">=")
+      vars:
+        distribution: "{{ ansible_facts.distribution | lower }}"
+
+    - name: assert version number
+      assert:
+        that: tomcat_download_tarball_version == tomcat_version
   tags:
     - role::tomcat
     - role::tomcat::check

@@ -23,6 +23,15 @@
   tags:
     - idempotence
 
+- name: test tomcat role with explicit download url
+  hosts: docker_sandbox_containers
+  roles:
+    - role: amtega.tomcat
+      tomcat_version: 7.0.88
+      tomcat_download_url: >-
+        {{ "http://archive.apache.org/dist/tomcat/tomcat-7/v7.0.88/bin/"
+           ~ "apache-tomcat-7.0.88.tar.gz" }}
+
 - name: cleanup docker docker sandbox
   hosts: localhost
   roles:

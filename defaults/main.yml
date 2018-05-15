@@ -20,9 +20,7 @@ tomcat_link: /opt/tomcat
 
 # Version to setup
 
-tomcat_version_major: 8
-tomcat_version_minor: 0
-tomcat_version_patch: 9
+tomcat_version: 8.0.9
 
 # The mirror to dowload tomcat redistributable package from if an specific url
 # is specified. See tomcat_download_url variable.
@@ -30,7 +28,11 @@ tomcat_version_patch: 9
 tomcat_download_mirror: http://archive.apache.org
 
 # Use this variable to use an sepecific url to the redistributable tarball.
-# If not defined it will be guessed from tomcat version specified before
+# Keep in mind that if you use this variable tomcat_version variable must match
+# with tarball filename
+#
+# If this variable is not defined the download utl will be guessed from
+# tomcat_version and tomcat_download_mirror specified before
 
 # tomcat_download_url:
 
