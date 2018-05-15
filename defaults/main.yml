@@ -35,7 +35,7 @@ tomcat_download_mirror: http://archive.apache.org
 tomcat_download_path: /tmp
 
 #
-# Pproxy settings
+# Proxy settings
 #
 
 # IP address and port, or URL, for using an http_proxy.

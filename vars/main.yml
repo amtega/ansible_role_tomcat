@@ -36,6 +36,15 @@ tomcat_packages:
   rhel_7:
     - tar
 
+# Full version
+
+tomcat_version: >-
+  {{ tomcat_version_major
+     ~ "."
+     ~ tomcat_version_minor
+     ~ "."
+    ~ tomcat_version_patch }}
+
 # Download variables
 
 tomcat_default_download_dist_url: >-
@@ -44,20 +53,12 @@ tomcat_default_download_dist_url: >-
      ~ "/tomcat-"
      ~ tomcat_version_major
      ~ "/v"
-     ~ tomcat_version_major
-     ~ "."
-     ~ tomcat_version_minor
-     ~ "."
-     ~ tomcat_version_patch
+     ~ tomcat_version
      ~ "/bin/" }}
 
 tomcat_default_download_tarball: >-
   {{ "apache-tomcat-"
-     ~ tomcat_version_major
-     ~ "."
-     ~ tomcat_version_minor
-     ~ "."
-     ~ tomcat_version_patch
+     ~ tomcat_version
      ~ ".tar.gz" }}
 
 tomcat_default_download_url: >-
