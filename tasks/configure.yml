@@ -1,0 +1,23 @@
+---
+# Role configuration task
+
+- block:
+    - name: "setup group {{ tomcat_group }}"
+      group:
+        name: "{{ tomcat_group }}"
+
+    - name: "setup user {{ tomcat_user }}"
+      user:
+        name: "{{ tomcat_user }}"
+        group: "{{ tomcat_group }}"
+        home: "{{ tomcat_home }}"
+
+    - name: setup installation directory permissions
+      file:
+        path: "{{ tomcat_home }}"
+        owner: "{{ tomcat_user }}"
+        group: "{{ tomcat_group }}"
+        mode: "u=rwx,go=rx"
+  tags:
+    - role::tomcat
+    - role::tomcat::configure
