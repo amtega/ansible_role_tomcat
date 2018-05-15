@@ -28,8 +28,12 @@
         src: "{{ tomcat_download_path }}/{{ tomcat_download_tarball }}"
         dest: "{{ tomcat_base_path }}"
         copy: no
-        owner: "{{ tomcat_user }}"
-        group: "{{ tomcat_group }}"
+
+    - name: create symlink to the installation directory
+      file:
+        src: "{{ tomcat_home }}"
+        dest: "{{ tomcat_link }}"
+        state: link
         mode: "u=rwx,go=rx"
 
     - name: "setup group {{ tomcat_group }}"
@@ -42,6 +46,13 @@
         group: "{{ tomcat_group }}"
         home: "{{ tomcat_home }}"
 
+    - name: setup installation directory permissions
+      file:
+        path: "{{ tomcat_home }}"
+        owner: "{{ tomcat_user }}"
+        group: "{{ tomcat_group }}"
+        mode: "u=rwx,go=rx"
+
     - name: create custom fact directory
       file:
         path: /etc/ansible/facts.d
@@ -51,7 +62,7 @@
       template:
         src: tomcat.fact.j2
         dest: /etc/ansible/facts.d/tomcat.fact
-        mode: 0755
+        mode: 0640
   tags:
     - role::tomcat
     - role::tomcat::install

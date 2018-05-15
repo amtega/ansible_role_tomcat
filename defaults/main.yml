@@ -12,7 +12,11 @@ tomcat_group: tomcat
 # Server base path. Within this path a subdirectory will be created for the
 # specific version to deploy
 
-tomcat_base_path: "/opt"
+tomcat_base_path: /opt
+
+# Where to put a softlink to the the current installed tomcat home.
+
+tomcat_link: /opt/tomcat
 
 # Version to setup
 
