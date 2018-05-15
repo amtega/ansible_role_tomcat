@@ -1,22 +1,19 @@
----
-{{ ansible_managed | comment }}
-
 {
-  tomcat_user: "{{ tomcat_user }}"
-  tomcat_group: "{{ tomcat_group }}"
+  "user": "{{ tomcat_user }}",
+  "group": "{{ tomcat_group }}",
 
-  tomcat_base_path: "{{ tomcat_base_path }}"
+  "base_path": "{{ tomcat_base_path }}",
 
-  tomcat_version: "{{ tomcat_version }}"
-  tomcat_version_major: "{{ tomcat_version_major }}"
-  tomcat_version_minor: "{{ tomcat_version_major }}"
-  tomcat_version_patch: "{{ tomcat_version_major }}"
-  tomcat_download_mirror: "{{ tomcat_download_mirror }}"
+  "version": "{{ tomcat_version }}",
+  "version_major": "{{ tomcat_version_major }}",
+  "version_minor": "{{ tomcat_version_major }}",
+  "version_patch": "{{ tomcat_version_major }}",
+  "download_mirror": "{{ tomcat_download_mirror }}",
 
-  {% if tomcat_download_url is defined %}
-  tomcat_download_url: "{{ tomcat_download_url }}"
-  {% endif %}
+{% if tomcat_download_url is defined %}
+  "download_url": "{{ tomcat_download_url }}",
+{% endif %}
 
-  tomcat_download_path: "{{ tomcat_download_path }}"
-  tomcat_home: "{{ tomcat_home }}"
+  "download_path": "{{ tomcat_download_path }}",
+  "home": "{{ tomcat_home }}"
 }

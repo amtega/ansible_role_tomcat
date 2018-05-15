@@ -14,20 +14,30 @@
              | lower
              + "_" + ansible_facts.distribution_major_version }}
 
-    - name: download tomcat tarball
-      get_url:
-        url: "{{ tomcat_download_url | default(tomcat_default_download_url) }}"
-        dest: "{{ tomcat_download_path }}"
-      environment:
-        http_proxy: "{{ tomcat_http_proxy }}"
-        https_proxy: "{{ tomcat_https_proxy }}"
-        http_no_proxy: "{{ tomcat_http_no_proxy }}"
+    - block:
+        - name: download tomcat tarball
+          get_url:
+            url: "{{ tomcat_download_url | default(tomcat_default_download_url) }}"
+            dest: "{{ tomcat_download_path }}"
+          environment:
+            http_proxy: "{{ tomcat_http_proxy }}"
+            https_proxy: "{{ tomcat_https_proxy }}"
+            http_no_proxy: "{{ tomcat_http_no_proxy }}"
 
-    - name: extract tomcat tarball installation directory
-      unarchive:
-        src: "{{ tomcat_download_path }}/{{ tomcat_download_tarball }}"
-        dest: "{{ tomcat_base_path }}"
-        copy: no
+        - name: extract tomcat tarball installation directory
+          unarchive:
+            src: "{{ tomcat_download_path }}/{{ tomcat_download_tarball }}"
+            dest: "{{ tomcat_base_path }}"
+            copy: no
+      when: >-
+        ansible_local.tomcat is undefined
+        or tomcat_version is version(ansible_local.tomcat.version, ">")
+
+    - name: delete downloaded tomcat tarball
+      file:
+        path: "{{ tomcat_download_path }}/{{ tomcat_download_tarball }}"
+        state: absent
+      when: tomcat_download_remove
 
     - name: create symlink to the installation directory
       file:

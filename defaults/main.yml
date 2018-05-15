@@ -24,7 +24,7 @@ tomcat_version_major: 8
 tomcat_version_minor: 0
 tomcat_version_patch: 9
 
-# Te mirror to dowload tomcat redistributable package from if an specific url
+# The mirror to dowload tomcat redistributable package from if an specific url
 # is specified. See tomcat_download_url variable.
 
 tomcat_download_mirror: http://archive.apache.org
@@ -37,6 +37,10 @@ tomcat_download_mirror: http://archive.apache.org
 # Where to download tomcat redistributable
 
 tomcat_download_path: /tmp
+
+# Remove the tomcat redistributable after install
+
+tomcat_download_remove: true
 
 #
 # Proxy settings
