@@ -21,4 +21,8 @@ galaxy_info:
     - jee
     - java
 
-dependencies: []
+dependencies:
+  - role: amtega.epel
+    when:
+      - ansible_facts.distribution | lower in ['centos', 'rhel']
+      - ansible_facts.distribution_version is version("7", "<")

@@ -15,26 +15,45 @@ tomcat_supported_versions:
   fedora: 26
   rhel: 7
 
-# Required packages
+# Required operating system packages
 
 tomcat_packages:
   centos_6:
+    - gcc
+    - libxml2-devel
+    - libxml2-python
+    - libxslt-devel
+    - libxslt-python
+    - python-devel
+    - python-pip
+    - rsync
     - tar
-
   centos_7:
+    - python-lxml
+    - rsync
     - tar
-
   fedora_26:
+    - python-lxml
+    - rsync
     - tar
-
   fedora_27:
+    - python-lxml
+    - rsync
     - tar
-
   rhel_6:
+    - python-lxml
+    - rsync
+    - tar
+  rhel_7:
+    - python-lxml
+    - rsync
     - tar
 
-  rhel_7:
-    - tar
+# Required python pip packages
+
+tomcat_packages_python:
+  centos_6:
+    - lxml
 
 # Major, minor and patch version numbers
 
@@ -77,5 +96,26 @@ tomcat_download_tarball_version: >-
 # Tomcat home directory
 
 tomcat_home: >-
-  {{ tomcat_base_path }}/{{ tomcat_download_tarball
+  {{ tomcat_install_path }}/{{ tomcat_download_tarball
                             | regex_replace("(.*)\.tar\.gz", "\1") }}
+
+# Permissions to use in tomcat directories and files
+
+tomcat_files_permissions: "u=rwx,go=rx"
+
+# Proxy environment settings
+
+tomcat_http_proxy_config:
+    http_proxy: "{{ tomcat_http_proxy | default('') }}"
+    https_proxy: "{{ tomcat_https_proxy | default('') }}"
+    http_no_proxy: "{{ tomcat_http_no_proxy | default('') }}"
+
+tomcat_http_proxy_environment: >-
+  {{ (tomcat_http_proxy is defined
+      or tomcat_https_proxy is defined
+      or tomcat_http_no_proxy is defined)
+     | ternary(tomcat_http_proxy_config, {}) }}
+
+# Tomcat server.xml xpath variables
+
+tomcat_xpath_connector: "/Server/Service[@name='Catalina']/Connector"

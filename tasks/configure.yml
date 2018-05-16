@@ -2,22 +2,49 @@
 # Role configuration task
 
 - block:
-    - name: "setup group {{ tomcat_group }}"
-      group:
-        name: "{{ tomcat_group }}"
-
-    - name: "setup user {{ tomcat_user }}"
-      user:
-        name: "{{ tomcat_user }}"
-        group: "{{ tomcat_group }}"
-        home: "{{ tomcat_home }}"
-
-    - name: setup installation directory permissions
-      file:
-        path: "{{ tomcat_home }}"
+    - name: setup instances environment variables
+      template:
+        src: setenv.sh.j2
+        dest: "{{ instance.path}}/bin/setenv.sh"
         owner: "{{ tomcat_user }}"
         group: "{{ tomcat_group }}"
-        mode: "u=rwx,go=rx"
+        mode: "{{ tomcat_files_permissions }}"
+      loop: "{{ tomcat_instances }}"
+      loop_control:
+        loop_var: instance
+        label: "{{ instance.path }}"
+
+    - name: setup instances server config
+      xml:
+        path: "{{ item.0.path }}/conf/server.xml"
+        xpath: "{{ item.1.xpath }}"
+        value: "{{ item.1.value }}"
+        pretty_print: true
+      when: item.1.value in item.0
+      loop: "{{ query('nested', tomcat_instances, config) }}"
+      loop_control:
+        label: "{{ item.0.path }} {{ item.1.value }} {{ item.0[item.1.value] }}"
+      vars:
+        connector_xpath: "/Server/Service[@name='Catalina']/Connector"
+        config:
+          - xpath: "/Server/port"
+            value: server_port
+          - xpath: "{{ connector_xpath }}[@protocol='HTTP/1.1']/port"
+            value: server_http_port
+          - xpath: "{{ connector_xpath }}[@protocol='HTTP/1.1']/redirectPort"
+            value: server_https_port
+          - xpath: "{{ connector_xpath }}[@sslProtocol='TLS']/port"
+            value: server_http_port
+          - xpath: "{{ connector_xpath }}[@protocol='AJP/1.3']/port"
+            value: server_ajp_port
+          - xpath: "{{ connector_xpath }}[@protocol='AJP/1.3']/redirectPort"
+            value: server_https_port
+
+    - name: configure custom facts
+      template:
+        src: tomcat.fact.j2
+        dest: /etc/ansible/facts.d/tomcat.fact
+        mode: 0640
   tags:
     - role::tomcat
     - role::tomcat::configure

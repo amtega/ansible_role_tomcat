@@ -14,7 +14,7 @@
     - role::tomcat::install
 
 - name: configure tomcat
-  import_tasks: install.yml
+  import_tasks: configure.yml
   tags:
     - role::tomcat
     - role::tomcat::configure

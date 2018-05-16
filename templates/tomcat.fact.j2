@@ -2,12 +2,12 @@
   "user": "{{ tomcat_user }}",
   "group": "{{ tomcat_group }}",
 
-  "base_path": "{{ tomcat_base_path }}",
+  "base_path": "{{ tomcat_install_path }}",
 
   "version": "{{ tomcat_version }}",
   "version_major": "{{ tomcat_version_major }}",
-  "version_minor": "{{ tomcat_version_major }}",
-  "version_patch": "{{ tomcat_version_major }}",
+  "version_minor": "{{ tomcat_version_minor }}",
+  "version_patch": "{{ tomcat_version_patch }}",
   "download_mirror": "{{ tomcat_download_mirror }}",
 
 {% if tomcat_download_url is defined %}
@@ -15,5 +15,18 @@
 {% endif %}
 
   "download_path": "{{ tomcat_download_path }}",
-  "home": "{{ tomcat_home }}"
+  "home": "{{ tomcat_home }}",
+  "instances": [
+{% for instance in tomcat_instances %}
+    {
+      "path": "{{ instance.path }}",
+      "java_home": "{{ instance.java_home }}",
+      "java_opts": "{{ instance.java_opts }}",
+      "server_port": "{{ instance.server_port }}",
+      "server_http_port": "{{ instance.server_http_port }}",
+      "server_https_port": "{{ instance.server_https_port }}",
+      "server_ajp_port": "{{ instance.server_ajp_port }}"
+    }{% if not loop.last %},{{ "\n" }}{% else %}{{ "\n" }}{% endif %}
+{% endfor %}
+  ]
 }

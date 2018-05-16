@@ -2,17 +2,36 @@
 # Role install tasks
 
 - block:
-    - name: install required packages
-      package:
-        name: "{{ item }}"
-        state: present
-      loop: >-
-        {{ tomcat_packages[distribution] }}
+    - block:
+        - name: install required operating system packages
+          package:
+            name: "{{ item }}"
+            state: present
+          loop: >-
+            {{ tomcat_packages[distribution] | default([]) }}
+
+        - name: install required python packages
+          pip:
+            name: "{{ item }}"
+            state: "latest"
+          loop: >-
+            {{ tomcat_packages_python[distribution] | default([]) }}
+          environment: "{{ tomcat_http_proxy_environment }}"
       vars:
         distribution: >-
           {{ ansible_facts.distribution
              | lower
              + "_" + ansible_facts.distribution_major_version }}
+
+    - name: "setup group {{ tomcat_group }}"
+      group:
+        name: "{{ tomcat_group }}"
+
+    - name: "setup user {{ tomcat_user }}"
+      user:
+        name: "{{ tomcat_user }}"
+        group: "{{ tomcat_group }}"
+        home: "{{ tomcat_home }}"
 
     - block:
         - name: download tomcat tarball
@@ -20,34 +39,23 @@
             url: >-
               {{ tomcat_download_url | default(tomcat_default_download_url) }}
             dest: "{{ tomcat_download_path }}"
-          environment:
-            http_proxy: "{{ tomcat_http_proxy }}"
-            https_proxy: "{{ tomcat_https_proxy }}"
-            http_no_proxy: "{{ tomcat_http_no_proxy }}"
+          environment: "{{ tomcat_http_proxy_environment }}"
 
         - name: extract tomcat tarball installation directory
           unarchive:
             src: "{{ tomcat_download_path }}/{{ tomcat_download_tarball }}"
-            dest: "{{ tomcat_base_path }}"
+            dest: "{{ tomcat_install_path }}"
             copy: no
+            owner: "{{ tomcat_user }}"
+            group: "{{ tomcat_group }}"
+            mode: "{{ tomcat_files_permissions }}"
 
         - name: create symlink to the installation directory
           file:
             src: "{{ tomcat_home }}"
-            dest: "{{ tomcat_link }}"
+            dest: "{{ tomcat_install_path_link }}"
             state: link
-            mode: "u=rwx,go=rx"
-
-        - name: create custom fact directory
-          file:
-            path: /etc/ansible/facts.d
-            state: "directory"
-
-        - name: insert custom fact file
-          template:
-            src: tomcat.fact.j2
-            dest: /etc/ansible/facts.d/tomcat.fact
-            mode: 0640
+            mode: "{{ tomcat_files_permissions }}"
       when: >-
         ansible_local.tomcat is undefined
         or tomcat_version is version(ansible_local.tomcat.version, ">")
@@ -57,6 +65,50 @@
         path: "{{ tomcat_download_path }}/{{ tomcat_download_tarball }}"
         state: absent
       when: tomcat_download_remove
+
+    - name: create instances directory tree
+      file:
+        path: "{{ item.0.path }}/{{ item.1 }}"
+        state: directory
+        owner: "{{ tomcat_user }}"
+        group: "{{ tomcat_group }}"
+        mode: "{{ tomcat_files_permissions }}"
+      register: tomcat_create_instances_tree_result
+      loop: "{{ query('nested', tomcat_instances, subdirs) }}"
+      loop_control:
+        label: "{{ item.0.path }}/{{ item.1 }}"
+      vars:
+        subdirs:
+          - bin
+          - conf
+          - lib
+          - logs
+          - temp
+          - webapps
+          - work
+
+    - name: prepare instances directories
+      synchronize:
+        src: "{{ tomcat_home }}/{{ item.1 }}"
+        dest: "{{ item.0.path }}/{{ item.1 }}"
+        archive: true
+      loop: "{{ query('nested', tomcat_instances, subdirs) }}"
+      loop_control:
+        label: "{{ item.0.path }}/{{ item.1 }}"
+      vars:
+        subdirs:
+          - conf/
+          - webapps/
+          - bin/catalina.sh
+          - bin/startup.sh
+          - bin/shutdown.sh
+      when: tomcat_create_instances_tree_result is changed
+      delegate_to: "{{ inventory_hostname }}"
+
+    - name: create custom facts directory
+      file:
+        path: /etc/ansible/facts.d
+        state: "directory"
   tags:
     - role::tomcat
     - role::tomcat::install

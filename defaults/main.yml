@@ -1,6 +1,10 @@
 ---
 # Role default lower priority variables
 
+# Version to setup
+
+tomcat_version: 8.0.9
+
 # System user
 
 tomcat_user: tomcat
@@ -9,18 +13,25 @@ tomcat_user: tomcat
 
 tomcat_group: tomcat
 
-# Server base path. Within this path a subdirectory will be created for the
-# specific version to deploy
+# Install path. Within this path a subdirectory will be created for the specific
+# version to deploy
 
-tomcat_base_path: /opt
+tomcat_install_path: /opt
 
-# Where to put a softlink to the the current installed tomcat home.
+# Where to put a soft link to the the installed path
 
-tomcat_link: /opt/tomcat
+tomcat_install_path_link: /opt/tomcat
 
-# Version to setup
+# List of tomcat instances to create
 
-tomcat_version: 8.0.9
+tomcat_instances:
+  - path: /srv/tomcat/server
+    java_home: /usr/java/default
+    java_opts: -Xmx1024m -Xms1024m
+    server_port: 8005
+    server_http_port: 8080
+    server_https_port: 8443
+    server_ajp_port: 8009
 
 # The mirror to dowload tomcat redistributable package from if an specific url
 # is specified. See tomcat_download_url variable.
@@ -43,6 +54,8 @@ tomcat_download_path: /tmp
 # Remove the tomcat redistributable after install
 
 tomcat_download_remove: true
+
+# Tomcat instances configuration
 
 #
 # Proxy settings
