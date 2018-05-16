@@ -25,8 +25,9 @@ tomcat_install_path_link: /opt/tomcat
 # List of tomcat instances to create
 
 tomcat_instances:
-  - path: /srv/tomcat/server
-    java_home: /usr/java/default
+  - name: server
+    path: /srv/tomcat/server
+    java_home: /usr/lib/jvm/jre
     java_opts: -Xmx1024m -Xms1024m
     server_port: 8005
     server_http_port: 8080

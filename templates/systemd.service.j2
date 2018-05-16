@@ -1,0 +1,14 @@
+{{ ansible_managed | comment }}
+
+[Unit]
+Description=Tomcat instance {{ instance.name }}
+After=network.target
+[Service]
+Type=forking
+User={{ tomcat_user }}
+Restart=on-failure
+ExecStart={{ instance.path}}/bin/startup.sh
+ExecStop={{ instance.path}}/bin/shutdown.sh
+
+[Install]
+WantedBy=multi-user.target

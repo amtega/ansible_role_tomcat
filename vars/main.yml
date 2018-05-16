@@ -20,6 +20,7 @@ tomcat_supported_versions:
 tomcat_packages:
   centos_6:
     - gcc
+    - java
     - libxml2-devel
     - libxml2-python
     - libxslt-devel
@@ -29,22 +30,27 @@ tomcat_packages:
     - rsync
     - tar
   centos_7:
+    - java
     - python-lxml
     - rsync
     - tar
   fedora_26:
+    - java
     - python-lxml
     - rsync
     - tar
   fedora_27:
+    - java
     - python-lxml
     - rsync
     - tar
   rhel_6:
+    - java
     - python-lxml
     - rsync
     - tar
   rhel_7:
+    - java
     - python-lxml
     - rsync
     - tar
@@ -116,6 +122,6 @@ tomcat_http_proxy_environment: >-
       or tomcat_http_no_proxy is defined)
      | ternary(tomcat_http_proxy_config, {}) }}
 
-# Tomcat server.xml xpath variables
+# Systemd variables
 
-tomcat_xpath_connector: "/Server/Service[@name='Catalina']/Connector"
+tomcat_systemd_services_path: /usr/lib/systemd/system
