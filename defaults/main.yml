@@ -1,6 +1,10 @@
 ---
 # Role default lower priority variables
 
+# Version to setup
+
+tomcat_version: 8.0.9
+
 # System user
 
 tomcat_user: tomcat
@@ -9,24 +13,37 @@ tomcat_user: tomcat
 
 tomcat_group: tomcat
 
-# Server base path. Within this path a subdirectory will be created for the
-# specific version to deploy
+# Install path. Within this path a subdirectory will be created for the specific
+# version to deploy
 
-tomcat_base_path: "/opt"
+tomcat_install_path: /opt
 
-# Version to setup
+# Where to put a soft link to the the installed path
 
-tomcat_version_major: 8
-tomcat_version_minor: 0
-tomcat_version_patch: 9
+tomcat_install_path_link: /opt/tomcat
 
-# Te mirror to dowload tomcat redistributable package from if an specific url
+# List of tomcat instances to create
+
+tomcat_instances:
+  - path: /srv/tomcat/server
+    java_home: /usr/java/default
+    java_opts: -Xmx1024m -Xms1024m
+    server_port: 8005
+    server_http_port: 8080
+    server_https_port: 8443
+    server_ajp_port: 8009
+
+# The mirror to dowload tomcat redistributable package from if an specific url
 # is specified. See tomcat_download_url variable.
 
 tomcat_download_mirror: http://archive.apache.org
 
 # Use this variable to use an sepecific url to the redistributable tarball.
-# If not defined it will be guessed from tomcat version specified before
+# Keep in mind that if you use this variable tomcat_version variable must match
+# with tarball filename
+#
+# If this variable is not defined the download utl will be guessed from
+# tomcat_version and tomcat_download_mirror specified before
 
 # tomcat_download_url:
 
@@ -34,8 +51,14 @@ tomcat_download_mirror: http://archive.apache.org
 
 tomcat_download_path: /tmp
 
+# Remove the tomcat redistributable after install
+
+tomcat_download_remove: true
+
+# Tomcat instances configuration
+
 #
-# Pproxy settings
+# Proxy settings
 #
 
 # IP address and port, or URL, for using an http_proxy.

@@ -1,7 +1,7 @@
 ---
 # Role tasks
 
-- name: check for supported distribution
+- name: do some sanity checks
   import_tasks: check.yml
   tags:
     - role::tomcat
@@ -12,3 +12,9 @@
   tags:
     - role::tomcat
     - role::tomcat::install
+
+- name: configure tomcat
+  import_tasks: configure.yml
+  tags:
+    - role::tomcat
+    - role::tomcat::configure

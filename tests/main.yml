@@ -19,9 +19,34 @@
 - name: test tomcat role
   hosts: docker_sandbox_containers
   roles:
-    - amtega.tomcat
+    - role: amtega.tomcat
+      tomcat_instances:
+        - path: /srv/tomcat/server1
+          java_home: /usr/java/default
+          java_opts: -Xmx1024m -Xms1024m
+          server_port: 8005
+          server_http_port: 8080
+          server_https_port: 8443
+          server_ajp_port: 8009
+
+        - path: /srv/tomcat/server2
+          java_home: /usr/java/default
+          java_opts: -Xmx1024m -Xms1024m
+          server_port: 8006
+          server_http_port: 8081
+          server_https_port: 8444
+          server_ajp_port: 8010
   tags:
     - idempotence
+
+- name: test tomcat role with explicit download url
+  hosts: docker_sandbox_containers
+  roles:
+    - role: amtega.tomcat
+      tomcat_version: 7.0.88
+      tomcat_download_url: >-
+        {{ "http://archive.apache.org/dist/tomcat/tomcat-7/v7.0.88/bin/"
+           ~ "apache-tomcat-7.0.88.tar.gz" }}
 
 - name: cleanup docker docker sandbox
   hosts: localhost
