@@ -105,9 +105,21 @@ tomcat_home: >-
   {{ tomcat_install_path }}/{{ tomcat_download_tarball
                             | regex_replace("(.*)\.tar\.gz", "\1") }}
 
+# Tomcat PID file path relative to instance path
+
+tomcat_pid: bin/tomcat.pid
+
 # Permissions to use in tomcat directories and files
 
 tomcat_files_permissions: "u=rwx,go=rx"
+
+# Systemd variables
+
+tomcat_systemd_services_path: /usr/lib/systemd/system
+
+# System V init variables
+
+tomcat_systemv_init_path: /etc/init.d
 
 # Proxy environment settings
 
@@ -121,7 +133,3 @@ tomcat_http_proxy_environment: >-
       or tomcat_https_proxy is defined
       or tomcat_http_no_proxy is defined)
      | ternary(tomcat_http_proxy_config, {}) }}
-
-# Systemd variables
-
-tomcat_systemd_services_path: /usr/lib/systemd/system

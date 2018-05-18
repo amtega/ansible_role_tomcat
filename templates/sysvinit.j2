@@ -1,0 +1,85 @@
+{{ ansible_managed | comment }}
+
+#!/bin/bash
+#
+# tomcat@{{ instance.name }}  Start up the instance of Tomcat Server
+#
+# chkconfig: 2345 55 25
+# description: Tomcat is a JEE application container. \
+#              This service starts up the instance {{ instance.name }}.
+
+### BEGIN INIT INFO
+# Provides: tomcat@{{ instance.name }}
+# Required-Start: $local_fs $network
+# Required-Stop: $local_fs $syslog
+# Should-Start: $syslog
+# Should-Stop: $network $syslog
+# Default-Start: 2 3 4 5
+# Default-Stop: 0 1 6
+# Short-Description: Start up the Tomcat instance {{ instance.name }}
+# Description:       Tomcat is a JEE application container.
+#                    This service starts up the instance {{ instance.name }}.
+### END INIT INFO
+
+# source function library
+. /etc/rc.d/init.d/functions
+
+prog="{{ instance.name }}"
+user="{{ tomcat_user }}"
+
+PID_FILE="{{ instance.path }}/{{ tomcat_pid }}"
+
+start()
+{
+        echo -n $"Starting $prog: "
+        su $user {{ instance.path }}/bin/startup.sh && success > /dev/null || failure
+        RETVAL=$?
+        echo
+        return $RETVAL
+}
+
+stop()
+{
+        echo -n $"Stopping $prog: "
+        su $user {{ instance.path }}/bin/shutdown.sh > /dev/null
+        RETVAL=$?
+        echo
+        return $RETVAL
+}
+
+restart() {
+        stop
+        start
+}
+
+rh_status() {
+        status -p $PID_FILE tomcat@$prog
+}
+
+rh_status_q() {
+        rh_status >/dev/null 2>&1
+}
+
+case "$1" in
+        start)
+                rh_status_q && exit 0
+                start
+                ;;
+        stop)
+                if ! rh_status_q; then
+                        exit 0
+                fi
+                stop
+                ;;
+        restart)
+                restart
+                ;;
+        status)
+                rh_status
+                RETVAL=$?
+                ;;
+        *)
+                echo $"Usage: $0 {start|stop|restart|status}"
+                RETVAL=2
+esac
+exit $RETVAL

@@ -2,28 +2,42 @@
 # Role service tasks
 
 - block:
-    - name: setup tomcat instances systemd services
+    - block:
+        - name: setup tomcat instances systemd services
+          template:
+            src: "systemd.service.j2"
+            dest: "{{ tomcat_systemd_services_path }}/tomcat@{{ instance.name }}.service"
+            owner: root
+            group: root
+            mode: 0644
+          register: tomcat_setup_systemd_services_result
+          loop: "{{ tomcat_instances }}"
+          loop_control:
+            loop_var: instance
+            label: "{{ instance.name }}"
+
+        - name: reload systemd
+          command: systemctl daemon-reload
+          changed_when: false
+          when: >-
+            tomcat_setup_systemd_services_result.results
+            | select("changed")
+            | list
+            | length > 0
+      when: ansible_facts.service_mgr == "systemd"
+
+    - name: setup tomcat instances system v init services
       template:
-        src: "systemd.service.j2"
-        dest: "{{ tomcat_systemd_services_path }}/tomcat@{{ instance.name }}.service"
+        src: "sysvinit.j2"
+        dest: "{{ tomcat_systemv_init_path }}/tomcat@{{ instance.name }}"
         owner: root
         group: root
-        mode: 0644
-      register: tomcat_setup_systemd_services_result
+        mode: 0755
+      when: ansible_facts.service_mgr != "systemd"
       loop: "{{ tomcat_instances }}"
       loop_control:
         loop_var: instance
         label: "{{ instance.name }}"
-      when: ansible_facts.service_mgr == "systemd"
-
-    - name: reload systemd
-      command: systemctl daemon-reload
-      changed_when: false
-      when: >-
-        tomcat_setup_systemd_services_result.results
-        | select("changed")
-        | list
-        | length > 0
 
     - name: enable and start tomcat instances
       service:
