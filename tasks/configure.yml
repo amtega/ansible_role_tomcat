@@ -5,9 +5,9 @@
     - name: setup tomcat instances environment variables
       template:
         src: setenv.sh.j2
-        dest: "{{ instance.path}}/bin/setenv.sh"
-        owner: "{{ tomcat_user }}"
-        group: "{{ tomcat_group }}"
+        dest: "{{ instance.home}}/bin/setenv.sh"
+        owner: "{{ instance.user | default(tomcat_instance_user) }}"
+        group: "{{ instance.group | default(tomcat_instance_group) }}"
         mode: "{{ tomcat_files_permissions }}"
       loop: "{{ tomcat_instances }}"
       loop_control:
@@ -16,7 +16,7 @@
 
     - name: setup tomcat instances server config
       xml:
-        path: "{{ item.0.path }}/conf/server.xml"
+        path: "{{ item.0.home }}/conf/server.xml"
         xpath: "{{ item.1.xpath }}"
         value: "{{ item.1.value }}"
         pretty_print: true

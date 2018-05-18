@@ -11,10 +11,6 @@
             is version(tomcat_supported_versions[distribution], ">=")
       vars:
         distribution: "{{ ansible_facts.distribution | lower }}"
-
-    - name: assert version number
-      assert:
-        that: tomcat_download_tarball_version == tomcat_version
   tags:
     - role::tomcat
     - role::tomcat::check

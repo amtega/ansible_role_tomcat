@@ -22,33 +22,26 @@
     - role: amtega.tomcat
       tomcat_instances:
         - name: server1
-          path: /srv/tomcat/server1
-          java_home: /usr/lib/jvm/jre
-          java_opts: -Xmx1024m -Xms1024m
-          server_port: 8005
-          server_http_port: 8080
-          server_https_port: 8443
-          server_ajp_port: 8009
+          version: 8.0.9
+          link: /opt/tomcat8
 
         - name: server2
-          path: /srv/tomcat/server2
-          java_home: /usr/lib/jvm/jre
-          java_opts: -Xmx1024m -Xms1024m
+          version: 7.0.88
           server_port: 8006
           server_http_port: 8081
           server_https_port: 8444
           server_ajp_port: 8010
+          link: /opt/tomcat7
+
+        - name: server3
+          version: 6.0.0
+          server_port: 8007
+          server_http_port: 8082
+          server_https_port: 8445
+          server_ajp_port: 8011
+          link: /opt/tomcat6
   tags:
     - idempotence
-
-- name: test tomcat role with explicit download url
-  hosts: docker_sandbox_containers
-  roles:
-    - role: amtega.tomcat
-      tomcat_version: 7.0.88
-      tomcat_download_url: >-
-        {{ "http://archive.apache.org/dist/tomcat/tomcat-7/v7.0.88/bin/"
-           ~ "apache-tomcat-7.0.88.tar.gz" }}
 
 - name: cleanup docker docker sandbox
   hosts: localhost

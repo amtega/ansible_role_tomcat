@@ -34,26 +34,31 @@ tomcat_packages:
     - python-lxml
     - rsync
     - tar
+    - unzip
   fedora_26:
     - java
     - python-lxml
     - rsync
     - tar
+    - unzip
   fedora_27:
     - java
     - python-lxml
     - rsync
     - tar
+    - unzip
   rhel_6:
     - java
     - python-lxml
     - rsync
     - tar
+    - unzip
   rhel_7:
     - java
     - python-lxml
     - rsync
     - tar
+    - unzip
 
 # Required python pip packages
 
@@ -61,53 +66,9 @@ tomcat_packages_python:
   centos_6:
     - lxml
 
-# Major, minor and patch version numbers
-
-tomcat_version_major: >-
-  {{ tomcat_version | regex_replace("([0-9]+)\.([0-9]+)\.([0-9]+)", "\1") }}
-tomcat_version_minor: >-
-  {{ tomcat_version | regex_replace("([0-9]+)\.([0-9]+)\.([0-9]+)", "\2") }}
-tomcat_version_patch: >-
-  {{ tomcat_version | regex_replace("([0-9]+)\.([0-9]+)\.([0-9]+)", "\3") }}
-
-# Download variables
-
-tomcat_default_download_dist_url: >-
-  {{ tomcat_download_mirror
-     ~ "/dist/tomcat"
-     ~ "/tomcat-"
-     ~ tomcat_version_major
-     ~ "/v"
-     ~ tomcat_version
-     ~ "/bin/" }}
-
-tomcat_default_download_tarball: >-
-  {{ "apache-tomcat-"
-     ~ tomcat_version
-     ~ ".tar.gz" }}
-
-tomcat_default_download_url: >-
-  {{ tomcat_default_download_dist_url }}/{{ tomcat_default_download_tarball }}
-
-tomcat_download_tarball: >-
-  {{ tomcat_download_url
-     | default(tomcat_default_download_url)
-     | urlsplit('path')
-     | basename }}
-
-tomcat_download_tarball_version: >-
-  {{ tomcat_download_tarball
-     | regex_replace("apache-tomcat-([0-9]+\.[0-9]+\.[0-9]+)\.tar\.gz", "\1") }}
-
-# Tomcat home directory
-
-tomcat_home: >-
-  {{ tomcat_install_path }}/{{ tomcat_download_tarball
-                            | regex_replace("(.*)\.tar\.gz", "\1") }}
-
 # Tomcat PID file path relative to instance path
 
-tomcat_pid: bin/tomcat.pid
+tomcat_pid_file: bin/tomcat.pid
 
 # Permissions to use in tomcat directories and files
 

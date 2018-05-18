@@ -23,87 +23,178 @@
              | lower
              + "_" + ansible_facts.distribution_major_version }}
 
-    - name: "setup group {{ tomcat_group }}"
+    - name: setup instances groups
       group:
-        name: "{{ tomcat_group }}"
+        name: "{{ instance.group | default(tomcat_instance_group) }}"
+      loop: "{{ tomcat_instances }}"
+      loop_control:
+        loop_var: instance
+        label: "{{ instance.name }}"
 
-    - name: "setup user {{ tomcat_user }}"
+    - name: setup instances users
       user:
-        name: "{{ tomcat_user }}"
-        group: "{{ tomcat_group }}"
-        home: "{{ tomcat_home }}"
+        name: "{{ instance.user | default(tomcat_instance_user) }}"
+        group: "{{ instance.group | default(tomcat_instance_group) }}"
+        home: /
+      loop: "{{ tomcat_instances }}"
+      loop_control:
+        loop_var: instance
+        label: "{{ instance.name }}"
 
     - block:
-        - name: download tomcat tarball
+        - name: download instances tomcat tarball
           get_url:
-            url: >-
-              {{ tomcat_download_url | default(tomcat_default_download_url) }}
-            dest: "{{ tomcat_download_path }}"
+            url: "{{ download_url }}"
+            dest: >-
+              {{ instance.download_path
+                 | default(tomcat_instance_download_path) }}
           environment: "{{ tomcat_http_proxy_environment }}"
+          loop: "{{ tomcat_instances }}"
+          loop_control:
+            loop_var: instance
+            label: "{{ instance.name }}"
 
-        - name: extract tomcat tarball installation directory
+        - name: extract instances tomcat tarball
           unarchive:
-            src: "{{ tomcat_download_path }}/{{ tomcat_download_tarball }}"
-            dest: "{{ tomcat_install_path }}"
+            src: "{{ tarball }}"
+            dest: "{{ dest }}"
             copy: no
-            owner: "{{ tomcat_user }}"
-            group: "{{ tomcat_group }}"
+            owner: "{{ instance.user | default(tomcat_instance_user) }}"
+            group: "{{ instance.group | default(tomcat_instance_group) }}"
             mode: "{{ tomcat_files_permissions }}"
+          loop: "{{ tomcat_instances }}"
+          loop_control:
+            loop_var: instance
+            label: "{{ instance.name }}"
+          vars:
+            dest: "{{ instance.base | default(tomcat_instance_base) }}"
+            tarball: >-
+              {{ instance.download_path
+                 | default(tomcat_instance_download_path)
+                 + "/"
+                 + download_tarball }}
 
-        - name: create symlink to the installation directory
+        - name: create instances bases symlinks
           file:
-            src: "{{ tomcat_home }}"
-            dest: "{{ tomcat_install_path_link }}"
+            src: "{{ instance_base }}"
+            dest: "{{ instance.link }}"
             state: link
             mode: "{{ tomcat_files_permissions }}"
+          loop: "{{ tomcat_instances | selectattr('link', 'defined') | list }}"
+          loop_control:
+            loop_var: instance
+            label: "{{ instance.name }}"
+          vars:
+            instance_base: >-
+              {{ instance.base | default(tomcat_instance_base)
+                 + "/apache-tomcat-"
+                 + instance.version }}
       when: >-
         ansible_local.tomcat is undefined
-        or tomcat_version is not version(ansible_local.tomcat.version, "==")
+        or instance.version is not version(ansible_local.tomcat.version, "==")
+      vars:
+        version_major: >-
+          {{ instance.version
+             | regex_replace("([0-9]+)\.([0-9]+)\.([0-9]+)", "\1") }}
+        dist_url: >-
+          {{ instance.download_mirror
+             | default(tomcat_instance_download_mirror)
+             ~ "/dist/tomcat"
+             ~ "/tomcat-"
+             ~ version_major
+             ~ "/v"
+             ~ instance.version
+             ~ "/bin" }}
+        download_tarball: >-
+          {{ "apache-tomcat-"
+             ~ instance.version
+             ~ ".tar.gz" }}
+        download_url: >-
+          {{ (instance.download_url is defined)
+             | ternary(instance.download_url, dist_url)
+               + "/"
+               + download_tarball }}
 
-    - name: delete downloaded tomcat tarball
+    - name: delete tomcat instances downloaded tarballs
       file:
-        path: "{{ tomcat_download_path }}/{{ tomcat_download_tarball }}"
+        path: "{{ downloaded_tarball }}"
         state: absent
-      when: tomcat_download_remove
-
-    - name: create instances directory tree
-      file:
-        path: "{{ item.0.path }}/{{ item.1 }}"
-        state: directory
-        owner: "{{ tomcat_user }}"
-        group: "{{ tomcat_group }}"
-        mode: "{{ tomcat_files_permissions }}"
-      register: tomcat_create_instances_tree_result
-      loop: "{{ query('nested', tomcat_instances, subdirs) }}"
+      loop: >-
+        {{ tomcat_instances
+           | selectattr("remove_download", "defined")
+           | selectattr("remove_download", "equalto", true)
+           | list
+           + (tomcat_instance_remove_download)
+             | ternary(tomcat_instances
+                       | selectattr("remove_download", "undefined")
+                       | list,
+                       []) }}
       loop_control:
-        label: "{{ item.0.path }}/{{ item.1 }}"
+        loop_var: instance
+        label: "{{ instance.name }}"
       vars:
-        subdirs:
-          - bin
-          - conf
-          - lib
-          - logs
-          - temp
-          - webapps
-          - work
+        downloaded_tarball: >-
+          {{ instance.download_path
+             | default(tomcat_instance_download_path)
+             ~ "/"
+             ~ "apache-tomcat-"
+             ~ instance.version
+             ~ ".tar.gz" }}
 
-    - name: prepare instances directories
-      synchronize:
-        src: "{{ tomcat_home }}/{{ item.1.src }}"
-        dest: "{{ item.0.path }}/{{ item.1.dest | default(item.1.src) }}"
-        archive: true
-      loop: "{{ query('nested', tomcat_instances, subdirs) }}"
-      loop_control:
-        label: "{{ item.0.path }}/{{ item.1.dest | default(item.1.src) }}"
+    - block:
+        - name: create instances directory tree
+          file:
+            path: "{{ instance_home }}/{{ item.1 }}"
+            state: directory
+            owner: "{{ item.0.user | default(tomcat_instance_user) }}"
+            group: "{{ item.0.group | default(tomcat_instance_group) }}"
+            mode: "{{ tomcat_files_permissions }}"
+          register: tomcat_create_instances_tree_result
+          loop: "{{ query('nested', tomcat_instances, subdirs) }}"
+          loop_control:
+            label: "{{ instance.name }}/{{ item.1 }}"
+          vars:
+            subdirs:
+              - bin
+              - conf
+              - lib
+              - logs
+              - temp
+              - webapps
+              - work
+
+        - name: prepare instances directories
+          synchronize:
+            src: >-
+              {{ item.0.base
+                 | default(tomcat_instance_base)
+                 + "/apache-tomcat-"
+                 + item.0.version)
+                 + "/"
+                 + item.1.src }}
+            dest: >-
+              {{ instance_home
+                 + "/"
+                 + item.1.dest | default(item.1.src) }}
+            archive: true
+          loop: "{{ query('nested', tomcat_instances, subdirs) }}"
+          loop_control:
+            label: "{{ item.0.name }} {{ item.1.src }}"
+          vars:
+            subdirs:
+              - src: conf/
+                dest: conf
+              - src: bin/catalina.sh
+              - src: bin/startup.sh
+              - src: bin/shutdown.sh
+          when: tomcat_create_instances_tree_result is changed
+          delegate_to: "{{ inventory_hostname }}"
       vars:
-        subdirs:
-          - src: conf/
-            dest: conf
-          - src: bin/catalina.sh
-          - src: bin/startup.sh
-          - src: bin/shutdown.sh
-      when: tomcat_create_instances_tree_result is changed
-      delegate_to: "{{ inventory_hostname }}"
+        instance_home: >-
+          {{ item.0.home
+             | default(tomcat_instance_home)
+               + "/"
+               + item.0.name) }}
 
     - name: create custom facts directory
       file:

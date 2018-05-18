@@ -1,7 +1,7 @@
 {{ ansible_managed | comment }}
 
-JAVA_HOME="{{ instance.java_home }}"
-JAVA_OPTS="{{ instance.java_opts }}"
-CATALINA_HOME="{{ tomcat_home }}"
-CATALINA_BASE="{{ instance.path }}"
-CATALINA_PID="{{ instance.path }}/{{ tomcat_pid }}"
+JAVA_HOME="{{ instance.java_home | default(tomcat_instance_java_home) }}"
+JAVA_OPTS="{{ instance.java_opts | default(tomcat_instance_java_opts) }}"
+CATALINA_HOME="{{ instance.home }}"
+CATALINA_BASE="{{ instance.base }}"
+CATALINA_PID="{{ instance.home }}/{{ tomcat_pid_file }}"

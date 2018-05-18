@@ -25,14 +25,14 @@
 . /etc/rc.d/init.d/functions
 
 prog="{{ instance.name }}"
-user="{{ tomcat_user }}"
+user="{{ instance.user | default(tomcat_instance_user) }}"
 
-PID_FILE="{{ instance.path }}/{{ tomcat_pid }}"
+PID_FILE="{{ instance.home }}/{{ tomcat_pid_file }}"
 
 start()
 {
         echo -n $"Starting $prog: "
-        su $user {{ instance.path }}/bin/startup.sh && success > /dev/null || failure
+        su $user {{ instance.home }}/bin/startup.sh && success > /dev/null || failure
         RETVAL=$?
         echo
         return $RETVAL
@@ -41,7 +41,7 @@ start()
 stop()
 {
         echo -n $"Stopping $prog: "
-        su $user {{ instance.path }}/bin/shutdown.sh > /dev/null
+        su $user {{ instance.home }}/bin/shutdown.sh > /dev/null
         RETVAL=$?
         echo
         return $RETVAL

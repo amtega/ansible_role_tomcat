@@ -5,10 +5,10 @@ Description=Tomcat instance {{ instance.name }}
 After=network.target
 [Service]
 Type=forking
-User={{ tomcat_user }}
+User={{ instance.user | default(tomcat_instance_user) }}
 Restart=on-failure
-ExecStart={{ instance.path}}/bin/startup.sh
-ExecStop={{ instance.path}}/bin/shutdown.sh
+ExecStart={{ instance.home }}/bin/startup.sh
+ExecStop={{ instance.home }}/bin/shutdown.sh
 
 [Install]
 WantedBy=multi-user.target
