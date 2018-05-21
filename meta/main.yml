@@ -3,7 +3,7 @@
 
 galaxy_info:
   author: Juan Antonio Valiño García
-  description: Setup tomcat application server
+  description: Setup tomcat application server instances
   company: AMTEGA - Xunta de Galicia
   license: GPLv3 or EUPL
   min_ansible_version: 2.5
