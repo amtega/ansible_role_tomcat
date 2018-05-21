@@ -1,4 +1,4 @@
-# Ansible EPEL repository role
+# Ansible tomcat role
 
 This is an [Ansible](http://www.ansible.com) role which setups tomcat application server instances.
 
