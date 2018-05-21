@@ -1,6 +1,6 @@
 # Ansible EPEL repository role
 
-This is an [Ansible](http://www.ansible.com) role which setups tomcat application server.
+This is an [Ansible](http://www.ansible.com) role which setups tomcat application server instances.
 
 ## Requirements
 
@@ -24,7 +24,6 @@ This is an example playbook:
 - hosts: all
   roles:
     - amtega.tomcat
-
 ```
 
 ## Testing

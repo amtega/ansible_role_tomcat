@@ -1,32 +1,23 @@
 {
-  "user": "{{ tomcat_user }}",
-  "group": "{{ tomcat_group }}",
-
-  "base_path": "{{ tomcat_install_path }}",
-
-  "version": "{{ tomcat_version }}",
-  "version_major": "{{ tomcat_version_major }}",
-  "version_minor": "{{ tomcat_version_minor }}",
-  "version_patch": "{{ tomcat_version_patch }}",
-  "download_mirror": "{{ tomcat_download_mirror }}",
-
-{% if tomcat_download_url is defined %}
-  "download_url": "{{ tomcat_download_url }}",
-{% endif %}
-
-  "download_path": "{{ tomcat_download_path }}",
-  "home": "{{ tomcat_home }}",
-  "instances": [
 {% for instance in tomcat_instances %}
+  "{{ instance.name }}":
     {
-      "path": "{{ instance.path }}",
-      "java_home": "{{ instance.java_home }}",
-      "java_opts": "{{ instance.java_opts }}",
-      "server_port": "{{ instance.server_port }}",
-      "server_http_port": "{{ instance.server_http_port }}",
-      "server_https_port": "{{ instance.server_https_port }}",
-      "server_ajp_port": "{{ instance.server_ajp_port }}"
+      "version": "{{ instance.version }}",
+      "base": "{{ instance.base | default(tomcat_instance_base) }}",
+      "home": "{{ instance.home | default(tomcat_instance_home) }}",
+      "user": "{{ instance.user | default(tomcat_instance_user) }}",
+      "group": "{{ instance.group | default(tomcat_instance_group) }}",
+      "java_home": "{{ instance.java_home | default(tomcat_instance_java_home) }}",
+      "java_opts": "{{ instance.java_opts | default(tomcat_instance_java_opts) }}",
+      "download_mirror": "{{ instance.download_mirror | default(tomcat_instance_download_mirror) }}",
+      "download_path": "{{ instance.download_path | default(tomcat_instance_download_path) }}",
+{% if instance.download_url is defined %}
+      "download_url": "{{ instance.download_url }}",
+{% endif %}
+      "server_port": "{{ instance.server_port | default(tomcat_instance_server_port) }}",
+      "server_http_port": "{{ instance.server_http_port | default(tomcat_instance_server_http_port) }}",
+      "server_https_port": "{{ instance.server_https_port | default(tomcat_instance_server_https_port) }}",
+      "server_ajp_port": "{{ instance.server_ajp_port | default(tomcat_instance_server_ajp_port) }}"
     }{% if not loop.last %},{{ "\n" }}{% else %}{{ "\n" }}{% endif %}
 {% endfor %}
-  ]
 }
