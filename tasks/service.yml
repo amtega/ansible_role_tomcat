@@ -6,7 +6,11 @@
         - name: setup tomcat instances systemd services
           template:
             src: "systemd.service.j2"
-            dest: "{{ tomcat_systemd_services_path }}/tomcat@{{ instance.name }}.service"
+            dest: >-
+              {{ tomcat_systemd_services_path
+                 + "/tomcat@"
+                 + instance.name
+                 + ".service" }}
             owner: root
             group: root
             mode: 0644
@@ -48,6 +52,13 @@
       loop_control:
         loop_var: instance
         label: "{{ instance.name }}"
+
+  vars:
+    instance_base: >-
+      {{ instance.base
+         | default(tomcat_instance_base)
+           + "/"
+           + instance.name }}
   tags:
     - role::tomcat
     - role::tomcat::service

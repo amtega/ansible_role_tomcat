@@ -1,23 +1,46 @@
 ---
 # Role default lower priority variables
 
-# List of tomcat instances to create
+# List of tomcat instances to provisione.The dicts must have the following
+# values:
+# { name: server                # Name of the instance
+#   version: 8.0.9              # Tomcat version
+#   base: /srv/tomcat           # Base path for tomcat instance. Within this
+#                               # a subdirectoy will be created for the
+#                               # specific tomcat instance
+#   home: /opt                  # Home path for tomcat binaries. Within this
+#                               # a subdirectoy will be created for the
+#                               # specific tomcat version
+#   user: tomcat                # Instance system user
+#   group: tomcat               # Instance system group
+#   link: /opt/tomcat           # Where to put a soft link to the tomcat home
+#   java_home: >-               # Java home to use
+#     /usr/lib/jvm/jre
+#   java_opts: >-               # Java options to use
+#     -Xmx1024m -Xms1024m
+#   server_port: 8005           # Server port
+#   server_http_port: 8080      # Server HTTP port
+#   server_https_port: 8443     # Server HTTPS port
+#   server_ajp_port: 8009       # Server AJP port
+#   pid_file: bin/tomcat.pid    # Path to the tomcat PID file, relative to
+#                               # instance base path
+#   download_mirror: >-         # Mirror to use to download Tomcat
+#     http://archive.apache.org
+#   download_path: /tmp         # Where to download tomcat redistributable
+#   remove_download: true       # Remove or not downloaded tomcat
+#                                 redistributable after provisioning
+#   download_url:               # Specific url to the the redistributable
+#                               # tarball path (without the filename) }e }
 
 tomcat_instances:
   - name: server
     version: 8.0.9
-#    link: /opt/tomcat               # Where to put a soft link to the base
-#    download_url:                  # Use this variable to use an sepecific url
-#                                   # to the redistributable tarball. Keep in
-#                                   # mind that if you use this variable
-#                                   # instance version variable must match
-#                                   # with tarball filename
 
 # Default instance options to apply if no other ones are specified in the
 # specific instance dictionary of the tomcat_instances variable.
 
-tomcat_instance_base: /opt
-tomcat_instance_home: /srv/tomcat
+tomcat_instance_base: /srv/tomcat
+tomcat_instance_home: /opt
 tomcat_instance_user: tomcat
 tomcat_instance_group: tomcat
 tomcat_instance_server_port: 8005
@@ -26,17 +49,10 @@ tomcat_instance_server_https_port: 8443
 tomcat_instance_server_ajp_port: 8009
 tomcat_instance_java_home: /usr/lib/jvm/jre
 tomcat_instance_java_opts: -Xmx1024m -Xms1024m
+tomcat_instance_pid_file: bin/tomcat.pid
 tomcat_instance_download_mirror: http://archive.apache.org
 tomcat_instance_download_path: /tmp
 tomcat_instance_remove_download: true
-
-
-# Where to download tomcat redistributable
-# Remove the tomcat redistributable after install
-
-
-
-# Tomcat instances configuration
 
 #
 # Proxy settings

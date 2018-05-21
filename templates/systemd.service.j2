@@ -7,8 +7,8 @@ After=network.target
 Type=forking
 User={{ instance.user | default(tomcat_instance_user) }}
 Restart=on-failure
-ExecStart={{ instance.home }}/bin/startup.sh
-ExecStop={{ instance.home }}/bin/shutdown.sh
+ExecStart={{ instance_base }}/bin/startup.sh
+ExecStop={{ instance_base }}/bin/shutdown.sh
 
 [Install]
 WantedBy=multi-user.target

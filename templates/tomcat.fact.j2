@@ -4,11 +4,11 @@
     {
       "version": "{{ instance.version }}",
       "base": "{{ instance.base | default(tomcat_instance_base) }}",
-      "home": "{{ instance.home default(tomcat_instance_home) }}",
+      "home": "{{ instance.home | default(tomcat_instance_home) }}",
       "user": "{{ instance.user | default(tomcat_instance_user) }}",
       "group": "{{ instance.group | default(tomcat_instance_group) }}",
-      "java_home": "{{ instance.java_home | default(tomcat_instance_java_home }}",
-      "java_opts": "{{ instance.java_opts default(tomcat_instance_java_opts) }}",
+      "java_home": "{{ instance.java_home | default(tomcat_instance_java_home) }}",
+      "java_opts": "{{ instance.java_opts | default(tomcat_instance_java_opts) }}",
       "download_mirror": "{{ instance.download_mirror | default(tomcat_instance_download_mirror) }}",
       "download_path": "{{ instance.download_path | default(tomcat_instance_download_path) }}",
 {% if instance.download_url is defined %}

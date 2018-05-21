@@ -66,10 +66,6 @@ tomcat_packages_python:
   centos_6:
     - lxml
 
-# Tomcat PID file path relative to instance path
-
-tomcat_pid_file: bin/tomcat.pid
-
 # Permissions to use in tomcat directories and files
 
 tomcat_files_permissions: "u=rwx,go=rx"

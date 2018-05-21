@@ -5,39 +5,49 @@
     - name: setup tomcat instances environment variables
       template:
         src: setenv.sh.j2
-        dest: "{{ instance.home}}/bin/setenv.sh"
+        dest: "{{ instance_base }}/bin/setenv.sh"
         owner: "{{ instance.user | default(tomcat_instance_user) }}"
         group: "{{ instance.group | default(tomcat_instance_group) }}"
         mode: "{{ tomcat_files_permissions }}"
-      loop: "{{ tomcat_instances }}"
+      loop: "{{ query('indexed_items', tomcat_instances) }}"
       loop_control:
-        loop_var: instance
-        label: "{{ instance.name }}"
+        label: "{{ item.1.name }}"
 
     - name: setup tomcat instances server config
       xml:
-        path: "{{ item.0.home }}/conf/server.xml"
+        path: "{{ instance_base }}/conf/server.xml"
         xpath: "{{ item.1.xpath }}"
-        value: "{{ item.1.value }}"
+        attribute: "{{ item.1.attribute }}"
+        value: >-
+          {{ instance[item.1.value]
+             | default(vars['tomcat_instance_' + item.1.value]) }}
         pretty_print: true
-      when: item.1.value in item.0
       loop: "{{ query('nested', tomcat_instances, config) }}"
       loop_control:
-        label: "{{ item.0.name }} {{ item.1.value }} {{ item.0[item.1.value] }}"
+        label: >-
+          {{ item.0.name }}
+          {{ item.1.xpath }}
+          {{ item.1.attribute }}
       vars:
         connector_xpath: "/Server/Service[@name='Catalina']/Connector"
         config:
-          - xpath: "/Server/port"
+          - xpath: "/Server"
+            attribute: port
             value: server_port
-          - xpath: "{{ connector_xpath }}[@protocol='HTTP/1.1']/port"
+          - xpath: "{{ connector_xpath }}[@protocol='HTTP/1.1']"
+            attribute: port
             value: server_http_port
-          - xpath: "{{ connector_xpath }}[@protocol='HTTP/1.1']/redirectPort"
+          - xpath: "{{ connector_xpath }}[@protocol='HTTP/1.1']"
+            attribute: redirectPort
             value: server_https_port
-          - xpath: "{{ connector_xpath }}[@sslProtocol='TLS']/port"
+          - xpath: "{{ connector_xpath }}[@sslProtocol='TLS']"
+            attribute: port
             value: server_http_port
-          - xpath: "{{ connector_xpath }}[@protocol='AJP/1.3']/port"
+          - xpath: "{{ connector_xpath }}[@protocol='AJP/1.3']"
+            attribute: port
             value: server_ajp_port
-          - xpath: "{{ connector_xpath }}[@protocol='AJP/1.3']/redirectPort"
+          - xpath: "{{ connector_xpath }}[@protocol='AJP/1.3']"
+            attribute: redirectPort
             value: server_https_port
 
     - name: configure tomcat facts
@@ -45,6 +55,20 @@
         src: tomcat.fact.j2
         dest: /etc/ansible/facts.d/tomcat.fact
         mode: 0640
+  vars:
+    instance: >-
+      {{ (item.0 is number) | ternary(item.1, item.0) }}
+
+    instance_home: >-
+      {{ instance.home | default(tomcat_instance_home)
+         + "/apache-tomcat-"
+         + instance.version }}
+
+    instance_base: >-
+      {{ instance.base
+         | default(tomcat_instance_base)
+           + "/"
+           + instance.name }}
   tags:
     - role::tomcat
     - role::tomcat::configure

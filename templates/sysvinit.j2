@@ -27,12 +27,12 @@
 prog="{{ instance.name }}"
 user="{{ instance.user | default(tomcat_instance_user) }}"
 
-PID_FILE="{{ instance.home }}/{{ tomcat_pid_file }}"
+PID_FILE="{{ instance_base }}/{{ instance.pid_file | default(tomcat_instance_pid_file) }}"
 
 start()
 {
         echo -n $"Starting $prog: "
-        su $user {{ instance.home }}/bin/startup.sh && success > /dev/null || failure
+        su $user {{ instance_base }}/bin/startup.sh && success > /dev/null || failure
         RETVAL=$?
         echo
         return $RETVAL
@@ -41,8 +41,9 @@ start()
 stop()
 {
         echo -n $"Stopping $prog: "
-        su $user {{ instance.home }}/bin/shutdown.sh > /dev/null
+        su $user {{ instance_base }}/bin/shutdown.sh > /dev/null
         RETVAL=$?
+        rm -Rf $PID_FILE
         echo
         return $RETVAL
 }
