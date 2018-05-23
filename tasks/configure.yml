@@ -1,5 +1,5 @@
 ---
-# Role configuration task
+# Role configuration tasks
 
 - block:
     - name: setup tomcat instances environment variables
@@ -22,6 +22,7 @@
           {{ instance[item.1.value]
              | default(vars['tomcat_instance_' + item.1.value]) }}
         pretty_print: true
+      register: tomcat_configure_server_result
       loop: "{{ query('nested', tomcat_instances, config) }}"
       loop_control:
         label: >-

@@ -46,13 +46,22 @@
     - name: enable and start tomcat instances
       service:
         name: "tomcat@{{ instance.name }}"
-        state: started
+        state: "{{ state }}"
         enabled: true
       loop: "{{ tomcat_instances }}"
       loop_control:
         loop_var: instance
         label: "{{ instance.name }}"
-
+      vars:
+        config_changed: >-
+          {{ tomcat_configure_server_result.results
+             | default([])
+             | selectattr("item.0.name", "equalto", instance.name)
+             | select("changed")
+             | list }}
+        state: >-
+          {{ (config_changed | length > 0)
+             | ternary("restarted", "started") }}
   vars:
     instance_base: >-
       {{ instance.base
