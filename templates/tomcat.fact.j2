@@ -1,10 +1,12 @@
 {
 {% for instance in tomcat_instances %}
+{% set instance_home= instance.home | default(tomcat_instance_home) + "/apache-tomcat-" + instance.version %}
+{% set instance_base= instance.base | default(tomcat_instance_base) + "/" + instance.name %}
   "{{ instance.name }}":
     {
       "version": "{{ instance.version }}",
-      "base": "{{ instance.base | default(tomcat_instance_base) }}",
-      "home": "{{ instance.home | default(tomcat_instance_home) }}",
+      "base": "{{ instance_base }}",
+      "home": "{{ instance_home }}",
       "user": "{{ instance.user | default(tomcat_instance_user) }}",
       "group": "{{ instance.group | default(tomcat_instance_group) }}",
       "java_home": "{{ instance.java_home | default(tomcat_instance_java_home) }}",
