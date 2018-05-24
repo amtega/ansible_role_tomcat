@@ -30,8 +30,8 @@
 
       - name: server2
         version: 7.0.88
-        home: /usr/local
-        base: /srv/tomcat_instances
+        home: /usr/local/tomcat7
+        base: /srv/tomcat7
         java_variables:
           var1: VAR1
           var2: VAR2

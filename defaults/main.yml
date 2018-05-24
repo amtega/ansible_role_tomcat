@@ -5,12 +5,8 @@
 # values:
 # { name: server                # Name of the instance
 #   version: 8.0.9              # Tomcat version
-#   base: /srv/tomcat           # Base path for tomcat instance. Within this
-#                               # a subdirectoy will be created for the
-#                               # specific tomcat instance
-#   home: /opt                  # Home path for tomcat binaries. Within this
-#                               # a subdirectoy will be created for the
-#                               # specific tomcat version
+#   base: /srv/tomcat           # Base path for tomcat instance.
+#   home: /opt                  # Home path for tomcat binaries.
 #   user: tomcat                # Instance system user
 #   group: tomcat               # Instance system group
 #   link: /opt/tomcat           # Where to put a soft link to the tomcat home
@@ -36,12 +32,23 @@
 #   download_url:               # Specific url to the the redistributable
 #                               # tarball path (without the filename) }e }
 
+
+
+# Within this
+#                               # a subdirectoy will be created for the
+#                               # specific tomcat version
+
 tomcat_instances:
   - name: server
     version: 8.0.9
 
 # Default instance options to apply if no other ones are specified in the
-# specific instance dictionary of the tomcat_instances variable.
+# specific instance dictionary of the tomcat_instances variable
+#
+# When tomcat_instance_base or tomcat_instance_home are used a subdirectoy
+# within the specified one will be created for the specific tomcat instance, so
+# you can think in this variables like the parent directories for base and home
+# paths of the instances that don't have anyone specified.
 
 tomcat_instance_base: /srv/tomcat
 tomcat_instance_home: /opt

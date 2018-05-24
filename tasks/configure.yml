@@ -63,14 +63,15 @@
     instance: >-
       {{ (item.0 is number) | ternary(item.1, item.0) }}
     instance_home: >-
-      {{ instance.home | default(tomcat_instance_home)
-         + "/apache-tomcat-"
-         + instance.version }}
+      {{ instance.home
+         | default(tomcat_instance_home
+                   + "/apache-tomcat-"
+                   + instance.version) }}
     instance_base: >-
       {{ instance.base
-         | default(tomcat_instance_base)
-           + "/"
-           + instance.name }}
+         | default(tomcat_instance_base
+                   + "/"
+                   + instance.name) }}
   tags:
     - role::tomcat
     - role::tomcat::configure

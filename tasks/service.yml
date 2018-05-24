@@ -65,9 +65,9 @@
   vars:
     instance_base: >-
       {{ instance.base
-         | default(tomcat_instance_base)
-           + "/"
-           + instance.name }}
+         | default(tomcat_instance_base
+                   + "/"
+                   + instance.name) }}
   tags:
     - role::tomcat
     - role::tomcat::service
