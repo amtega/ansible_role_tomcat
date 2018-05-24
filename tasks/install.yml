@@ -53,14 +53,27 @@
               loop_control:
                 label: "{{ item.name }}"
 
+            - name: create tomcat instances home dirs
+              file:
+                path: "{{ instance_home }}"
+                state: directory
+                owner: "{{ instance.user | default(tomcat_instance_user) }}"
+                group: "{{ instance.group | default(tomcat_instance_group) }}"
+                mode: "{{ tomcat_files_permissions }}"
+              loop: "{{ tomcat_instances }}"
+              loop_control:
+                label: "{{ item.name }}"
+
             - name: extract instances tomcat tarball
               unarchive:
                 src: "{{ downloaded_tarball }}"
-                dest: "{{ instance.home | default(tomcat_instance_home) }}"
+                dest: "{{ instance_home }}"
                 copy: no
                 owner: "{{ instance.user | default(tomcat_instance_user) }}"
                 group: "{{ instance.group | default(tomcat_instance_group) }}"
                 mode: "{{ tomcat_files_permissions }}"
+                extra_opts:
+                  - "--strip-components=1"
               register: tomcat_extract_tarball_result
               loop: "{{ tomcat_instances }}"
               loop_control:
@@ -193,14 +206,15 @@
       {{ (item.0 is defined) | ternary(item.0, item) }}
 
     instance_home: >-
-      {{ instance.home | default(tomcat_instance_home)
-         + "/apache-tomcat-"
-         + instance.version }}
+      {{ instance.home
+         | default(tomcat_instance_home
+                   + "/apache-tomcat-"
+                   + instance.version) }}
     instance_base: >-
       {{ instance.base
-         | default(tomcat_instance_base)
-           + "/"
-           + instance.name }}
+         | default(tomcat_instance_base
+                   + "/"
+                   + instance.name) }}
   tags:
     - role::tomcat
     - role::tomcat::install
