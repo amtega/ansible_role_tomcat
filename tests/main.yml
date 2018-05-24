@@ -21,6 +21,8 @@
   roles:
     - role: amtega.tomcat
   vars:
+    java_variables:
+
     tomcat_instances:
       - name: server1
         version: 8.0.9
@@ -30,6 +32,9 @@
         version: 7.0.88
         home: /usr/local
         base: /srv/tomcat_instances
+        java_variables:
+          var1: VAR1
+          var2: VAR2
         server_port: 8006
         server_http_port: 8081
         server_https_port: 8444

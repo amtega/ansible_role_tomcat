@@ -53,18 +53,19 @@
 
     - name: configure tomcat facts
       template:
-        src: tomcat.fact.j2
-        dest: /etc/ansible/facts.d/tomcat.fact
+        src: "tomcat.fact.j2"
+        dest: /etc/ansible/facts.d/tomcat@{{ instance.name }}.fact
         mode: 0640
+      loop: "{{ query('indexed_items', tomcat_instances) }}"
+      loop_control:
+        label: "{{ instance.name }}"
   vars:
     instance: >-
       {{ (item.0 is number) | ternary(item.1, item.0) }}
-
     instance_home: >-
       {{ instance.home | default(tomcat_instance_home)
          + "/apache-tomcat-"
          + instance.version }}
-
     instance_base: >-
       {{ instance.base
          | default(tomcat_instance_base)

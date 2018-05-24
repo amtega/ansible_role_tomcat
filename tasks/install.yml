@@ -28,7 +28,7 @@
         name: "{{ item.group | default(tomcat_instance_group) }}"
       loop: "{{ tomcat_instances }}"
       loop_control:
-        label: "{{ instance.name }}"
+        label: "{{ item.name }}"
 
     - name: setup instances users
       user:
@@ -37,7 +37,7 @@
         home: /
       loop: "{{ tomcat_instances }}"
       loop_control:
-        label: "{{ instance.name }}"
+        label: "{{ item.name }}"
 
     - block:
         - block:
@@ -51,7 +51,7 @@
               register: tomcat_download_tarball_result
               loop: "{{ tomcat_instances }}"
               loop_control:
-                label: "{{ instance.name }}"
+                label: "{{ item.name }}"
 
             - name: extract instances tomcat tarball
               unarchive:
@@ -64,7 +64,7 @@
               register: tomcat_extract_tarball_result
               loop: "{{ tomcat_instances }}"
               loop_control:
-                label: "{{ instance.name }}"
+                label: "{{ item.name }}"
 
             - name: create tomcat instances home symlinks
               file:
@@ -75,11 +75,13 @@
               loop: >-
                 {{ tomcat_instances | selectattr('link', 'defined') | list }}
               loop_control:
-                label: "{{ instance.name }}"
+                label: "{{ item.name }}"
           when: >-
-            ansible_local.tomcat is undefined
+            ansible_local[local_fact] is undefined
             or instance.version
-               is not version(ansible_local.tomcat[instance.name].version, "==")
+               is not version(ansible_local[local_fact].version, "==")
+          vars:
+            local_fact: "tomcat@{{ instance.name }}"
 
         - name: delete tomcat instances downloaded tarballs
           file:
@@ -96,7 +98,7 @@
                            | list,
                            []) }}
           loop_control:
-            label: "{{ instance.name }}"
+            label: "{{ item.name }}"
       vars:
         version_major: >-
           {{ instance.version
