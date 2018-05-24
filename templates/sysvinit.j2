@@ -2,14 +2,14 @@
 
 #!/bin/bash
 #
-# tomcat@{{ instance.name }}  Start up the instance of Tomcat Server
+# {{ instance.name }}  Start up the instance of Tomcat Server
 #
 # chkconfig: 2345 55 25
 # description: Tomcat is a JEE application container. \
 #              This service starts up the instance {{ instance.name }}.
 
 ### BEGIN INIT INFO
-# Provides: tomcat@{{ instance.name }}
+# Provides: {{ instance.name }}
 # Required-Start: $local_fs $network
 # Required-Stop: $local_fs $syslog
 # Should-Start: $syslog
@@ -54,7 +54,7 @@ restart() {
 }
 
 rh_status() {
-        status -p $PID_FILE tomcat@$prog
+        status -p $PID_FILE $prog
 }
 
 rh_status_q() {

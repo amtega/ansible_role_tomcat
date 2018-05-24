@@ -90,11 +90,9 @@
               loop_control:
                 label: "{{ item.name }}"
           when: >-
-            ansible_local[local_fact] is undefined
+            ansible_local[instance.name] is undefined
             or instance.version
-               is not version(ansible_local[local_fact].version, "==")
-          vars:
-            local_fact: "tomcat@{{ instance.name }}"
+               is not version(ansible_local[instance.name].version, "==")
 
         - name: delete tomcat instances downloaded tarballs
           file:

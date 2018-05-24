@@ -24,11 +24,11 @@
     java_variables:
 
     tomcat_instances:
-      - name: server1
+      - name: tomcat@server1
         version: 8.0.9
         link: /opt/tomcat8
 
-      - name: server2
+      - name: tomcat@server2
         version: 7.0.88
         home: /usr/local/tomcat7
         base: /srv/tomcat7
@@ -41,7 +41,7 @@
         server_ajp_port: 8010
         link: /opt/tomcat7
 
-      - name: server3
+      - name: tomcat@server3
         version: 6.0.0
         server_port: 8007
         server_http_port: 8082
