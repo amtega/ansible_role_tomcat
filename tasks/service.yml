@@ -8,6 +8,7 @@
             src: "systemd.service.j2"
             dest: >-
               {{ tomcat_systemd_services_path
+                 + "/"
                  + instance.name
                  + ".service" }}
             owner: root
