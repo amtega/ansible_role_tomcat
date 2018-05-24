@@ -32,14 +32,8 @@
 #   download_url:               # Specific url to the the redistributable
 #                               # tarball path (without the filename) }e }
 
-
-
-# Within this
-#                               # a subdirectoy will be created for the
-#                               # specific tomcat version
-
 tomcat_instances:
-  - name: server
+  - name: tomcat@server1
     version: 8.0.9
 
 # Default instance options to apply if no other ones are specified in the
