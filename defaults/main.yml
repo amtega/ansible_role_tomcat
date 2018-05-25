@@ -1,7 +1,7 @@
 ---
 # Role default lower priority variables
 
-# List of tomcat instances to provisione.The dicts must have the following
+# List of tomcat instances to provisione. The dicts must have the following
 # values:
 # { name: server                # Name of the instance
 #   version: 8.0.9              # Tomcat version
@@ -30,7 +30,7 @@
 #   remove_download: true       # Remove or not downloaded tomcat
 #                                 redistributable after provisioning
 #   download_url:               # Specific url to the the redistributable
-#                               # tarball path (without the filename) }e }
+#                               # tarball path (without the filename) }
 
 tomcat_instances:
   - name: tomcat@server1

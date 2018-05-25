@@ -70,6 +70,10 @@ tomcat_packages_python:
 
 tomcat_files_permissions: "u=rwx,go=rx"
 
+# Config files paths (relative to tomcat base)
+
+tomcat_server_config: conf/server.xml
+
 # Systemd variables
 
 tomcat_systemd_services_path: /usr/lib/systemd/system

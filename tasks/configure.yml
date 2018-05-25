@@ -15,7 +15,7 @@
 
     - name: setup tomcat instances server config
       xml:
-        path: "{{ instance_base }}/conf/server.xml"
+        path: "{{ instance_base }}/{{ tomcat_server_config }}"
         xpath: "{{ item.1.xpath }}"
         attribute: "{{ item.1.attribute }}"
         value: >-
