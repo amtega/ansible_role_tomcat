@@ -12,7 +12,7 @@ tomcat_supported_distributions:
 
 tomcat_supported_versions:
   centos: 6
-  fedora: 26
+  fedora: 27
   rhel: 7
 
 # Required operating system packages
@@ -35,13 +35,13 @@ tomcat_packages:
     - rsync
     - tar
     - unzip
-  fedora_26:
+  fedora_27:
     - java
     - python-lxml
     - rsync
     - tar
     - unzip
-  fedora_27:
+  fedora_28:
     - java
     - python-lxml
     - rsync
