@@ -18,9 +18,7 @@
         path: "{{ instance_base }}/{{ tomcat_server_config }}"
         xpath: "{{ item.1.xpath }}"
         attribute: "{{ item.1.attribute }}"
-        value: >-
-          {{ instance[item.1.value]
-             | default(vars['tomcat_instance_' + item.1.value]) }}
+        value: "{{ value | string }}"
         pretty_print: true
       register: tomcat_configure_server_result
       loop: "{{ query('nested', tomcat_instances, config) }}"
@@ -30,7 +28,13 @@
           {{ item.1.xpath }}
           {{ item.1.attribute }}
       vars:
-        connector_xpath: "/Server/Service[@name='Catalina']/Connector"
+        service_xpath: "/Server/Service[@name='Catalina']"
+        connector_xpath: "{{ service_xpath }}/Connector"
+        engine_xpath: "{{ service_xpath }}/Engine[@name='Catalina']"
+        host_xpath: "{{ engine_xpath }}/Host[@name='localhost']"
+        value: >-
+          {{ instance[item.1.value]
+             | default(vars['tomcat_instance_' + item.1.value]) }}
         config:
           - xpath: "/Server"
             attribute: port
@@ -50,6 +54,9 @@
           - xpath: "{{ connector_xpath }}[@protocol='AJP/1.3']"
             attribute: redirectPort
             value: server_https_port
+          - xpath: "{{ host_xpath }}"
+            attribute: autoDeploy
+            value: server_autodeploy
 
     - name: configure tomcat facts
       template:

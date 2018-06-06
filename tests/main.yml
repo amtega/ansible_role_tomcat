@@ -47,6 +47,7 @@
         server_http_port: 8082
         server_https_port: 8445
         server_ajp_port: 8011
+        server_autodeploy: false
         link: /opt/tomcat6
         download_url: http://archive.apache.org/dist/tomcat/tomcat-6/v6.0.0/bin
   tasks:
