@@ -21,5 +21,6 @@
   "server_port": {{ instance.server_port | default(tomcat_instance_server_port) | to_json }},
   "server_http_port": {{ instance.server_http_port | default(tomcat_instance_server_http_port) | to_json }},
   "server_https_port": {{ instance.server_https_port | default(tomcat_instance_server_https_port) | to_json }},
-  "server_ajp_port": {{ instance.server_ajp_port | default(tomcat_instance_server_ajp_port) | to_json }}
+  "server_ajp_port": {{ instance.server_ajp_port | default(tomcat_instance_server_ajp_port) | to_json }},
+  "server_autodeploy": {{ instance.server_autodeploy | default(tomcat_instance_server_autodeploy) | to_json }}
 }
