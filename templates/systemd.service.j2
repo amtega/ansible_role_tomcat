@@ -3,12 +3,16 @@
 [Unit]
 Description=Tomcat instance {{ instance.name }}
 After=network.target
+
 [Service]
 Type=forking
+PIDFile={{ instance_base }}/{{ instance.pid_file | default(tomcat_instance_pid_file) }}
 User={{ instance.user | default(tomcat_instance_user) }}
+Group={{ instance.group | default(tomcat_instance_group) }}
 Restart=on-failure
 ExecStart={{ instance_base }}/bin/startup.sh
 ExecStop={{ instance_base }}/bin/shutdown.sh
+SuccessExitStatus=143
 
 [Install]
 WantedBy=multi-user.target
