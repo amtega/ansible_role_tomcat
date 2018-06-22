@@ -22,7 +22,6 @@
 
         - name: reload systemd
           command: systemctl daemon-reload
-          changed_when: false
           when: >-
             tomcat_setup_systemd_services_result.results
             | select("changed")
