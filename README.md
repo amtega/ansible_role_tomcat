@@ -23,7 +23,11 @@ This is an example playbook:
 
 - hosts: all
   roles:
-    - amtega.tomcat
+    - role: amtega.tomcat
+      tomcat_instances:
+        - name: tomcat@server1
+          version: 8.0.9
+          link: /opt/tomcat8
 ```
 
 ## Testing
