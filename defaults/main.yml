@@ -70,14 +70,6 @@ tomcat_instance_remove_download: true
 # Proxy settings
 #
 
-# IP address and port, or URL, for using an http_proxy.
-
-#tomcat_http_proxy:
-
-# IP address and port, or URL, for using an https_proxy.
-
-#tomcat_https_proxy:
-
-# Exclude IP address or URL from the proxy.
-
-#tomcat_no_proxy:
+tomcat_http_proxy: "{{ ansible_facts.env.http_proxy | default('') }}"
+tomcat_https_proxy: "{{ ansible_facts.env.https_proxy | default('') }}"
+tomcat_no_proxy: "{{ ansible_facts.env.no_proxy | default('') }}"
