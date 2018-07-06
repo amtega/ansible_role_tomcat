@@ -13,7 +13,7 @@ tomcat_supported_distributions:
 tomcat_supported_versions:
   centos: 6
   fedora: 27
-  rhel: 7
+  rhel: 6
 
 # Required operating system packages
 
