@@ -27,6 +27,8 @@
       - name: tomcat@server1
         version: 8.0.9
         link: /opt/tomcat8
+        user_uid: 3000
+        group_uid: 3000
 
       - name: tomcat@server2
         version: 7.0.88
@@ -50,6 +52,8 @@
         server_autodeploy: false
         link: /opt/tomcat6
         download_url: http://archive.apache.org/dist/tomcat/tomcat-6/v6.0.0/bin
+    tomcat_instance_user_uid: 2000
+    tomcat_instance_group_gid: 2000
   tasks:
     - name: check that provisioned instances are listening
       wait_for:
