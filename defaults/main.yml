@@ -8,7 +8,9 @@
 #   base: /srv/tomcat           # Base path for tomcat instance.
 #   home: /opt                  # Home path for tomcat binaries.
 #   user: tomcat                # Instance system user
+#   user_uid: 2000              # UID for the instance user (optional)
 #   group: tomcat               # Instance system group
+#   group_uid: 2000             # GID for the instance group (optional)
 #   link: /opt/tomcat           # Where to put a soft link to the tomcat home
 #   java_home: >-               # Java home to use
 #     /usr/lib/jvm/jre
@@ -48,7 +50,9 @@ tomcat_instances:
 tomcat_instance_base: /srv/tomcat
 tomcat_instance_home: /opt
 tomcat_instance_user: tomcat
+#tomcat_instance_user_uid: 2000
 tomcat_instance_group: tomcat
+#tomcat_instance_group_gid: 2000
 tomcat_instance_server_port: 8005
 tomcat_instance_server_http_port: 8080
 tomcat_instance_server_https_port: 8443

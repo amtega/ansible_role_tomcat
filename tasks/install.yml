@@ -25,7 +25,24 @@
 
     - name: setup instances groups
       group:
-        name: "{{ item.group | default(tomcat_instance_group) }}"
+        name: "{{ instance.group | default(tomcat_instance_group) }}"
+        gid: >-
+          {{ instance.group_gid
+             | default(tomcat_instance_group_gid)
+             | default(omit) }}
+      loop: "{{ tomcat_instances }}"
+      loop_control:
+        label: "{{ item.name }}"
+
+    # Seems that user module doesn't work correctly when using uid parameter
+    # with an existen user (with no uid change) and there are processes running
+    # with that user. So, first we check existence of the users as workaround
+
+    - name: check if instance users exist
+      shell: "getent passwd {{ instance.user | default(tomcat_instance_user) }}"
+      register: tomcat_check_users_result
+      changed_when: false
+      failed_when: false
       loop: "{{ tomcat_instances }}"
       loop_control:
         label: "{{ item.name }}"
@@ -34,10 +51,14 @@
       user:
         name: "{{ instance.user | default(tomcat_instance_user) }}"
         group: "{{ instance.group | default(tomcat_instance_group) }}"
-        home: /
-      loop: "{{ tomcat_instances }}"
+        uid: >-
+          {{ instance.user_uid
+             | default(tomcat_instance_user_uid)
+             | default(omit) }}
+      when: tomcat_check_users_result.results[item.0].rc != 0
+      loop: "{{ query('indexed_items', tomcat_instances) }}"
       loop_control:
-        label: "{{ item.name }}"
+        label: "{{ item.1.name }}"
 
     - block:
         - block:
