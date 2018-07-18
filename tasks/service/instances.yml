@@ -1,0 +1,33 @@
+---
+# Role service tasks
+
+- name: enable and start tomcat instances
+  service:
+    name: "{{ instance.name }}"
+    state: "{{ state }}"
+    enabled: true
+  loop: "{{ tomcat_instances }}"
+  loop_control:
+    loop_var: instance
+    label: "{{ instance.name }}"
+  when: tomcat_configure_server_result is defined
+  vars:
+    server_config_changed: >-
+      {{ tomcat_configure_server_result.results
+         | default([])
+         | selectattr("item.0.name", "equalto", instance.name)
+         | select("changed")
+         | list }}
+    cms_config_changed: >-
+      {{ tomcat_configure_cms_result.results
+         | default([])
+         | selectattr("instance.name", "equalto", instance.name)
+         | select("changed")
+         | list }}
+    state: >-
+      {{ ((server_config_changed + cms_config_changed) | length > 0)
+         | ternary("restarted", "started") }}
+  tags:
+    - role::tomcat
+    - role::tomcat::service
+    - role::tomcat::service::instances

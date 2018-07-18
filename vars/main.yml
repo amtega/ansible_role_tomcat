@@ -73,6 +73,7 @@ tomcat_files_permissions: "u=rwx,go=rx"
 # Config files paths (relative to tomcat base)
 
 tomcat_server_config: conf/server.xml
+tomcat_users_config: conf/tomcat-users.xml
 
 # Systemd variables
 

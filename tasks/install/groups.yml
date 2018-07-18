@@ -1,0 +1,18 @@
+---
+# Role install tasks
+
+- name: setup instances groups
+  group:
+    name: "{{ instance.group | default(tomcat_instance_group) }}"
+    gid: >-
+      {{ instance.group_gid
+         | default(tomcat_instance_group_gid)
+         | default(omit) }}
+  loop: "{{ tomcat_instances }}"
+  loop_control:
+    loop_var: instance
+    label: "{{ instance.name }}"
+  tags:
+    - role::tomcat
+    - role::tomcat::install
+    - role::tomcat::install::groups

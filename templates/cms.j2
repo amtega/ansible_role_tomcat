@@ -1,0 +1,11 @@
+{% for instance in tomcat_instances %}
+- {{ instance | to_nice_yaml(indent=2) | indent(width=2) }}
+  cms_roles_xml:
+{% for role in instance.cms_roles | default(tomcat_instance_cms_roles) %}
+    - <role rolename="{{ role }}"/>
+{% endfor %}
+  cms_users_xml:
+{% for user in instance.cms_users | default(tomcat_instance_cms_users) %}
+    - <user username="{{ user.username }}" password="{{ user.password }}" roles="{{ user.roles | join(',') }}"/>
+{% endfor %}
+{% endfor %}

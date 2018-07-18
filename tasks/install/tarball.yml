@@ -1,0 +1,110 @@
+---
+# Tomcat tarball install tasks
+
+- block:
+    - block:
+        - name: download instances tomcat tarball
+          get_url:
+            url: "{{ download_url }}"
+            dest: >-
+              {{ instance.download_path
+                 | default(tomcat_instance_download_path) }}
+          environment: "{{ tomcat_http_proxy_environment }}"
+          register: tomcat_download_tarball_result
+          loop: "{{ tomcat_instances }}"
+          loop_control:
+            loop_var: instance
+            label: "{{ instance.name }}"
+
+        - name: create tomcat instances home dirs
+          file:
+            path: "{{ instance_home }}"
+            state: directory
+            owner: "{{ instance.user | default(tomcat_instance_user) }}"
+            group: "{{ instance.group | default(tomcat_instance_group) }}"
+            mode: "{{ tomcat_files_permissions }}"
+          loop: "{{ tomcat_instances }}"
+          loop_control:
+            loop_var: instance
+            label: "{{ instance.name }}"
+
+        - name: extract instances tomcat tarball
+          unarchive:
+            src: "{{ downloaded_tarball }}"
+            dest: "{{ instance_home }}"
+            copy: no
+            owner: "{{ instance.user | default(tomcat_instance_user) }}"
+            group: "{{ instance.group | default(tomcat_instance_group) }}"
+            mode: "{{ tomcat_files_permissions }}"
+            extra_opts:
+              - "--strip-components=1"
+          register: tomcat_extract_tarball_result
+          loop: "{{ tomcat_instances }}"
+          loop_control:
+            loop_var: instance
+            label: "{{ instance.name }}"
+
+        - name: create tomcat instances home symlinks
+          file:
+            src: "{{ instance_home }}"
+            dest: "{{ instance.link }}"
+            state: link
+            mode: "{{ tomcat_files_permissions }}"
+          loop: >-
+            {{ tomcat_instances | selectattr('link', 'defined') | list }}
+          loop_control:
+            loop_var: instance
+            label: "{{ instance.name }}"
+      when: >-
+        ansible_local[instance.name] is undefined
+        or instance.version
+           is not version(ansible_local[instance.name].version, "==")
+
+    - name: delete tomcat instances downloaded tarballs
+      file:
+        path: "{{ downloaded_tarball }}"
+        state: absent
+      loop: >-
+        {{ tomcat_instances
+           | selectattr("remove_download", "defined")
+           | selectattr("remove_download", "equalto", true)
+           | list
+           + (tomcat_instance_remove_download)
+             | ternary(tomcat_instances
+                       | selectattr("remove_download", "undefined")
+                       | list,
+                       []) }}
+      loop_control:
+        loop_var: instance
+        label: "{{ instance.name }}"
+  vars:
+    version_major: >-
+      {{ instance.version
+         | regex_replace("([0-9]+)\.([0-9]+)\.([0-9]+)", "\1") }}
+    dist_url: >-
+      {{ instance.download_mirror
+         | default(tomcat_instance_download_mirror)
+         ~ "/dist/tomcat"
+         ~ "/tomcat-"
+         ~ version_major
+         ~ "/v"
+         ~ instance.version
+         ~ "/bin" }}
+    dist_tarball: >-
+      {{ "apache-tomcat-"
+         ~ instance.version
+         ~ ".tar.gz" }}
+    download_url: >-
+      {{ (instance.download_url is defined)
+         | ternary(instance.download_url, dist_url)
+           + "/"
+           + dist_tarball }}
+    downloaded_tarball: >-
+      {{ instance.download_path
+         | default(tomcat_instance_download_path)
+         + "/"
+         + dist_tarball }}
+  tags:
+    - role::tomcat
+    - role::tomcat::install
+    - role::tomcat::install::tarball

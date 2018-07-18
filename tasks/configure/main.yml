@@ -1,0 +1,22 @@
+---
+# Configuration tasks
+
+- block:
+    - include_tasks: "{{ role_path }}/tasks/configure/environment.yml"
+    - include_tasks: "{{ role_path }}/tasks/configure/server.yml"
+    - include_tasks: "{{ role_path }}/tasks/configure/cms.yml"
+    - include_tasks: "{{ role_path }}/tasks/configure/facts.yml"
+  vars:
+    instance_base: >-
+      {{ instance.base
+         | default(tomcat_instance_base
+                   + "/"
+                   + instance.name) }}
+    instance_home: >-
+      {{ instance.home
+         | default(tomcat_instance_home
+                   + "/apache-tomcat-"
+                   + instance.version) }}
+  tags:
+    - role::tomcat
+    - role::tomcat::configure
