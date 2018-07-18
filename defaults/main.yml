@@ -11,7 +11,11 @@
 #   user_uid: 2000              # UID for the instance user (optional)
 #   group: tomcat               # Instance system group
 #   group_uid: 2000             # GID for the instance group (optional)
-#   link: /opt/tomcat           # Where to put a soft link to the tomcat home
+#   server_port: 8005           # Server port
+#   server_http_port: 8080      # Server HTTP port
+#   server_https_port: 8443     # Server HTTPS port
+#   server_ajp_port: 8009       # Server AJP port
+#   server_autodeploy: false    # Enable or not tomcat autodeploy
 #   java_home: >-               # Java home to use
 #     /usr/lib/jvm/jre
 #   java_min_heap_size: 1024m   # Minimum tomcat heap size
@@ -20,13 +24,24 @@
 #   ava_max_perm_size: 128m     # Maximum tomcat permanent generation space
 #   java_variables: {}          # Dictionary to setup extra -D java variables
 #   java_raw_opts: []           # List of extra java raw options
-#   server_port: 8005           # Server port
-#   server_http_port: 8080      # Server HTTP port
-#   server_https_port: 8443     # Server HTTPS port
-#   server_ajp_port: 8009       # Server AJP port
-#   server_autodeploy: false    # Enable or not tomcat autodeploy
 #   pid_file: bin/tomcat.pid    # Path to the tomcat PID file, relative to
 #                               # instance base path
+#   link: /opt/tomcat           # Where to put a soft link to the tomcat home
+#   cms_roles:                  # Contained managed security roles. Keep in
+#     - manager-gui             # mind that this config will replace all your
+#     - admin-gui               # CMS settings and left only the values
+#     - manager-script          # specified here
+#     - manager-jmx
+#     - manager-status
+#   cms_users:                  # Contained managed security users. Keep in
+#     - username: admin         # mind that this config will replace all your
+#       password: admin         # CMS settings and left only the values
+#       roles:                  # specified here
+#         - admin-gui
+#         - manager-gui
+#         - manager-script
+#         - manager-jmx
+#         - manager.status
 #   download_mirror: >-         # Mirror to use to download Tomcat
 #     http://archive.apache.org
 #   download_path: /tmp         # Where to download tomcat redistributable
@@ -66,6 +81,21 @@ tomcat_instance_java_max_perm_size: 128m
 tomcat_instance_java_variables: []
 tomcat_instance_java_raw_opts: []
 tomcat_instance_pid_file: bin/tomcat.pid
+tomcat_instance_cms_roles:
+  - manager-gui
+  - admin-gui
+  - manager-script
+  - manager-jmx
+  - manager-status
+tomcat_instance_cms_users:
+  - username: admin
+    password: admin
+    roles:
+      - admin-gui
+      - manager-gui
+      - manager-script
+      - manager-jmx
+      - manager.status
 tomcat_instance_download_mirror: http://archive.apache.org
 tomcat_instance_download_path: /tmp
 tomcat_instance_remove_download: true

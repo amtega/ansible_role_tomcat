@@ -1,0 +1,22 @@
+---
+# Ansible custom facts configuration tasks
+
+- block:
+    - name: create custom facts directory
+      file:
+        path: /etc/ansible/facts.d
+        state: "directory"
+
+    - name: configure tomcat facts
+      template:
+        src: "tomcat.fact.j2"
+        dest: /etc/ansible/facts.d/{{ instance.name }}.fact
+        mode: 0640
+      loop: "{{ tomcat_instances }}"
+      loop_control:
+        loop_var: instance
+        label: "{{ instance.name }}"
+  tags:
+    - role::tomcat
+    - role::tomcat::configure
+    - role::tomcat::configure::facts

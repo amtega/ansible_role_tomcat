@@ -2,25 +2,25 @@
 # Role tasks
 
 - name: sanity checks
-  import_tasks: check.yml
+  import_tasks: check/main.yml
   tags:
     - role::tomcat
     - role::tomcat::check
 
 - name: install tomcat
-  import_tasks: install.yml
+  import_tasks: install/main.yml
   tags:
     - role::tomcat
     - role::tomcat::install
 
 - name: configure tomcat
-  import_tasks: configure.yml
+  import_tasks: configure/main.yml
   tags:
     - role::tomcat
     - role::tomcat::configure
 
 - name: setup tomcat service
-  import_tasks: service.yml
+  import_tasks: service/main.yml
   tags:
     - role::tomcat
     - role::tomcat::service

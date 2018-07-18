@@ -1,0 +1,64 @@
+---
+# Instances install tasks
+
+- block:
+    - name: create instances directory tree
+      file:
+        path: "{{ instance_base }}/{{ item.1 }}"
+        state: directory
+        owner: "{{ item.0.user | default(tomcat_instance_user) }}"
+        group: "{{ item.0.group | default(tomcat_instance_group) }}"
+        mode: "{{ tomcat_files_permissions }}"
+      register: tomcat_create_instances_tree_result
+      loop: "{{ tomcat_instances | product(subdirs) | list }}"
+      loop_control:
+        label: "{{ item.0.name }} {{ item.1 }}"
+      vars:
+        subdirs:
+          - bin
+          - conf
+          - lib
+          - logs
+          - temp
+          - webapps
+          - work
+
+    - name: prepare instances directories
+      synchronize:
+        src: "{{ instance_home }}/{{ item.1.src }}"
+        dest: "{{ instance_base }}/{{ item.1.dest }}"
+        archive: true
+      loop: "{{ tomcat_instances | product(subdirs) | list }}"
+      loop_control:
+        label: "{{ item.0.name }} {{ item.1.src }}"
+      vars:
+        subdirs:
+          - src: conf/
+            dest: conf
+          - src: bin/catalina.sh
+            dest: bin/catalina.sh
+          - src: bin/startup.sh
+            dest: bin/startup.sh
+          - src: bin/shutdown.sh
+            dest: bin/shutdown.sh
+      delegate_to: "{{ inventory_hostname }}"
+      when: >-
+        tomcat_extract_tarball_result.results
+        | selectattr("instance.name", "equalto", item.0.name)
+        | first
+        is changed
+        or tomcat_download_tarball_result.results
+        | selectattr("instance.name", "equalto", item.0.name)
+        | first
+        is changed
+        or tomcat_create_instances_tree_result.results
+        | selectattr("item.0.name", "equalto", item.0.name)
+        | select("changed")
+        | list
+        | length > 0
+  vars:
+    instance: "{{ item.0 }}"
+  tags:
+    - role::tomcat
+    - role::tomcat::install
+    - role::tomcat::install::instances

@@ -1,0 +1,18 @@
+---
+# Environment variables configuration tasks
+
+- name: setup tomcat instances environment variables
+  template:
+    src: setenv.sh.j2
+    dest: "{{ instance_base }}/bin/setenv.sh"
+    owner: "{{ instance.user | default(tomcat_instance_user) }}"
+    group: "{{ instance.group | default(tomcat_instance_group) }}"
+    mode: "{{ tomcat_files_permissions }}"
+  loop: "{{ tomcat_instances }}"
+  loop_control:
+    loop_var: instance
+    label: "{{ instance.name }}"
+  tags:
+    - role::tomcat
+    - role::tomcat::configure
+    - role::tomcat::configure::environment
