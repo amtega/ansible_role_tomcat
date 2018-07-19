@@ -9,6 +9,10 @@
 #   home: /opt                  # Home path for tomcat binaries.
 #   user: tomcat                # Instance system user
 #   user_uid: 2000              # UID for the instance user (optional)
+#   user_soft_nofile: 4096      # Tomcat user soft and hard limits for number
+#   user_hard_nofile: 4096      # of files and processes
+#   user_soft_nproc: 1000
+#   user_hard_nproc: 1000
 #   group: tomcat               # Instance system group
 #   group_uid: 2000             # GID for the instance group (optional)
 #   server_port: 8005           # Server port
@@ -41,7 +45,15 @@
 #         - manager-gui
 #         - manager-script
 #         - manager-jmx
-#         - manager.status
+#         - manager-status
+#   manager_addresses_allow:    # List of regular expressions that define the
+#     - 127\.\d+\.\d+\.\d+      # remote addresses and hostnames to allow
+#   manager_addresses_deny:     # or deny access to  the tomcat manager
+#     - 127.13.13.5
+#   manager_hostnames_allow:
+#     - d+\.acme.com
+#   manager_hostnames_deny:
+#     - bad.*\.acme.com
 #   download_mirror: >-         # Mirror to use to download Tomcat
 #     http://archive.apache.org
 #   download_path: /tmp         # Where to download tomcat redistributable
@@ -66,6 +78,10 @@ tomcat_instance_base: /srv/tomcat
 tomcat_instance_home: /opt
 tomcat_instance_user: tomcat
 #tomcat_instance_user_uid: 2000
+tomcat_instance_user_soft_nofile: 4096
+tomcat_instance_user_hard_nofile: 4096
+tomcat_instance_user_soft_nproc: 1000
+tomcat_instance_user_hard_nproc: 1000
 tomcat_instance_group: tomcat
 #tomcat_instance_group_gid: 2000
 tomcat_instance_server_port: 8005
@@ -95,7 +111,13 @@ tomcat_instance_cms_users:
       - manager-gui
       - manager-script
       - manager-jmx
-      - manager.status
+      - manager-status
+tomcat_instance_manager_addresses_allow:
+  - d+\.d+\.\d+\.\d+
+tomcat_instance_manager_addresses_deny: []
+tomcat_instance_manager_hostnames_allow:
+  - .*
+tomcat_instance_manager_hostnames_deny: []
 tomcat_instance_download_mirror: http://archive.apache.org
 tomcat_instance_download_path: /tmp
 tomcat_instance_remove_download: true

@@ -5,6 +5,8 @@
     - include_tasks: "{{ role_path }}/tasks/configure/environment.yml"
     - include_tasks: "{{ role_path }}/tasks/configure/server.yml"
     - include_tasks: "{{ role_path }}/tasks/configure/cms.yml"
+    - include_tasks: "{{ role_path }}/tasks/configure/manager.yml"
+    - include_tasks: "{{ role_path }}/tasks/configure/limits.yml"
     - include_tasks: "{{ role_path }}/tasks/configure/facts.yml"
   vars:
     instance_base: >-

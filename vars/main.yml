@@ -74,6 +74,8 @@ tomcat_files_permissions: "u=rwx,go=rx"
 
 tomcat_server_config: conf/server.xml
 tomcat_users_config: conf/tomcat-users.xml
+tomcat_manager_config: conf/Catalina/localhost/manager.xml
+tomcat_limits_config: /etc/security/limits.d
 
 # Systemd variables
 

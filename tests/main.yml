@@ -28,7 +28,23 @@
         version: 8.0.9
         link: /opt/tomcat8
         user_uid: 3000
+        user_soft_nofile: 1024
+        user_hard_nofile: 1024
+        user_soft_nproc: 500
+        user_hard_nproc: 500
         group_uid: 3000
+        manager_addresses_allow:
+          - 192.168.5.2
+          - 192.168.5.3
+        manager_addresses_deny:
+          - 192.168.5.13
+          - 192.168.5.14
+        manager_hostnames_allow:
+          - host1.acme.com
+          - host2.acme.com
+        manager_hostnames_deny:
+          - badhost1.acme.com
+          - badhost2.acme.com
 
       - name: tomcat@server2
         version: 7.0.88

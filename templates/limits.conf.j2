@@ -1,0 +1,6 @@
+{{ ansible_managed | comment }}
+
+{{ instance.user | default(tomcat_instance_user) }} soft nofile {{ instance.user_soft_nofile | default(tomcat_instance_user_soft_nofile) }}
+{{ instance.user | default(tomcat_instance_user) }} hard nofile {{ instance.user_hard_nofile | default(tomcat_instance_user_hard_nofile) }}
+{{ instance.user | default(tomcat_instance_user) }} soft nproc {{ instance.user_soft_nproc | default(tomcat_instance_user_soft_nproc) }}
+{{ instance.user | default(tomcat_instance_user) }} hard nproc {{ instance.user_hard_nproc | default(tomcat_instance_user_hard_nproc) }}

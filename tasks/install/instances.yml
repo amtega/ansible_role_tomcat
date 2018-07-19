@@ -22,12 +22,15 @@
           - temp
           - webapps
           - work
+          - "{{ tomcat_manager_config | dirname }}"
 
     - name: prepare instances directories
       synchronize:
         src: "{{ instance_home }}/{{ item.1.src }}"
         dest: "{{ instance_base }}/{{ item.1.dest }}"
         archive: true
+        rsync_opts:
+          - "--exclude='{{ tomcat_manager_config | dirname }}'"
       loop: "{{ tomcat_instances | product(subdirs) | list }}"
       loop_control:
         label: "{{ item.0.name }} {{ item.1.src }}"
