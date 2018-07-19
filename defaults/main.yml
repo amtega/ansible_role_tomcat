@@ -41,7 +41,7 @@
 #         - manager-gui
 #         - manager-script
 #         - manager-jmx
-#         - manager.status
+#         - manager-status
 #   manager_addresses_allow:    # List of regular expressions that define the
 #     - 127\.\d+\.\d+\.\d+      # remote addresses and hostnames to allow
 #   manager_addresses_deny:     # or deny access to  the tomcat manager
@@ -103,7 +103,7 @@ tomcat_instance_cms_users:
       - manager-gui
       - manager-script
       - manager-jmx
-      - manager.status
+      - manager-status
 tomcat_instance_manager_addresses_allow:
   - d+\.d+\.\d+\.\d+
 tomcat_instance_manager_addresses_deny: []
