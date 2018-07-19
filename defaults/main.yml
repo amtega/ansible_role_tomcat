@@ -9,6 +9,10 @@
 #   home: /opt                  # Home path for tomcat binaries.
 #   user: tomcat                # Instance system user
 #   user_uid: 2000              # UID for the instance user (optional)
+#   user_soft_nofile: 4096      # Tomcat user soft and hard limits for number
+#   user_hard_nofile: 4096      # of files and processes
+#   user_soft_nproc: 1000
+#   user_hard_nproc: 1000
 #   group: tomcat               # Instance system group
 #   group_uid: 2000             # GID for the instance group (optional)
 #   server_port: 8005           # Server port
@@ -74,6 +78,10 @@ tomcat_instance_base: /srv/tomcat
 tomcat_instance_home: /opt
 tomcat_instance_user: tomcat
 #tomcat_instance_user_uid: 2000
+tomcat_instance_user_soft_nofile: 4096
+tomcat_instance_user_hard_nofile: 4096
+tomcat_instance_user_soft_nproc: 1000
+tomcat_instance_user_hard_nproc: 1000
 tomcat_instance_group: tomcat
 #tomcat_instance_group_gid: 2000
 tomcat_instance_server_port: 8005

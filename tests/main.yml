@@ -28,6 +28,10 @@
         version: 8.0.9
         link: /opt/tomcat8
         user_uid: 3000
+        user_soft_nofile: 1024
+        user_hard_nofile: 1024
+        user_soft_nproc: 500
+        user_hard_nproc: 500
         group_uid: 3000
         manager_addresses_allow:
           - 192.168.5.2
