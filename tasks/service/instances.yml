@@ -24,8 +24,17 @@
          | selectattr("instance.name", "equalto", instance.name)
          | select("changed")
          | list }}
+    manager_config_changed: >-
+      {{ tomcat_configure_manager_result.results
+         | default([])
+         | selectattr("instance.name", "equalto", instance.name)
+         | select("changed")
+         | list }}
     state: >-
-      {{ ((server_config_changed + cms_config_changed) | length > 0)
+      {{ ((server_config_changed
+           + cms_config_changed
+           + manager_config_changed)
+          | length > 0)
          | ternary("restarted", "started") }}
   tags:
     - role::tomcat

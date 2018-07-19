@@ -42,6 +42,14 @@
 #         - manager-script
 #         - manager-jmx
 #         - manager.status
+#   manager_addresses_allow:    # List of regular expressions that define the
+#     - 127\.\d+\.\d+\.\d+      # remote addresses and hostnames to allow
+#   manager_addresses_deny:     # or deny access to  the tomcat manager
+#     - 127.13.13.5
+#   manager_hostnames_allow:
+#     - d+\.acme.com
+#   manager_hostnames_deny:
+#     - bad.*\.acme.com
 #   download_mirror: >-         # Mirror to use to download Tomcat
 #     http://archive.apache.org
 #   download_path: /tmp         # Where to download tomcat redistributable
@@ -96,6 +104,12 @@ tomcat_instance_cms_users:
       - manager-script
       - manager-jmx
       - manager.status
+tomcat_instance_manager_addresses_allow:
+  - d+\.d+\.\d+\.\d+
+tomcat_instance_manager_addresses_deny: []
+tomcat_instance_manager_hostnames_allow:
+  - .*
+tomcat_instance_manager_hostnames_deny: []
 tomcat_instance_download_mirror: http://archive.apache.org
 tomcat_instance_download_path: /tmp
 tomcat_instance_remove_download: true
