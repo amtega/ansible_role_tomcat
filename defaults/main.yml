@@ -3,64 +3,68 @@
 
 # List of tomcat instances to provisione. The dicts must have the following
 # values:
-# { name: server                # Name of the instance
-#   version: 8.0.9              # Tomcat version
-#   base: /srv/tomcat           # Base path for tomcat instance.
-#   home: /opt                  # Home path for tomcat binaries.
-#   user: tomcat                # Instance system user
-#   user_uid: 2000              # UID for the instance user (optional)
-#   user_soft_nofile: 4096      # Tomcat user soft and hard limits for number
-#   user_hard_nofile: 4096      # of files and processes
+# { name: server                 # Name of the instance
+#   version: 8.0.9               # Tomcat version
+#   base: /srv/tomcat            # Base path for tomcat instance
+#   home: /opt                   # Home path for tomcat binaries
+#   use_native_daemon: true      # Use native Commons Daemon. If false Catalina
+#                                # cripts will be used instead. This is only
+#                                # available for tomcat >= 7
+#   user: tomcat                 # Instance system user
+#   user_uid: 2000               # UID for the instance user (optional)
+#   user_soft_nofile: 4096       # Tomcat user soft and hard limits for number
+#   user_hard_nofile: 4096       # of files and processes
 #   user_soft_nproc: 1000
 #   user_hard_nproc: 1000
-#   group: tomcat               # Instance system group
-#   group_uid: 2000             # GID for the instance group (optional)
-#   server_port: 8005           # Server port
-#   server_http_port: 8080      # Server HTTP port
-#   server_https_port: 8443     # Server HTTPS port
-#   server_ajp_port: 8009       # Server AJP port
-#   server_autodeploy: false    # Enable or not tomcat autodeploy
-#   java_home: >-               # Java home to use
+#   group: tomcat                # Instance system group
+#   group_uid: 2000              # GID for the instance group (optional)
+#   server_port: 8005            # Server port
+#   server_http_port: 8080       # Server HTTP port
+#   server_https_port: 844 3     # Server HTTPS port
+#   server_ajp_port: 8009        # Server AJP port
+#   server_autodeploy: fals e    # Enable or not tomcat autodeploy
+#   java_home: >-                # Java home to use
 #     /usr/lib/jvm/jre
-#   java_min_heap_size: 1024m   # Minimum tomcat heap size
-#   java_max_heap_size: 1024m   # Maximum tomcat heap size
-#   java_min_perm_size: 128m    # Minimum tomcat permanent generation space
-#   ava_max_perm_size: 128m     # Maximum tomcat permanent generation space
-#   java_variables: {}          # Dictionary to setup extra -D java variables
-#   java_raw_opts: []           # List of extra java raw options
-#   pid_file: bin/tomcat.pid    # Path to the tomcat PID file, relative to
-#                               # instance base path
-#   link: /opt/tomcat           # Where to put a soft link to the tomcat home
-#   cms_roles:                  # Contained managed security roles. Keep in
-#     - manager-gui             # mind that this config will replace all your
-#     - admin-gui               # CMS settings and left only the values
-#     - manager-script          # specified here
+#   java_min_heap_size: 1024m    # Minimum tomcat heap size
+#   java_max_heap_size: 1024m    # Maximum tomcat heap size
+#   java_min_perm_size: 128m     # Minimum tomcat permanent generation space
+#   ava_max_perm_size: 128m      # Maximum tomcat permanent generation space
+#   java_variables: {}           # Dictionary to setup extra -D java variables
+#   java_raw_opts: []            # List of extra java raw options
+#   pid_file: bin/tomcat.pid     # Path to the tomcat PID file, relative to
+#                                # instance base path
+#   link: /opt/tomcat            # Where to put a soft link to the tomcat home
+#   cms_roles:                   # Contained managed security roles. Keep in
+#     - manager-gui              # mind that this config will replace all your
+#     - admin-gui                # CMS settings and left only the values
+#     - manager-script           # specified here
 #     - manager-jmx
 #     - manager-status
-#   cms_users:                  # Contained managed security users. Keep in
-#     - username: admin         # mind that this config will replace all your
-#       password: admin         # CMS settings and left only the values
-#       roles:                  # specified here
-#         - admin-gui
+#   cms_users:                   # Contained managed security users. Keep in
+#     - username: admin          # mind that this config will replace all your
+#       password: admin          # CMS settings and left only the values
+#       roles:                   # specified here
+#         - admin-gu i
 #         - manager-gui
 #         - manager-script
 #         - manager-jmx
 #         - manager-status
-#   manager_addresses_allow:    # List of regular expressions that define the
-#     - 127\.\d+\.\d+\.\d+      # remote addresses and hostnames to allow
-#   manager_addresses_deny:     # or deny access to  the tomcat manager
+#   manager_addresses_allow:     # List of regular expressions that define the
+#     - 127\.\d+\.\d+\.\d+       # remote addresses and hostnames to allow
+#   manager_addresses_deny:      # or deny access to  the tomcat manager
 #     - 127.13.13.5
 #   manager_hostnames_allow:
 #     - d+\.acme.com
 #   manager_hostnames_deny:
 #     - bad.*\.acme.com
-#   download_mirror: >-         # Mirror to use to download Tomcat
+#   download_mirror: >-          # Mirror to use to download Tomcat
 #     http://archive.apache.org
-#   download_path: /tmp         # Where to download tomcat redistributable
-#   remove_download: true       # Remove or not downloaded tomcat
-#                                 redistributable after provisioning
-#   download_url:               # Specific url to the the redistributable
-#                               # tarball path (without the filename) }
+#   download_path: /tmp          # Where to download tomcat redistributable
+#   remove_download: true        # Remove or not downloaded tomcat
+#                                  redistributable after provisioning
+#   server_download_url:         # Specific url to the the tomcat
+#                                # redistributable tarball path (without the
+#                                # filename) }}
 
 tomcat_instances:
   - name: tomcat@server1
@@ -76,6 +80,7 @@ tomcat_instances:
 
 tomcat_instance_base: /srv/tomcat
 tomcat_instance_home: /opt
+tomcat_instance_use_native_daemon: true
 tomcat_instance_user: tomcat
 #tomcat_instance_user_uid: 2000
 tomcat_instance_user_soft_nofile: 4096
@@ -89,7 +94,7 @@ tomcat_instance_server_http_port: 8080
 tomcat_instance_server_https_port: 8443
 tomcat_instance_server_ajp_port: 8009
 tomcat_instance_server_autodeploy: true
-tomcat_instance_java_home: /usr/lib/jvm/jre
+tomcat_instance_java_home: /usr/lib/jvm/java-openjdk
 tomcat_instance_java_min_heap_size: 1024m
 tomcat_instance_java_max_heap_size: 1024m
 tomcat_instance_java_min_perm_size: 128m

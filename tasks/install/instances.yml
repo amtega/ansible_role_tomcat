@@ -46,11 +46,11 @@
             dest: bin/shutdown.sh
       delegate_to: "{{ inventory_hostname }}"
       when: >-
-        tomcat_extract_tarball_result.results
+        tomcat_extract_daemon_tarball_result.results
         | selectattr("instance.name", "equalto", item.0.name)
         | first
         is changed
-        or tomcat_download_tarball_result.results
+        or tomcat_download_tomcat_tarball_result.results
         | selectattr("instance.name", "equalto", item.0.name)
         | first
         is changed
