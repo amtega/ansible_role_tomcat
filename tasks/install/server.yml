@@ -1,16 +1,16 @@
 ---
-# Tomcat tarball install tasks
+# Tomcat server itself install tasks
 
 - block:
     - block:
-        - name: download instances tomcat tarball
+        - name: download tomcat server tarball
           get_url:
             url: "{{ download_url }}"
             dest: >-
               {{ instance.download_path
                  | default(tomcat_instance_download_path) }}
           environment: "{{ tomcat_http_proxy_environment }}"
-          register: tomcat_download_tarball_result
+          register: tomcat_download_tomcat_tarball_result
           loop: "{{ tomcat_instances }}"
           loop_control:
             loop_var: instance
@@ -28,7 +28,7 @@
             loop_var: instance
             label: "{{ instance.name }}"
 
-        - name: extract instances tomcat tarball
+        - name: extract tomcat server tarball
           unarchive:
             src: "{{ downloaded_tarball }}"
             dest: "{{ instance_home }}"
@@ -38,7 +38,7 @@
             mode: "{{ tomcat_files_permissions }}"
             extra_opts:
               - "--strip-components=1"
-          register: tomcat_extract_tarball_result
+          register: tomcat_extract_daemon_tarball_result
           loop: "{{ tomcat_instances }}"
           loop_control:
             loop_var: instance
@@ -60,7 +60,7 @@
         or instance.version
            is not version(ansible_local[instance.name].version, "==")
 
-    - name: delete tomcat instances downloaded tarballs
+    - name: delete tomcat server downloaded tarballs
       file:
         path: "{{ downloaded_tarball }}"
         state: absent
@@ -95,8 +95,8 @@
          ~ instance.version
          ~ ".tar.gz" }}
     download_url: >-
-      {{ (instance.download_url is defined)
-         | ternary(instance.download_url, dist_url)
+      {{ (instance.server_download_url is defined)
+         | ternary(instance.server_download_url, dist_url)
            + "/"
            + dist_tarball }}
     downloaded_tarball: >-
@@ -107,4 +107,4 @@
   tags:
     - role::tomcat
     - role::tomcat::install
-    - role::tomcat::install::tarball
+    - role::tomcat::install::server

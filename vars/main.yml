@@ -21,40 +21,63 @@ tomcat_packages:
   centos_6:
     - gcc
     - java
+    - java-devel
+    - libcap-devel
     - libxml2-devel
     - libxml2-python
     - libxslt-devel
     - libxslt-python
+    - make
     - python-devel
     - python-pip
     - rsync
     - tar
   centos_7:
+    - gcc
     - java
+    - java-devel
+    - libcap-devel
+    - make
     - python-lxml
     - rsync
     - tar
     - unzip
   fedora_27:
+    - gcc
     - java
+    - java-devel
+    - libcap-devel
+    - make
     - python-lxml
     - rsync
     - tar
     - unzip
   fedora_28:
+    - gcc
     - java
+    - java-devel
+    - libcap-devel
+    - make
     - python-lxml
     - rsync
     - tar
     - unzip
   rhel_6:
+    - gcc
     - java
+    - java-devel
+    - libcap-devel
+    - make
     - python-lxml
     - rsync
     - tar
     - unzip
   rhel_7:
+    - gcc
     - java
+    - java-devel
+    - libcap-devel
+    - make
     - python-lxml
     - rsync
     - tar
