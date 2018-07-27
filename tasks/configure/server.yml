@@ -41,6 +41,9 @@
         attribute: port
         value: server_ajp_port
       - xpath: "{{ connector_xpath }}[@protocol='AJP/1.3']"
+        attribute: maxThreads
+        value: server_ajp_max_threads        
+      - xpath: "{{ connector_xpath }}[@protocol='AJP/1.3']"
         attribute: redirectPort
         value: server_https_port
       - xpath: "{{ host_xpath }}"
