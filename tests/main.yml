@@ -59,6 +59,7 @@
         server_https_port: 8444
         server_ajp_port: 8010
         server_ajp_max_threads: 800
+        server_engine_jvm_route: tomcat-server-2
         link: /opt/tomcat7
 
       - name: tomcat@server3

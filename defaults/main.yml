@@ -23,6 +23,8 @@
 #   server_https_port: 844 3     # Server HTTPS port
 #   server_ajp_port: 8009        # Server AJP port
 #   server_ajp_max_threads: 400  # Maximum number of threads for AJP
+#   server_engine_jvm_route: >-  # Catalina engine identifier which must be used
+#     mytomcat-server-01         # in load balancing for session affinity
 #   server_autodeploy: fals e    # Enable or not tomcat autodeploy
 #   java_home: >-                # Java home to use
 #     /usr/lib/jvm/jre
@@ -95,6 +97,7 @@ tomcat_instance_server_http_port: 8080
 tomcat_instance_server_https_port: 8443
 tomcat_instance_server_ajp_port: 8009
 tomcat_instance_server_ajp_max_threads: 400
+#tomcat_instance_server_engine_jvm_route:
 tomcat_instance_server_autodeploy: true
 tomcat_instance_java_home: /usr/lib/jvm/java-openjdk
 tomcat_instance_java_min_heap_size: 1024m

@@ -4,11 +4,21 @@
 - name: setup tomcat instances server config
   xml:
     path: "{{ instance_base }}/{{ tomcat_server_config }}"
-    xpath: "{{ item.1.xpath }}"
-    attribute: "{{ item.1.attribute }}"
-    value: "{{ value | string }}"
+    xpath: >-
+      {{ (value != "<NONE/>")
+         | ternary(item.1.xpath, item.1.xpath + "/@" + item.1.attribute) }}
+    attribute: >-
+      {{ (value != "<NONE/>")
+         | ternary(item.1.attribute, omit) }}
+    value: >-
+      {{ (value != "<NONE/>")
+         | ternary(valuestr, omit) }}
+    state: >-
+      {{ (value != "<NONE/>")
+         | ternary(omit, "absent") }}
     pretty_print: true
   register: tomcat_configure_server_result
+
   loop: "{{ tomcat_instances | product(config) | list }}"
   loop_control:
     label: >-
@@ -23,7 +33,12 @@
     host_xpath: "{{ engine_xpath }}/Host[@name='localhost']"
     value: >-
       {{ instance[item.1.value]
-         | default(lookup('vars', 'tomcat_instance_' + item.1.value)) }}
+         | default(lookup('vars',
+                          'tomcat_instance_'
+                          + item.1.value, default="<NONE/>")) }}
+    valuestr: >-
+      {{ (value is sameas(true) or value is sameas(false))
+         | ternary(value | string | lower, value | string) }}
     config:
       - xpath: "/Server"
         attribute: port
@@ -42,13 +57,16 @@
         value: server_ajp_port
       - xpath: "{{ connector_xpath }}[@protocol='AJP/1.3']"
         attribute: maxThreads
-        value: server_ajp_max_threads        
+        value: server_ajp_max_threads
       - xpath: "{{ connector_xpath }}[@protocol='AJP/1.3']"
         attribute: redirectPort
         value: server_https_port
       - xpath: "{{ host_xpath }}"
         attribute: autoDeploy
         value: server_autodeploy
+      - xpath: "{{ engine_xpath }}"
+        attribute: jvmRoute
+        value: server_engine_jvm_route
   tags:
     - role::tomcat
     - role::tomcat::configure
