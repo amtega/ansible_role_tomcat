@@ -183,22 +183,22 @@ tomcat_instance_download_mirror: http://archive.apache.org
 tomcat_instance_download_path: /tmp
 tomcat_instance_remove_download: true
 tomcat_instance_cluster: false
-# tomcat_instance_cluster_channel_send_options: 8
-# tomcat_instance_cluster_expire_sessions_on_shutdown: false
-# tomcat_instance_cluster_notify_listeners_on_replication: true
-# tomcat_instance_cluster_mcast_address: 127.0.0.1
-# tomcat_instance_cluster_mcast_port: 45000
-# tomcat_instance_cluster_mcast_frequency: 500
-# tomcat_instance_cluster_mcast_droptime: 3000
-# tomcat_instance_cluster_nio_address: auto
-# tomcat_instance_cluster_nio_port: 4000
-# tomcat_instance_cluster_nio_autobind: 100
-# tomcat_instance_cluster_nio_selector_timeout: 5000
-# tomcat_instance_cluster_nio_max_threads: 6
-# tomcat_instance_cluster_deploy_temp_dir: cluster/temp/
-# tomcat_instance_cluster_deploy_dir: cluster/dist/
-# tomcat_instance_cluster_deploy_watch_dir: webapps/
-# tomcat_instance_cluster_deploy_watch_enabled: true
+tomcat_instance_cluster_channel_send_options: 8
+tomcat_instance_cluster_expire_sessions_on_shutdown: false
+tomcat_instance_cluster_notify_listeners_on_replication: true
+tomcat_instance_cluster_mcast_address: 127.0.0.1
+tomcat_instance_cluster_mcast_port: 45000
+tomcat_instance_cluster_mcast_frequency: 500
+tomcat_instance_cluster_mcast_droptime: 3000
+tomcat_instance_cluster_nio_address: auto
+tomcat_instance_cluster_nio_port: 4000
+tomcat_instance_cluster_nio_autobind: 100
+tomcat_instance_cluster_nio_selector_timeout: 5000
+tomcat_instance_cluster_nio_max_threads: 6
+tomcat_instance_cluster_deploy_temp_dir: cluster/temp
+tomcat_instance_cluster_deploy_dir: cluster/dist
+tomcat_instance_cluster_deploy_watch_dir: webapps
+tomcat_instance_cluster_deploy_watch_enabled: true
 
 #
 # Proxy settings
