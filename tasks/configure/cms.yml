@@ -2,18 +2,18 @@
 # Contained managed security configuration tasks
 
 - name: setup tomcat contained managed security groups
-  xml:
-    path: "{{ instance_base }}/{{ tomcat_users_config }}"
-    xpath: "/tomcat-users"
-    set_children: "{{ (instance.cms_roles_xml + instance.cms_users_xml) | sort }}"
-    input_type: yaml
-    pretty_print: true
-    backup: true
+  template:
+    src: "cms.xml.j2"
+    dest: "{{ instance_base }}/{{ tomcat_users_config }}"
+    owner: "{{ instance.user | default(tomcat_instance_user) }}"
+    group: "{{ instance.group | default(tomcat_instance_group) }}"
+    mode: 0755
   register: tomcat_configure_cms_result
-  loop: "{{ lookup('template', 'cms.yml.j2') | from_yaml }}"
+  loop: "{{ tomcat_instances }}"
   loop_control:
     loop_var: instance
     label: "{{ instance.name }}"
+
   tags:
     - role::tomcat
     - role::tomcat::configure

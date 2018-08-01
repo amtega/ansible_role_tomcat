@@ -1,0 +1,12 @@
+{{ ansible_managed | comment("xml") }}
+
+<?xml version='1.0' encoding='utf-8'?>
+
+<tomcat-users>
+{% for role in instance.cms_roles | default(tomcat_instance_cms_roles) %}
+  <role rolename="{{ role }}"/>
+{% endfor %}
+{% for user in instance.cms_users | default(tomcat_instance_cms_users) %}
+  <user username="{{ user.username }}" password="{{ user.password }}" roles="{{ user.roles | join(',') }}"/>
+{% endfor %}
+</tomcat-users>
