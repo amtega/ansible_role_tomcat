@@ -38,6 +38,8 @@
         subdirs:
           - src: conf/
             dest: conf
+          - src: webapps/manager
+            dest: webapps/manager
           - src: bin/catalina.sh
             dest: bin/catalina.sh
           - src: bin/startup.sh
