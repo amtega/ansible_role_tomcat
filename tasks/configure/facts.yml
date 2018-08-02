@@ -16,6 +16,9 @@
       loop_control:
         loop_var: instance
         label: "{{ instance.name }}"
+
+    - name: reload facts
+      setup:
   tags:
     - role::tomcat
     - role::tomcat::configure
