@@ -18,8 +18,14 @@
          | selectattr("item.0.name", "equalto", instance.name)
          | select("changed")
          | list }}
-    cms_config_changed: >-
-      {{ tomcat_configure_cms_result.results
+    cms_database_config_changed: >-
+      {{ tomcat_configure_cms_database_result.results
+         | default([])
+         | selectattr("instance.name", "equalto", instance.name)
+         | select("changed")
+         | list }}
+    cms_roles_users_config_changed: >-
+      {{ tomcat_configure_cms_roles_users_result.results
          | default([])
          | selectattr("instance.name", "equalto", instance.name)
          | select("changed")
@@ -32,7 +38,8 @@
          | list }}
     state: >-
       {{ ((server_config_changed
-           + cms_config_changed
+           + cms_database_config_changed
+           + cms_roles_users_config_changed
            + manager_config_changed)
           | length > 0)
          | ternary("restarted", "started") }}
