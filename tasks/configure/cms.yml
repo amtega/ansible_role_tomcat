@@ -1,19 +1,31 @@
 ---
 # Contained managed security configuration tasks
 
-- name: setup tomcat contained managed security groups
-  template:
-    src: "cms.xml.j2"
-    dest: "{{ instance_base }}/{{ tomcat_users_config }}"
-    owner: "{{ instance.user | default(tomcat_instance_user) }}"
-    group: "{{ instance.group | default(tomcat_instance_group) }}"
-    mode: 0755
-  register: tomcat_configure_cms_result
+- name: configure tomcat user database
+  xml:
+    path: "{{ instance_base }}/{{ tomcat_server_config }}"
+    xpath: "/Server/GlobalNamingResources/Resource[@name='UserDatabase']"
+    attribute: readonly
+    value: "true"
+    pretty_print: true
+  register: tomcat_configure_cms_database_result
   loop: "{{ tomcat_instances }}"
   loop_control:
     loop_var: instance
     label: "{{ instance.name }}"
 
+- name: setup contained managed security roles and users
+  template:
+    src: "tomcat-users.xml.j2"
+    dest: "{{ instance_base }}/{{ tomcat_users_config }}"
+    owner: "{{ instance.user | default(tomcat_instance_user) }}"
+    group: "{{ instance.group | default(tomcat_instance_group) }}"
+    mode: 0755
+  register: tomcat_configure_cms_roles_users_result
+  loop: "{{ tomcat_instances }}"
+  loop_control:
+    loop_var: instance
+    label: "{{ instance.name }}"
   tags:
     - role::tomcat
     - role::tomcat::configure
