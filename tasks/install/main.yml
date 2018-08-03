@@ -2,12 +2,12 @@
 # Install tasks
 
 - block:
-    - include_tasks: "{{ role_path }}/tasks/install/packages.yml"
-    - include_tasks: "{{ role_path }}/tasks/install/groups.yml"
-    - include_tasks: "{{ role_path }}/tasks/install/users.yml"
-    - include_tasks: "{{ role_path }}/tasks/install/server.yml"
-    - include_tasks: "{{ role_path }}/tasks/install/instances.yml"
-    - include_tasks: "{{ role_path }}/tasks/install/daemon.yml"
+    - import_tasks: "{{ role_path }}/tasks/install/packages.yml"
+    - import_tasks: "{{ role_path }}/tasks/install/groups.yml"
+    - import_tasks: "{{ role_path }}/tasks/install/users.yml"
+    - import_tasks: "{{ role_path }}/tasks/install/server.yml"
+    - import_tasks: "{{ role_path }}/tasks/install/instances.yml"
+    - import_tasks: "{{ role_path }}/tasks/install/daemon.yml"
   vars:
     instance_base: >-
       {{ instance.base

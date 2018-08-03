@@ -2,9 +2,9 @@
 # Install tasks
 
 - block:
-    - include_tasks: "{{ role_path }}/tasks/service/systemd.yml"
-    - include_tasks: "{{ role_path }}/tasks/service/systemv.yml"
-    - include_tasks: "{{ role_path }}/tasks/service/instances.yml"
+    - import_tasks: "{{ role_path }}/tasks/service/systemd.yml"
+    - import_tasks: "{{ role_path }}/tasks/service/systemv.yml"
+    - import_tasks: "{{ role_path }}/tasks/service/instances.yml"
   vars:
     instance_base: >-
       {{ instance.base
