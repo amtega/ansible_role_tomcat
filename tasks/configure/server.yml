@@ -18,7 +18,6 @@
          | ternary(omit, "absent") }}
     pretty_print: true
   register: tomcat_configure_server_result
-
   loop: "{{ tomcat_instances | product(config) | list }}"
   loop_control:
     label: >-
