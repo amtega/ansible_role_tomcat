@@ -1,19 +1,19 @@
 ---
 # Manager configuration tasks
 
-- block:
-    - name: setup tomcat manager
-      template:
-        src: "manager.xml.j2"
-        dest: "{{ instance_base }}/{{ tomcat_manager_config }}"
-        owner: "{{ instance.user | default(tomcat_instance_user) }}"
-        group: "{{ instance.group | default(tomcat_instance_group) }}"
-        mode: 0755
-      register: tomcat_configure_manager_result
-      loop: "{{ tomcat_instances }}"
-      loop_control:
-        loop_var: instance
-        label: "{{ instance.name }}"
+- name: setup tomcat manager
+  template:
+    src: "manager.xml.j2"
+    dest: "{{ instance_base }}/{{ tomcat_manager_config }}"
+    owner: "{{ instance.user | default(tomcat_instance_user) }}"
+    group: "{{ instance.group | default(tomcat_instance_group) }}"
+    mode: 0755
+  register: tomcat_configure_manager_result
+  when: instance.state | default(tomcat_instance_state) == "present"
+  loop: "{{ tomcat_instances }}"
+  loop_control:
+    loop_var: instance
+    label: "{{ instance.name }}"
   tags:
     - role::tomcat
     - role::tomcat::configure

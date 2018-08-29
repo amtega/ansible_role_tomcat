@@ -10,7 +10,9 @@
   loop_control:
     loop_var: instance
     label: "{{ instance.name }}"
-  when: tomcat_configure_server_result is defined
+  when:
+    - instance.state | default(tomcat_instance_state) == "present"
+    - tomcat_configure_server_result is defined
   vars:
     server_config_changed: >-
       {{ tomcat_configure_server_result.results

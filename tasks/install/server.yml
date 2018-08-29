@@ -55,10 +55,12 @@
           loop_control:
             loop_var: instance
             label: "{{ instance.name }}"
-      when: >-
-        ansible_local[instance.name] is undefined
-        or instance.version
-           is not version(ansible_local[instance.name].version, "==")
+      when:
+        - instance.state | default(tomcat_instance_state) == "present"
+        - >-
+          ansible_local[instance.name] is undefined
+          or instance.version
+             is not version(ansible_local[instance.name].version, "==")
 
     - name: delete tomcat server downloaded tarballs
       file:

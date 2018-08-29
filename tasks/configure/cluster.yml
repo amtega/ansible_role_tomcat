@@ -32,7 +32,9 @@
       vars:
         cluster_config: "{{ lookup('template', 'cluster.yml.j2') | from_yaml }}"
 
-  when: instance.cluster | default(false)
+  when:
+    - instance.state | default(tomcat_instance_state) == "present"
+    - instance.cluster | default(false)
   vars:
     service_xpath: "/Server/Service[@name='Catalina']"
     engine_xpath: "{{ service_xpath }}/Engine[@name='Catalina']"

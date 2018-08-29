@@ -18,6 +18,7 @@
          | ternary(omit, "absent") }}
     pretty_print: true
   register: tomcat_configure_server_result
+  when: instance.state | default(tomcat_instance_state) == "present"
   loop: "{{ tomcat_instances | product(config) | list }}"
   loop_control:
     label: >-

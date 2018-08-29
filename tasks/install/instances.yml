@@ -61,6 +61,7 @@
         | select("changed")
         | list
         | length > 0
+  when: instance.state | default(tomcat_instance_state) == "present"
   vars:
     instance: "{{ item.0 }}"
   tags:

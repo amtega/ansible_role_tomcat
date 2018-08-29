@@ -12,6 +12,7 @@
         src: "tomcat.fact.j2"
         dest: /etc/ansible/facts.d/{{ instance.name }}.fact
         mode: 0640
+      when: instance.state | default(tomcat_instance_state) == "present"
       loop: "{{ tomcat_instances }}"
       loop_control:
         loop_var: instance

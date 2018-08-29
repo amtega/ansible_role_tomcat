@@ -12,6 +12,7 @@
 #   version: 8.0.9               # Tomcat version
 #   base: /srv/tomcat            # Base path for tomcat instance
 #   home: /opt                   # Home path for tomcat binaries
+#   state: present               # Can be present or absent
 #   use_native_daemon: true      # Use native Commons Daemon. Only available
 #                                # for tomcat >= 7. If false Catalina scripts
 #                                # will be used instead.
@@ -126,7 +127,7 @@ tomcat_instances:
 
 # Default instance options to apply if no other ones are specified in the
 # specific instance dictionary of the tomcat_instances variable
-#
+
 # When tomcat_instance_base or tomcat_instance_home are used a subdirectoy
 # within the specified one will be created for the specific tomcat instance, so
 # you can think in this variables like the parent directories for base and home
@@ -134,6 +135,7 @@ tomcat_instances:
 
 tomcat_instance_base: /srv/tomcat
 tomcat_instance_home: /opt
+tomcat_instance_state: present
 tomcat_instance_use_native_daemon: true
 tomcat_instance_user: tomcat
 #tomcat_instance_user_uid: 2000

@@ -1,18 +1,18 @@
 ---
 # Tomcat user limits configuration tasks
 
-- block:
-    - name: setup tomcat user limits
-      template:
-        src: "limits.conf.j2"
-        dest: "{{ tomcat_limits_config }}/10-{{ instance.name }}.conf"
-        owner: root
-        group: root
-        mode: 0644
-      loop: "{{ tomcat_instances }}"
-      loop_control:
-        loop_var: instance
-        label: "{{ instance.name }}"
+- name: setup tomcat user limits
+  template:
+    src: "limits.conf.j2"
+    dest: "{{ tomcat_limits_config }}/10-{{ instance.name }}.conf"
+    owner: root
+    group: root
+    mode: 0644
+  when: instance.state | default(tomcat_instance_state) == "present"
+  loop: "{{ tomcat_instances }}"
+  loop_control:
+    loop_var: instance
+    label: "{{ instance.name }}"
   tags:
     - role::tomcat
     - role::tomcat::configure
