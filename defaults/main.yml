@@ -1,8 +1,8 @@
 ---
 # Role default lower priority variables
 
-# List of tomcat instances to provisione. The dicts must have the following
-# values:
+# List of dicts with tomcat instances to provisione. The dicts have the
+# following structure:
 #
 # {
 #
@@ -13,6 +13,8 @@
 #   base: /srv/tomcat            # Base path for tomcat instance
 #   home: /opt                   # Home path for tomcat binaries
 #   state: present               # Can be present or absent
+#   force_install: true          # Force install even if the role detects that
+#                                # it is not necessary
 #   use_native_daemon: true      # Use native Commons Daemon. Only available
 #                                # for tomcat >= 7. If false Catalina scripts
 #                                # will be used instead.
@@ -91,6 +93,14 @@
 #   manager_hostnames_deny:
 #     - bad.*\.acme.com
 #
+# List of dicts with the files to provisione within the instance base. The
+# paths are relative to instance home. See amtega.files role for details of the
+# variable structure
+#
+# files:
+#   - path: application_logs
+#     state: directory
+#
 ## Tomcat binaries download setttings
 #
 #   download_mirror: >-          # Mirror to use to download Tomcat
@@ -136,6 +146,7 @@ tomcat_instances:
 tomcat_instance_base: /srv/tomcat
 tomcat_instance_home: /opt
 tomcat_instance_state: present
+tomcat_instance_force_install: false
 tomcat_instance_use_native_daemon: true
 tomcat_instance_user: tomcat
 #tomcat_instance_user_uid: 2000
@@ -181,6 +192,7 @@ tomcat_instance_manager_addresses_deny: []
 tomcat_instance_manager_hostnames_allow:
   - .*
 tomcat_instance_manager_hostnames_deny: []
+tomcat_instance_files: []
 tomcat_instance_download_mirror: http://archive.apache.org
 tomcat_instance_download_path: /tmp
 tomcat_instance_remove_download: true

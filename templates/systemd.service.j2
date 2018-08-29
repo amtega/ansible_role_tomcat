@@ -20,6 +20,8 @@ ExecStop={{ instance_base }}/bin/daemon.sh stop
 ExecStart={{ instance_base }}/bin/startup.sh
 ExecStop={{ instance_base }}/bin/shutdown.sh
 {% endif %}
+TimeoutStartSec=30
+TimeoutStopSec=30
 SuccessExitStatus=143
 
 [Install]

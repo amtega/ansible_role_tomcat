@@ -61,6 +61,7 @@
           ansible_local[instance.name] is undefined
           or instance.version
              is not version(ansible_local[instance.name].version, "==")
+          or instance.force_install | default(tomcat_instance_force_install)
 
     - name: delete tomcat server downloaded tarballs
       file:
