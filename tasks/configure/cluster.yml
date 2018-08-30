@@ -12,7 +12,8 @@
              | default(tomcat_instance_cluster_channel_send_options) }}
         state: present
         pretty_print: true
-      loop: "{{ tomcat_instances }}"
+      loop: >-
+        {{ tomcat_instances_state_present + tomcat_instances_state_started }}
       loop_control:
         loop_var: instance
         label: "{{ instance.name }}"
@@ -25,16 +26,15 @@
         input_type: yaml
         pretty_print: true
       register: tomcat_configure_cluster_result
-      loop: "{{ tomcat_instances }}"
+      loop: >-
+        {{ tomcat_instances_state_present + tomcat_instances_state_started }}
       loop_control:
         loop_var: instance
         label: "{{ instance.name }}"
       vars:
         cluster_config: "{{ lookup('template', 'cluster.yml.j2') | from_yaml }}"
 
-  when:
-    - instance.state | default(tomcat_instance_state) == "present"
-    - instance.cluster | default(false)
+  when: instance.cluster | default(false)
   vars:
     service_xpath: "/Server/Service[@name='Catalina']"
     engine_xpath: "{{ service_xpath }}/Engine[@name='Catalina']"

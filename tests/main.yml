@@ -16,7 +16,7 @@
   tags:
     - sandbox
 
-- name: test tomcat role
+- name: test tomcat role instance provisioning
   hosts: docker_sandbox_containers
   roles:
     - role: amtega.tomcat
@@ -110,6 +110,34 @@
           - server_ajp_port
   tags:
     - idempotence
+
+- name: test tomcat role instance removal
+  hosts: docker_sandbox_containers
+  roles:
+    - role: amtega.tomcat
+  vars:
+    tomcat_instances:
+      - name: tomcat@server1
+        version: 8.0.9
+        state: absent
+  tasks:
+    - name: check server1 instance base dir
+      stat:
+        path: /srv/tomcat/tomcat@server1
+      register: check_server1_base_result
+
+    - name: check server1 instance home dir
+      stat:
+        path: /opt/apache-tomcat-8.0.9
+      register: check_server1_home_result
+
+    - name: check server1 instance base dir does not exist
+      assert:
+        that: not check_server1_base_result.stat.exists
+
+    - name: check server1 instance home dir does not exist
+      assert:
+        that: not check_server1_home_result.stat.exists
 
 - name: cleanup docker sandbox
   hosts: localhost

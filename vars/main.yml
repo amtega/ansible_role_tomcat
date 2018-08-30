@@ -100,6 +100,18 @@ tomcat_users_config: conf/tomcat-users.xml
 tomcat_manager_config: conf/Catalina/localhost/manager.xml
 tomcat_limits_config: /etc/security/limits.d
 
+# Tomcat instances subdirs
+
+tomcat_instance_subdirs:
+  - bin
+  - conf
+  - lib
+  - logs
+  - temp
+  - webapps
+  - work
+  - "{{ tomcat_manager_config | dirname }}"
+
 # Systemd variables
 
 tomcat_systemd_services_path: /usr/lib/systemd/system

@@ -3,7 +3,7 @@
 
 - block:
     - block:
-        - name: create base instances directory tree
+        - name: setup base instances directory tree
           file:
             path: "{{ instance_base }}/{{ item.1 }}"
             state: directory
@@ -11,19 +11,13 @@
             group: "{{ item.0.group | default(tomcat_instance_group) }}"
             mode: "{{ tomcat_files_permissions }}"
           register: tomcat_create_instances_tree_result
-          loop: "{{ tomcat_instances | product(subdirs) | list }}"
+          loop: >-
+            {{ (tomcat_instances_state_present
+                + tomcat_instances_state_started)
+               | product(tomcat_instance_subdirs)
+               | list }}
           loop_control:
             label: "{{ item.0.name }} {{ item.1 }}"
-          vars:
-            subdirs:
-              - bin
-              - conf
-              - lib
-              - logs
-              - temp
-              - webapps
-              - work
-              - "{{ tomcat_manager_config | dirname }}"
 
         - name: fill base instances directory tree
           synchronize:
@@ -32,7 +26,10 @@
             archive: true
             rsync_opts:
               - "--exclude='{{ tomcat_manager_config | dirname }}'"
-          loop: "{{ tomcat_instances | product(subdirs) | list }}"
+          loop: >-
+            {{ (tomcat_instances_state_present
+                + tomcat_instances_state_started)
+               | product(subdirs) | list }}
           loop_control:
             label: "{{ item.0.name }} {{ item.1.src }}"
           vars:
@@ -68,8 +65,8 @@
     - name: create additional files within instance tree
       include_role:
         name: amtega.files
-      when: instance.state | default(tomcat_instance_state) == "present"
-      with_items: "{{ tomcat_instances }}"
+      with_items: >-
+        {{ tomcat_instances_state_present + tomcat_instances_state_started }}
       loop_control:
         loop_var: instance
       vars:

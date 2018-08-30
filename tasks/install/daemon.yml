@@ -8,11 +8,14 @@
         state: absent
       when: >-
         instance.force_install | default(tomcat_instance_force_install)
-        or instance.use_native_daemon
+        or ansible_local[instance.name] is defined
+           and
+           instance.use_native_daemon
            | default(tomcat_instance_use_native_daemon)
            != ansible_local[instance.name].use_native_daemon
       register: tomcat_daemon_remove_result
-      loop: "{{ tomcat_instances }}"
+      loop: >-
+        {{ tomcat_instances_state_present + tomcat_instances_state_started }}
       loop_control:
         loop_var: instance
         label: "{{ instance.name }}"
@@ -28,7 +31,8 @@
         list_files: true
         creates: "{{ daemon_bin }}"
       register: tomcat_daemon_extract_tarball_result
-      loop: "{{ tomcat_instances }}"
+      loop: >-
+        {{ tomcat_instances_state_present + tomcat_instances_state_started }}
       loop_control:
         loop_var: instance
         label: "{{ instance.name }}"
@@ -41,7 +45,10 @@
       args:
         chdir: "{{ daemon_src_dir }}"
         creates: "{{ daemon_bin }}"
-      loop: "{{ tomcat_instances | flatten }}"
+      loop: >-
+        {{ tomcat_instances_state_present
+           + tomcat_instances_state_started
+           | flatten }}
       loop_control:
         loop_var: instance
         index_var: index
@@ -52,7 +59,10 @@
       args:
         chdir: "{{ daemon_src_dir }}"
         creates: "{{ daemon_bin }}"
-      loop: "{{ tomcat_instances | flatten }}"
+      loop: >-
+        {{ tomcat_instances_state_present
+           + tomcat_instances_state_started
+           | flatten }}
       loop_control:
         loop_var: instance
         index_var: index
@@ -64,7 +74,10 @@
         chdir: "{{ daemon_src_dir }}"
         creates: "{{ daemon_bin }}"
       register: tomcat_daemon_install_result
-      loop: "{{ tomcat_instances | flatten }}"
+      loop: >-
+        {{ tomcat_instances_state_present
+           + tomcat_instances_state_started
+           | flatten }}
       loop_control:
         loop_var: instance
         index_var: index
@@ -74,7 +87,10 @@
       file:
         path: "{{ daemon_src_dir }}"
         state: absent
-      loop: "{{ tomcat_instances | flatten }}"
+      loop: >-
+        {{ tomcat_instances_state_present
+           + tomcat_instances_state_started
+           | flatten }}
       loop_control:
         loop_var: instance
         index_var: index
@@ -85,13 +101,13 @@
         src: "{{ instance_home }}/bin/daemon.sh"
         dest: "{{ instance_base }}/bin/daemon.sh"
         archive: true
-      loop: "{{ tomcat_instances }}"
+      loop: >-
+        {{ tomcat_instances_state_present + tomcat_instances_state_started }}
       loop_control:
         loop_var: instance
         label: "{{ instance.name }}"
       delegate_to: "{{ inventory_hostname }}"
   when:
-    - instance.state | default(tomcat_instance_state) == "present"
     - instance.use_native_daemon | default(tomcat_instance_use_native_daemon)
     - instance.version is version("7", ">=")
   vars:

@@ -12,7 +12,9 @@
 #   version: 8.0.9               # Tomcat version
 #   base: /srv/tomcat            # Base path for tomcat instance
 #   home: /opt                   # Home path for tomcat binaries
-#   state: present               # Can be present or absent
+#   state: present               # Can be started (instance running), present
+#                                # (instance not running) or absent
+#                                # (instance removed)
 #   force_install: true          # Force install even if the role detects that
 #                                # it is not necessary
 #   use_native_daemon: true      # Use native Commons Daemon. Only available
@@ -129,7 +131,15 @@
 #   cluster_deploy_temp_dir: cluster/temp/
 #   cluster_deploy_dir: cluster/dist/
 #   cluster_deploy_watch_dir: webapps/
-#   cluster_deploy_watch_enabled: true }}
+#   cluster_deploy_watch_enabled: true
+#
+## Uninstall settings.
+#
+# instance_uninstall_preserve:   # List of paths to preserve during uninstall
+#   - log                        # (state=absent). The paths are relative to
+#                                # instance base
+# }
+#
 
 tomcat_instances:
   - name: tomcat@server1
@@ -213,6 +223,7 @@ tomcat_instance_cluster_deploy_temp_dir: cluster/temp
 tomcat_instance_cluster_deploy_dir: cluster/dist
 tomcat_instance_cluster_deploy_watch_dir: webapps
 tomcat_instance_cluster_deploy_watch_enabled: true
+tomcat_instance_uninstall_preserve: []
 
 #
 # Proxy settings

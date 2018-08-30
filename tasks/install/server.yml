@@ -11,7 +11,9 @@
                  | default(tomcat_instance_download_path) }}
           environment: "{{ tomcat_http_proxy_environment }}"
           register: tomcat_download_tomcat_tarball_result
-          loop: "{{ tomcat_instances }}"
+          loop: >-
+            {{ tomcat_instances_state_present
+               + tomcat_instances_state_started }}
           loop_control:
             loop_var: instance
             label: "{{ instance.name }}"
@@ -23,7 +25,9 @@
             owner: "{{ instance.user | default(tomcat_instance_user) }}"
             group: "{{ instance.group | default(tomcat_instance_group) }}"
             mode: "{{ tomcat_files_permissions }}"
-          loop: "{{ tomcat_instances }}"
+          loop: >-
+            {{ tomcat_instances_state_present
+               + tomcat_instances_state_started }}
           loop_control:
             loop_var: instance
             label: "{{ instance.name }}"
@@ -39,7 +43,9 @@
             extra_opts:
               - "--strip-components=1"
           register: tomcat_extract_daemon_tarball_result
-          loop: "{{ tomcat_instances }}"
+          loop: >-
+            {{ tomcat_instances_state_present
+               + tomcat_instances_state_started }}
           loop_control:
             loop_var: instance
             label: "{{ instance.name }}"
@@ -51,29 +57,31 @@
             state: link
             mode: "{{ tomcat_files_permissions }}"
           loop: >-
-            {{ tomcat_instances | selectattr('link', 'defined') | list }}
+            {{ tomcat_instances_state_present
+               + tomcat_instances_state_absent
+               | selectattr('link', 'defined') | list }}
           loop_control:
             loop_var: instance
             label: "{{ instance.name }}"
-      when:
-        - instance.state | default(tomcat_instance_state) == "present"
-        - >-
-          ansible_local[instance.name] is undefined
-          or instance.version
-             is not version(ansible_local[instance.name].version, "==")
-          or instance.force_install | default(tomcat_instance_force_install)
+      when: >-
+        ansible_local[instance.name] is undefined
+        or instance.version
+           is not version(ansible_local[instance.name].version, "==")
+        or instance.force_install | default(tomcat_instance_force_install)
 
     - name: delete tomcat server downloaded tarballs
       file:
         path: "{{ downloaded_tarball }}"
         state: absent
       loop: >-
-        {{ tomcat_instances
+        {{ tomcat_instances_state_present
+           + tomcat_instances_state_started
            | selectattr("remove_download", "defined")
            | selectattr("remove_download", "equalto", true)
            | list
            + (tomcat_instance_remove_download)
-             | ternary(tomcat_instances
+             | ternary(tomcat_instances_state_present
+                       + tomcat_instances_state_started
                        | selectattr("remove_download", "undefined")
                        | list,
                        []) }}

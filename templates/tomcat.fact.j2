@@ -2,6 +2,7 @@
   "version": {{ instance.version | to_json }},
   "base": {{ instance_base | to_json }},
   "home": {{ instance_home | to_json }},
+  "state": {{ instance.state | default(tomcat_instance_state) | to_json }},
   "use_native_daemon": "{{ instance.use_native_daemon | default(tomcat_instance_use_native_daemon) | to_json }}",
   "user": {{ instance.user | default(tomcat_instance_user) | to_json }},
   "group": {{ instance.group | default(tomcat_instance_group) | to_json }},

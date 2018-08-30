@@ -10,7 +10,8 @@
         value: "true"
         pretty_print: true
       register: tomcat_configure_cms_database_result
-      loop: "{{ tomcat_instances }}"
+      loop: >-
+        {{ tomcat_instances_state_present + tomcat_instances_state_started }}
       loop_control:
         loop_var: instance
         label: "{{ instance.name }}"
@@ -23,11 +24,11 @@
         group: "{{ instance.group | default(tomcat_instance_group) }}"
         mode: 0755
       register: tomcat_configure_cms_roles_users_result
-      loop: "{{ tomcat_instances }}"
+      loop: >-
+        {{ tomcat_instances_state_present + tomcat_instances_state_started }}
       loop_control:
         loop_var: instance
         label: "{{ instance.name }}"
-  when: instance.state | default(tomcat_instance_state) == "present"
   tags:
     - role::tomcat
     - role::tomcat::configure

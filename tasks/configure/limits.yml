@@ -8,8 +8,7 @@
     owner: root
     group: root
     mode: 0644
-  when: instance.state | default(tomcat_instance_state) == "present"
-  loop: "{{ tomcat_instances }}"
+  loop: "{{ tomcat_instances_state_present + tomcat_instances_state_started }}"
   loop_control:
     loop_var: instance
     label: "{{ instance.name }}"

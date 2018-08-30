@@ -14,8 +14,8 @@
         group: root
         mode: 0644
       register: tomcat_setup_systemd_services_result
-      when: instance.state | default(tomcat_instance_state) == "present"
-      loop: "{{ tomcat_instances }}"
+      loop: >-
+        {{ tomcat_instances_state_present + tomcat_instances_state_started }}
       loop_control:
         loop_var: instance
         label: "{{ instance.name }}"

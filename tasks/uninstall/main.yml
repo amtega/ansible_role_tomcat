@@ -1,0 +1,21 @@
+---
+# Configuration tasks
+
+- block:
+    - import_tasks: "{{ role_path }}/tasks/uninstall/services.yml"
+    - import_tasks: "{{ role_path }}/tasks/uninstall/instances.yml"
+    - import_tasks: "{{ role_path }}/tasks/uninstall/facts.yml"
+  vars:
+    instance_base: >-
+      {{ instance.base
+         | default(tomcat_instance_base
+                   + "/"
+                   + instance.name) }}
+    instance_home: >-
+      {{ instance.home
+         | default(tomcat_instance_home
+                   + "/apache-tomcat-"
+                   + instance.version) }}
+  tags:
+    - role::tomcat
+    - role::tomcat::uninstall
