@@ -19,8 +19,8 @@
     pretty_print: true
   register: tomcat_configure_server_result
   loop: >-
-    {{ tomcat_instances_state_present
-       + tomcat_instances_state_started
+    {{ (tomcat_instances_state_present
+        + tomcat_instances_state_started)
        | product(config)
        | list }}"
   loop_control:

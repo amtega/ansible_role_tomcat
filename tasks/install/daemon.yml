@@ -9,10 +9,9 @@
       when: >-
         instance.force_install | default(tomcat_instance_force_install)
         or ansible_local[instance.name] is defined
-           and
-           instance.use_native_daemon
-           | default(tomcat_instance_use_native_daemon)
-           != ansible_local[instance.name].use_native_daemon
+           and instance.use_native_daemon
+               | default(tomcat_instance_use_native_daemon)
+               != ansible_local[instance.name].use_native_daemon
       register: tomcat_daemon_remove_result
       loop: >-
         {{ tomcat_instances_state_present + tomcat_instances_state_started }}
@@ -46,9 +45,7 @@
         chdir: "{{ daemon_src_dir }}"
         creates: "{{ daemon_bin }}"
       loop: >-
-        {{ tomcat_instances_state_present
-           + tomcat_instances_state_started
-           | flatten }}
+        {{ (tomcat_instances_state_present + tomcat_instances_state_started) }}
       loop_control:
         loop_var: instance
         index_var: index
@@ -60,9 +57,7 @@
         chdir: "{{ daemon_src_dir }}"
         creates: "{{ daemon_bin }}"
       loop: >-
-        {{ tomcat_instances_state_present
-           + tomcat_instances_state_started
-           | flatten }}
+        {{ tomcat_instances_state_present + tomcat_instances_state_started }}
       loop_control:
         loop_var: instance
         index_var: index
@@ -75,9 +70,7 @@
         creates: "{{ daemon_bin }}"
       register: tomcat_daemon_install_result
       loop: >-
-        {{ tomcat_instances_state_present
-           + tomcat_instances_state_started
-           | flatten }}
+        {{ tomcat_instances_state_present + tomcat_instances_state_started }}
       loop_control:
         loop_var: instance
         index_var: index
@@ -88,9 +81,7 @@
         path: "{{ daemon_src_dir }}"
         state: absent
       loop: >-
-        {{ tomcat_instances_state_present
-           + tomcat_instances_state_started
-           | flatten }}
+        {{ tomcat_instances_state_present + tomcat_instances_state_started }}
       loop_control:
         loop_var: instance
         index_var: index
