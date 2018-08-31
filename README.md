@@ -28,7 +28,7 @@ This is an example playbook:
       tomcat_instances:
         - name: tomcat@server1
           version: 8.0.9
-          link: /opt/tomcat8
+          state: started
 ```
 
 ## Testing
