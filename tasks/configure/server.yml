@@ -22,7 +22,7 @@
     {{ (tomcat_instances_state_present
         + tomcat_instances_state_started)
        | product(config)
-       | list }}"
+       | list }}
   loop_control:
     label: >-
       {{ item.0.name }}
