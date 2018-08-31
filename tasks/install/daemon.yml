@@ -36,56 +36,61 @@
         loop_var: instance
         label: "{{ instance.name }}"
 
-    - name: configure native daemon compilation
-      shell: >-
-        ./configure
-        --with-java={{ instance.java_home
-                       | default(tomcat_instance_java_home) }}
-      args:
-        chdir: "{{ daemon_src_dir }}"
-        creates: "{{ daemon_bin }}"
-      loop: >-
-        {{ (tomcat_instances_state_present + tomcat_instances_state_started) }}
-      loop_control:
-        loop_var: instance
-        index_var: index
-        label: "{{ instance.name }}"
+    - block:
+        - name: configure native daemon compilation
+          shell: >-
+            ./configure
+            --with-java={{ instance.java_home
+                           | default(tomcat_instance_java_home) }}
+          args:
+            chdir: "{{ daemon_src_dir }}"
+            creates: "{{ daemon_bin }}"
+          loop: >-
+            {{ (tomcat_instances_state_present + tomcat_instances_state_started) }}
+          loop_control:
+            loop_var: instance
+            index_var: index
+            label: "{{ instance.name }}"
 
-    - name: compile native daemon
-      shell: make
-      args:
-        chdir: "{{ daemon_src_dir }}"
-        creates: "{{ daemon_bin }}"
-      loop: >-
-        {{ tomcat_instances_state_present + tomcat_instances_state_started }}
-      loop_control:
-        loop_var: instance
-        index_var: index
-        label: "{{ instance.name }}"
+        - name: compile native daemon
+          shell: make
+          args:
+            chdir: "{{ daemon_src_dir }}"
+            creates: "{{ daemon_bin }}"
+          loop: >-
+            {{ tomcat_instances_state_present
+               + tomcat_instances_state_started }}
+          loop_control:
+            loop_var: instance
+            index_var: index
+            label: "{{ instance.name }}"
 
-    - name: install native daemon binary
-      shell: "cp jsvc {{ instance_home }}/bin"
-      args:
-        chdir: "{{ daemon_src_dir }}"
-        creates: "{{ daemon_bin }}"
-      register: tomcat_daemon_install_result
-      loop: >-
-        {{ tomcat_instances_state_present + tomcat_instances_state_started }}
-      loop_control:
-        loop_var: instance
-        index_var: index
-        label: "{{ instance.name }}"
+        - name: install native daemon binary
+          shell: "cp jsvc {{ instance_home }}/bin"
+          args:
+            chdir: "{{ daemon_src_dir }}"
+            creates: "{{ daemon_bin }}"
+          register: tomcat_daemon_install_result
+          loop: >-
+            {{ tomcat_instances_state_present
+               + tomcat_instances_state_started }}
+          loop_control:
+            loop_var: instance
+            index_var: index
+            label: "{{ instance.name }}"
 
-    - name: clean native daemon extracted tarball
-      file:
-        path: "{{ daemon_src_dir }}"
-        state: absent
-      loop: >-
-        {{ tomcat_instances_state_present + tomcat_instances_state_started }}
-      loop_control:
-        loop_var: instance
-        index_var: index
-        label: "{{ instance.name }}"
+        - name: clean native daemon extracted tarball
+          file:
+            path: "{{ daemon_src_dir }}"
+            state: absent
+          loop: >-
+            {{ tomcat_instances_state_present
+               + tomcat_instances_state_started }}
+          loop_control:
+            loop_var: instance
+            index_var: index
+            label: "{{ instance.name }}"
+      when: tomcat_daemon_extract_tarball_result.results[index].files is defined
 
     - name: install native daemon startup script on instances
       synchronize:
