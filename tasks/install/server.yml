@@ -49,33 +49,49 @@
           loop_control:
             loop_var: instance
             label: "{{ instance.name }}"
-
-        - name: create tomcat instances home symlinks
-          file:
-            src: "{{ instance_home }}"
-            dest: "{{ instance.link }}"
-            state: link
-            mode: "{{ tomcat_files_permissions }}"
-          loop: >-
-            {{ tomcat_instances_state_present
-               + tomcat_instances_state_absent
-               | selectattr('link', 'defined') | list }}
-          loop_control:
-            loop_var: instance
-            label: "{{ instance.name }}"
       when: >-
         ansible_local[instance.name] is undefined
         or instance.version
            is not version(ansible_local[instance.name].version, "==")
         or instance.force_install | default(tomcat_instance_force_install)
 
+    - name: create tomcat instances home symlinks
+      file:
+        src: "{{ instance_home }}"
+        dest: "{{ instance.home_link }}"
+        state: link
+        mode: "{{ tomcat_files_permissions }}"
+      loop: >-
+        {{ (tomcat_instances_state_present
+            + tomcat_instances_state_started)
+           | selectattr('home_link', 'defined')
+           | list }}
+      loop_control:
+        loop_var: instance
+        label: "{{ instance.name }}"
+
+    - name: create tomcat instances base symlinks
+      file:
+        src: "{{ instance_base }}"
+        dest: "{{ instance.base_link }}"
+        state: link
+        mode: "{{ tomcat_files_permissions }}"
+      loop: >-
+        {{ (tomcat_instances_state_present
+            + tomcat_instances_state_started)
+           | selectattr('base_link', 'defined')
+           | list }}
+      loop_control:
+        loop_var: instance
+        label: "{{ instance.name }}"
+
     - name: delete tomcat server downloaded tarballs
       file:
         path: "{{ downloaded_tarball }}"
         state: absent
       loop: >-
-        {{ tomcat_instances_state_present
-           + tomcat_instances_state_started
+        {{ (tomcat_instances_state_present
+            + tomcat_instances_state_started)
            | selectattr("remove_download", "defined")
            | selectattr("remove_download", "equalto", true)
            | list

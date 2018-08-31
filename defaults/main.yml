@@ -55,9 +55,12 @@
 #
 #   pid_file: bin/tomcat.pid     # Path relative to  instance base path
 #
-## Soft link settings
+## Soft links settings
 #
-#   link: /opt/tomcat            # Where to put a soft link to the tomcat home
+#   home_link: /opt/tomcat      # Where to put a soft link to the tomcat
+#                                # instance home directory
+#   base_link: /srv/instance     # Where to put a soft link to the tomcat
+#                                # instance base directory
 #
 ## Contained managed security settings. Keep in mind that this config will
 ## replace all your CMS settings and left only the values specified here
