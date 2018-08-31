@@ -9,7 +9,7 @@
       when: >-
         instance.force_install | default(tomcat_instance_force_install)
         or ansible_local[instance.name] is defined
-           and instance.use_native_daemon
+           and ansible_local[instance.name].use_native_daemon
                | default(tomcat_instance_use_native_daemon)
                != ansible_local[instance.name].use_native_daemon
       register: tomcat_daemon_remove_result
