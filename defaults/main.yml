@@ -95,7 +95,7 @@
 #     - bad.*\.acme.com
 #
 # List of dicts with the files to provisione within the instance base. The
-# paths are relative to instance home. See amtega.files role for details of the
+# paths are relative to instance base. See amtega.files role for details of the
 # variable structure
 #
 # files:

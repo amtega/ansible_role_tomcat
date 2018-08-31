@@ -71,6 +71,7 @@
         loop_var: instance
       vars:
         files: "{{ instance.files | default(tomcat_instance_files) }}"
+        files_prefix: "{{ instance_home }}"
   tags:
     - role::tomcat
     - role::tomcat::install
