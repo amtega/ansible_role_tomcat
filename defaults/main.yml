@@ -151,7 +151,7 @@ tomcat_instances:
 
 tomcat_instance_base: /srv/tomcat
 tomcat_instance_home: /opt
-tomcat_instance_state: present
+tomcat_instance_state: started
 tomcat_instance_force_install: false
 tomcat_instance_use_native_daemon: true
 tomcat_instance_user: tomcat
