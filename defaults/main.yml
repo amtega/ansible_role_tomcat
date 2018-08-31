@@ -48,10 +48,6 @@
 #
 #   java_home: >-                # Java home to use
 #     /usr/lib/jvm/jre
-#   java_min_heap_size: 1024m    # Minimum tomcat heap size
-#   java_max_heap_size: 1024m    # Maximum tomcat heap size
-#   java_min_perm_size: 128m     # Minimum tomcat permanent generation space
-#   java_max_perm_size: 128m     # Maximum tomcat permanent generation space
 #   java_variables: {}           # Dictionary to setup extra -D java variables
 #   java_raw_opts: []            # List of extra java raw options
 #
@@ -174,10 +170,6 @@ tomcat_instance_server_ajp_max_threads: 400
 #tomcat_instance_server_engine_jvm_route:
 tomcat_instance_server_autodeploy: true
 tomcat_instance_java_home: /usr/lib/jvm/java-openjdk
-tomcat_instance_java_min_heap_size: 1024m
-tomcat_instance_java_max_heap_size: 1024m
-tomcat_instance_java_min_perm_size: 128m
-tomcat_instance_java_max_perm_size: 128m
 tomcat_instance_java_variables: []
 tomcat_instance_java_raw_opts: []
 tomcat_instance_pid_file: bin/tomcat.pid
