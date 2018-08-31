@@ -125,10 +125,10 @@ tomcat_systemv_init_path: /etc/init.d
 tomcat_http_proxy_config:
     http_proxy: "{{ tomcat_http_proxy | default('') }}"
     https_proxy: "{{ tomcat_https_proxy | default('') }}"
-    http_no_proxy: "{{ tomcat_http_no_proxy | default('') }}"
+    http_no_proxy: "{{ tomcat_no_proxy | default('') }}"
 
 tomcat_http_proxy_environment: >-
   {{ (tomcat_http_proxy is defined
       or tomcat_https_proxy is defined
-      or tomcat_http_no_proxy is defined)
+      or tomcat_no_proxy is defined)
      | ternary(tomcat_http_proxy_config, {}) }}
