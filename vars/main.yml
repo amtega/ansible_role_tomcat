@@ -112,6 +112,16 @@ tomcat_instance_subdirs:
   - work
   - "{{ tomcat_manager_config | dirname }}"
 
+# Startup scripts
+
+tomcat_catalina_scripts:
+  - bin/catalina.sh
+  - bin/startup.sh
+  - bin/shutdown.sh
+
+tomcat_daemon_scripts:
+  - bin/daemon.sh
+
 # Systemd variables
 
 tomcat_systemd_services_path: /usr/lib/systemd/system

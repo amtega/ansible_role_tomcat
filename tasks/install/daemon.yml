@@ -2,7 +2,7 @@
 # Commons Daemon install tasks
 
 - block:
-    - name: remove daemon binary
+    - name: remove native daemon binary
       file:
         path: "{{ daemon_bin }}"
         state: absent
@@ -94,15 +94,33 @@
 
     - name: install native daemon startup script on instances
       synchronize:
-        src: "{{ instance_home }}/bin/daemon.sh"
-        dest: "{{ instance_base }}/bin/daemon.sh"
+        src: "{{ instance_home }}/{{ item.1 }}"
+        dest: "{{ instance_base }}/{{ item.1 }}"
         archive: true
       loop: >-
-        {{ tomcat_instances_state_present + tomcat_instances_state_started }}
+        {{ (tomcat_instances_state_present
+            + tomcat_instances_state_started)
+           | product(tomcat_daemon_scripts)
+           | list }}
       loop_control:
-        loop_var: instance
-        label: "{{ instance.name }}"
+        label: "{{ item.0.name }} {{ item.1 }}"
       delegate_to: "{{ inventory_hostname }}"
+      vars:
+        instance: "{{ item.0 }}"
+
+    - name: remove catalina scripts for native daemon based instances
+      file:
+        path: "{{ instance_base }}/{{ item.1 }}"
+        state: absent
+      loop: >-
+        {{ (tomcat_instances_state_present
+            + tomcat_instances_state_started)
+           | product(tomcat_catalina_scripts)
+           | list }}
+      loop_control:
+        label: "{{ item.0.name }} {{ item.1 }}"
+      vars:
+        instance: "{{ item.0 }}"
   when:
     - instance.use_native_daemon | default(tomcat_instance_use_native_daemon)
     - instance.version is version("7", ">=")
