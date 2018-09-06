@@ -52,7 +52,7 @@
             subdirs:
               - src: conf/
                 dest: conf
-              - src: webapps/manager
+              - src: webapps/manager/
                 dest: webapps/manager
       vars:
         instance: "{{ item.0 }}"
