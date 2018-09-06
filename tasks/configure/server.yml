@@ -52,9 +52,6 @@
       - xpath: "{{ connector_xpath }}[@protocol='HTTP/1.1']"
         attribute: redirectPort
         value: server_https_port
-      - xpath: "{{ connector_xpath }}[@sslProtocol='TLS']"
-        attribute: port
-        value: server_http_port
       - xpath: "{{ connector_xpath }}[@protocol='AJP/1.3']"
         attribute: port
         value: server_ajp_port
