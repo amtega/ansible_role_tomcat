@@ -7,7 +7,9 @@
         name: "{{ instance.name }}"
         state: stopped
         enabled: false
-      when: ansible_local[instance.name] is defined
+      when:
+        - ansible_local.tomcat is defined
+        - ansible_local.tomcat[instance.name] is defined
       loop: "{{ tomcat_instances_state_absent }}"
       loop_control:
         loop_var: instance

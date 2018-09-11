@@ -8,10 +8,14 @@
         state: absent
       when: >-
         instance.force_install | default(tomcat_instance_force_install)
-        or ansible_local[instance.name] is defined
-           and ansible_local[instance.name].use_native_daemon
-               | default(tomcat_instance_use_native_daemon)
-               != ansible_local[instance.name].use_native_daemon
+        or (ansible_local.tomcat is defined
+            and ansible_local.tomcat[instance.name] is defined
+            and (instance.use_native_daemon
+                 | default(tomcat_instance_use_native_daemon)
+                 != ansible_local.tomcat[instance.name].use_native_daemon
+                 or instance.java_home
+                    | default(tomcat_instance_java_home)
+                    != ansible_local.tomcat[instance.name].java_home))
       register: tomcat_daemon_remove_result
       loop: >-
         {{ tomcat_instances_state_present + tomcat_instances_state_started }}
@@ -22,7 +26,7 @@
     - name: extract native daemon tarball
       unarchive:
         src: "{{ daemon_tarball }}"
-        dest: "{{ instance_home }}/bin"
+        dest: "{{ instance.home }}/bin"
         copy: no
         owner: "{{ instance.user | default(tomcat_instance_user) }}"
         group: "{{ instance.group | default(tomcat_instance_group) }}"
@@ -66,7 +70,7 @@
             label: "{{ instance.name }}"
 
         - name: install native daemon binary
-          shell: "cp jsvc {{ instance_home }}/bin"
+          shell: "cp jsvc {{ instance.home }}/bin"
           args:
             chdir: "{{ daemon_src_dir }}"
             creates: "{{ daemon_bin }}"
@@ -94,9 +98,10 @@
 
     - name: install native daemon startup script on instances
       synchronize:
-        src: "{{ instance_home }}/{{ item.1 }}"
-        dest: "{{ instance_base }}/{{ item.1 }}"
+        src: "{{ instance.home }}/{{ item.1 }}"
+        dest: "{{ instance.base }}/{{ item.1 }}"
         archive: true
+      when: tomcat_daemon_install_result is changed
       loop: >-
         {{ (tomcat_instances_state_present
             + tomcat_instances_state_started)
@@ -110,7 +115,7 @@
 
     - name: remove catalina scripts for native daemon based instances
       file:
-        path: "{{ instance_base }}/{{ item.1 }}"
+        path: "{{ instance.base }}/{{ item.1 }}"
         state: absent
       loop: >-
         {{ (tomcat_instances_state_present
@@ -125,7 +130,7 @@
     - instance.use_native_daemon | default(tomcat_instance_use_native_daemon)
     - instance.version is version("7", ">=")
   vars:
-    instance_bin_dir: "{{ instance_home }}/bin"
+    instance_bin_dir: "{{ instance.home }}/bin"
     daemon_bin: "{{ instance_bin_dir }}/jsvc"
     daemon_tarball:  >-
       {{ instance_bin_dir

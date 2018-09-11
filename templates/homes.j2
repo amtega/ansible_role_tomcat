@@ -1,6 +1,6 @@
 {% if tomcat_instances_state_present | length > 0 %}
 {% for instance in tomcat_instances_state_present %}
-- {{ instance_home }}
+- {{ instance.home }}
 {% endfor %}
 {% else %}
 []

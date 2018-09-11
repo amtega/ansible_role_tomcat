@@ -10,14 +10,8 @@
     - name: configure tomcat facts
       template:
         src: "tomcat.fact.j2"
-        dest: /etc/ansible/facts.d/{{ instance.name }}.fact
+        dest: /etc/ansible/facts.d/tomcat.fact
         mode: 0640
-      loop: >-
-        {{ tomcat_instances_state_present
-           + tomcat_instances_state_started }}
-      loop_control:
-        loop_var: instance
-        label: "{{ instance.name }}"
 
     - name: reload facts
       setup:

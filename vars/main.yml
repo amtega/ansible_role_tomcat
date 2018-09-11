@@ -112,6 +112,16 @@ tomcat_instance_subdirs:
   - work
   - "{{ tomcat_manager_config | dirname }}"
 
+# Tomcat instance subdirectories to populate
+
+tomcat_instance_subdirs_to_populate:
+  - conf
+  - webapps/manager
+  - webapps/manager
+  - webapps/examples
+  - webapps/docs
+  - webapps/ROOT
+
 # Startup scripts
 
 tomcat_catalina_scripts:

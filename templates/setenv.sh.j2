@@ -13,7 +13,7 @@ JAVA_HOME="{{ instance.java_home | default(tomcat_instance_java_home) }}"
 JAVA_OPTS="{{ java_options.strings | join(' ') }}"
 
 {% if not instance.use_native_daemon | default(tomcat_instance_use_native_daemon) %}
-CATALINA_HOME="{{ instance_home }}"
-CATALINA_BASE="{{ instance_base }}"
+CATALINA_HOME="{{ instance.home }}"
+CATALINA_BASE="{{ instance.base }}"
 CATALINA_PID="{{ instance_pid }}"
 {% endif %}

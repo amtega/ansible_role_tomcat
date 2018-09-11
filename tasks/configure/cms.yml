@@ -4,7 +4,7 @@
 - block:
     - name: configure tomcat user database
       xml:
-        path: "{{ instance_base }}/{{ tomcat_server_config }}"
+        path: "{{ instance.base }}/{{ tomcat_server_config }}"
         xpath: "/Server/GlobalNamingResources/Resource[@name='UserDatabase']"
         attribute: readonly
         value: "true"
@@ -19,7 +19,7 @@
     - name: setup contained managed security roles and users
       template:
         src: "tomcat-users.xml.j2"
-        dest: "{{ instance_base }}/{{ tomcat_users_config }}"
+        dest: "{{ instance.base }}/{{ tomcat_users_config }}"
         owner: "{{ instance.user | default(tomcat_instance_user) }}"
         group: "{{ instance.group | default(tomcat_instance_group) }}"
         mode: 0755

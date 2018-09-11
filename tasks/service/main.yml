@@ -2,20 +2,10 @@
 # Install tasks
 
 - block:
+    - import_tasks: "{{ role_path }}/tasks/service/ownership.yml"
     - import_tasks: "{{ role_path }}/tasks/service/systemd.yml"
     - import_tasks: "{{ role_path }}/tasks/service/systemv.yml"
     - import_tasks: "{{ role_path }}/tasks/service/instances.yml"
-  vars:
-    instance_base: >-
-      {{ instance.base
-         | default(tomcat_instance_base
-                   + "/"
-                   + instance.name) }}
-    instance_home: >-
-      {{ instance.home
-         | default(tomcat_instance_home
-                   + "/apache-tomcat-"
-                   + instance.version) }}
   tags:
     - role::tomcat
     - role::tomcat::service

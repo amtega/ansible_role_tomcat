@@ -4,8 +4,8 @@
 - block:
     - name: install catalina startup scripts on instances
       synchronize:
-        src: "{{ instance_home }}/{{ item.1 }}"
-        dest: "{{ instance_base }}/{{ item.1 }}"
+        src: "{{ instance.home }}/{{ item.1 }}"
+        dest: "{{ instance.base }}/{{ item.1 }}"
         archive: true
       loop: >-
         {{ (tomcat_instances_state_present
@@ -20,7 +20,7 @@
 
     - name: remove native daemon script for catalina based instances
       file:
-        path: "{{ instance_base }}/{{ item.1 }}"
+        path: "{{ instance.base }}/{{ item.1 }}"
         state: absent
       loop: >-
         {{ (tomcat_instances_state_present

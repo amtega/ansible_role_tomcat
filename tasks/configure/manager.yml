@@ -4,7 +4,7 @@
 - name: setup tomcat manager
   template:
     src: "manager.xml.j2"
-    dest: "{{ instance_base }}/{{ tomcat_manager_config }}"
+    dest: "{{ instance.base }}/{{ tomcat_manager_config }}"
     owner: "{{ instance.user | default(tomcat_instance_user) }}"
     group: "{{ instance.group | default(tomcat_instance_group) }}"
     mode: 0755

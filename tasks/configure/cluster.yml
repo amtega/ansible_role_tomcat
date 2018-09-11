@@ -4,7 +4,7 @@
 - block:
     - name: create cluster section in server config
       xml:
-        path: "{{ instance_base }}/{{ tomcat_server_config }}"
+        path: "{{ instance.base }}/{{ tomcat_server_config }}"
         xpath: "{{ cluster_xpath }}"
         attribute: "channelSendOptions"
         value: >-
@@ -20,7 +20,7 @@
 
     - name: setup cluster section properties in server config
       xml:
-        path: "{{ instance_base }}/{{ tomcat_server_config }}"
+        path: "{{ instance.base }}/{{ tomcat_server_config }}"
         xpath: "{{ cluster_xpath }}"
         set_children: "{{ cluster_config }}"
         input_type: yaml
