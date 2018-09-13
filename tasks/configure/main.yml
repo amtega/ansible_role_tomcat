@@ -9,17 +9,6 @@
     - import_tasks: "{{ role_path }}/tasks/configure/cluster.yml"
     - import_tasks: "{{ role_path }}/tasks/configure/limits.yml"
     - import_tasks: "{{ role_path }}/tasks/configure/facts.yml"
-  vars:
-    instance_base: >-
-      {{ instance.base
-         | default(tomcat_instance_base
-                   + "/"
-                   + instance.name) }}
-    instance_home: >-
-      {{ instance.home
-         | default(tomcat_instance_home
-                   + "/apache-tomcat-"
-                   + instance.version) }}
   tags:
     - role::tomcat
     - role::tomcat::configure

@@ -100,6 +100,38 @@ tomcat_users_config: conf/tomcat-users.xml
 tomcat_manager_config: conf/Catalina/localhost/manager.xml
 tomcat_limits_config: /etc/security/limits.d
 
+# Tomcat instances subdirs
+
+tomcat_instance_subdirs:
+  - bin
+  - conf
+  - lib
+  - logs
+  - temp
+  - webapps
+  - work
+  - "{{ tomcat_manager_config | dirname }}"
+
+# Tomcat instance subdirectories to populate
+
+tomcat_instance_subdirs_to_populate:
+  - conf
+  - webapps/manager
+  - webapps/manager
+  - webapps/examples
+  - webapps/docs
+  - webapps/ROOT
+
+# Startup scripts
+
+tomcat_catalina_scripts:
+  - bin/catalina.sh
+  - bin/startup.sh
+  - bin/shutdown.sh
+
+tomcat_daemon_scripts:
+  - bin/daemon.sh
+
 # Systemd variables
 
 tomcat_systemd_services_path: /usr/lib/systemd/system
@@ -113,10 +145,10 @@ tomcat_systemv_init_path: /etc/init.d
 tomcat_http_proxy_config:
     http_proxy: "{{ tomcat_http_proxy | default('') }}"
     https_proxy: "{{ tomcat_https_proxy | default('') }}"
-    http_no_proxy: "{{ tomcat_http_no_proxy | default('') }}"
+    http_no_proxy: "{{ tomcat_no_proxy | default('') }}"
 
 tomcat_http_proxy_environment: >-
   {{ (tomcat_http_proxy is defined
       or tomcat_https_proxy is defined
-      or tomcat_http_no_proxy is defined)
+      or tomcat_no_proxy is defined)
      | ternary(tomcat_http_proxy_config, {}) }}

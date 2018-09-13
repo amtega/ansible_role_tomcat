@@ -1,78 +1,91 @@
 ---
 # Role service tasks
 
-- name: enable and start tomcat instances
-  service:
-    name: "{{ instance.name }}"
-    state: "{{ required_state }}"
-    enabled: "{{ enabled }}"
-  loop: "{{ tomcat_instances }}"
-  loop_control:
-    loop_var: instance
-    label: "{{ instance.name }}"
-  vars:
-    empty: "{ results: [] }"
-    server_config_changed: >-
-      {{ lookup('vars',
-                'tomcat_configure_server_result',
-                default=empty)['results']
-         | default([])
-         | selectattr("item.0.name", "equalto", instance.name)
-         | select("changed")
-         | list }}
-    cms_database_config_changed: >-
-      {{ lookup('vars',
-                'tomcat_configure_cms_database_result',
-                default=empty)['results']
-         | default([])
-         | selectattr("instance.name", "equalto", instance.name)
-         | select("changed")
-         | list }}
-    cms_roles_users_config_changed: >-
-      {{ lookup('vars',
-                'tomcat_configure_cms_roles_users_result',
-                default=empty)['results']
-         | default([])
-         | selectattr("instance.name", "equalto", instance.name)
-         | select("changed")
-         | list }}
-    manager_config_changed: >-
-      {{ lookup('vars',
-                'tomcat_configure_manager_result',
-                default=empty)['results']
-         | default([])
-         | selectattr("instance.name", "equalto", instance.name)
-         | select("changed")
-         | list }}
-    daemon_removed: >-
-      {{ lookup('vars',
-                'tomcat_daemon_remove_result',
-                default=empty)['results']
-         | default([])
-         | selectattr("instance.name", "equalto", instance.name)
-         | select("changed")
-         | list }}
-    daemon_installed: >-
-      {{ lookup('vars',
-                'tomcat_daemon_install_result',
-                default=empty)['results']
-         | default([])
-         | selectattr("instance.name", "equalto", instance.name)
-         | select("changed")
-         | list }}
-    instance_state: "{{ instance.state | default(tomcat_instance_state) }}"
-    required_state: >-
-      {{ ((server_config_changed
-           + cms_database_config_changed
-           + cms_roles_users_config_changed
-           + manager_config_changed
-           + daemon_removed
-           + daemon_installed) | length > 0
-          and instance_state == "started")
-         | ternary("restarted", instance_state) }}
-    enabled: >-
-      {{ (required_state in ['started', 'restarted'])
-         | ternary(true, false) }}
+- block:
+    - name: disable and stop tomcat instances
+      service:
+        name: "{{ instance.name }}"
+        state: stopped
+        enabled: false
+      loop: "{{ tomcat_instances_state_present }}"
+      loop_control:
+        loop_var: instance
+        label: "{{ instance.name }}"
+
+    - name: enable and start tomcat instances
+      service:
+        name: "{{ instance.name }}"
+        state: "{{ required_state }}"
+        enabled: "{{ enabled }}"
+      loop: "{{ tomcat_instances_state_started }}"
+      loop_control:
+        loop_var: instance
+        label: "{{ instance.name }}"
+      vars:
+        empty: "{ results: [] }"
+        server_config_changed: >-
+          {{ lookup('vars',
+                    'tomcat_configure_server_result',
+                    default=empty)['results']
+             | default([])
+             | selectattr("item.0.name", "equalto", instance.name)
+             | select("changed")
+             | list }}
+        cms_database_config_changed: >-
+          {{ lookup('vars',
+                    'tomcat_configure_cms_database_result',
+                    default=empty)['results']
+             | default([])
+             | selectattr("instance.name", "equalto", instance.name)
+             | select("changed")
+             | list }}
+        cms_roles_users_config_changed: >-
+          {{ lookup('vars',
+                    'tomcat_configure_cms_roles_users_result',
+                    default=empty)['results']
+             | default([])
+             | selectattr("instance.name", "equalto", instance.name)
+             | select("changed")
+             | list }}
+        manager_config_changed: >-
+          {{ lookup('vars',
+                    'tomcat_configure_manager_result',
+                    default=empty)['results']
+             | default([])
+             | selectattr("instance.name", "equalto", instance.name)
+             | select("changed")
+             | list }}
+        daemon_removed: >-
+          {{ lookup('vars',
+                    'tomcat_daemon_remove_result',
+                    default=empty)['results']
+             | default([])
+             | selectattr("instance.name", "equalto", instance.name)
+             | select("changed")
+             | list }}
+        daemon_installed: >-
+          {{ lookup('vars',
+                    'tomcat_daemon_install_result',
+                    default=empty)['results']
+             | default([])
+             | selectattr("instance.name", "equalto", instance.name)
+             | select("changed")
+             | list }}
+        instance_state: "{{ instance.state | default(tomcat_instance_state) }}"
+        required_state: >-
+          {{ ((server_config_changed
+               + cms_database_config_changed
+               + cms_roles_users_config_changed
+               + manager_config_changed
+               + daemon_removed
+               + daemon_installed) | length > 0
+              and instance_state == "started")
+             | ternary("restarted", instance_state) }}
+        enabled: >-
+          {{ (required_state in ['started', 'restarted'])
+             | ternary(true, false) }}
+
+  when: tomcat_configure_server_result is defined
   tags:
     - role::tomcat
     - role::tomcat::service

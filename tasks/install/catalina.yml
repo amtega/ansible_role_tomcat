@@ -1,0 +1,40 @@
+---
+# Catalina scripts install tasks
+
+- block:
+    - name: install catalina startup scripts on instances
+      synchronize:
+        src: "{{ instance.home }}/{{ item.1 }}"
+        dest: "{{ instance.base }}/{{ item.1 }}"
+        archive: true
+      loop: >-
+        {{ (tomcat_instances_state_present
+            + tomcat_instances_state_started)
+           | product(tomcat_catalina_scripts)
+           | list }}
+      loop_control:
+        label: "{{ item.0.name }} {{ item.1 }}"
+      delegate_to: "{{ inventory_hostname }}"
+      vars:
+        instance: "{{ item.0 }}"
+
+    - name: remove native daemon script for catalina based instances
+      file:
+        path: "{{ instance.base }}/{{ item.1 }}"
+        state: absent
+      loop: >-
+        {{ (tomcat_instances_state_present
+            + tomcat_instances_state_started)
+           | product(tomcat_daemon_scripts)
+           | list }}
+      loop_control:
+        label: "{{ item.0.name }} {{ item.1 }}"
+      vars:
+        instance: "{{ item.0 }}"
+  when: >-
+    not instance.use_native_daemon | default(tomcat_instance_use_native_daemon)
+    or instance.version is version("7", "<")
+  tags:
+    - role::tomcat
+    - role::tomcat::install
+    - role::tomcat::install::catalina

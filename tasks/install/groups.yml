@@ -8,7 +8,8 @@
       {{ instance.group_gid
          | default(tomcat_instance_group_gid)
          | default(omit) }}
-  loop: "{{ tomcat_instances }}"
+  loop: >-
+    {{ tomcat_instances_state_present + tomcat_instances_state_started }}
   loop_control:
     loop_var: instance
     label: "{{ instance.name }}"

@@ -5,15 +5,21 @@
 # following structure:
 #
 # {
+## General information about instance config java_variables
+#
+# Most of the instance config variables have default values.
+# Take a look to the tomcat_instance_* variables defined later in this file to
+# known what defaults will be used.
 #
 ## Global settings
 #
 #   name: server                 # Name of the instance
 #   version: 8.0.9               # Tomcat version
 #   base: /srv/tomcat            # Base path for tomcat instance
-#   home: /opt                   # Home path for tomcat binaries
-#   state: restarted             # Indicate instance state. Can be started.
-#                                # restared or stopped
+#   home: /opt/tomcat            # Home path for tomcat binaries
+#   state: present               # Can be started (instance running), present
+#                                # (instance not running) or absent
+#                                # (instance removed)
 #   force_install: true          # Force install even if the role detects that
 #                                # it is not necessary
 #   use_native_daemon: true      # Use native Commons Daemon. Only available
@@ -47,20 +53,19 @@
 #
 #   java_home: >-                # Java home to use
 #     /usr/lib/jvm/jre
-#   java_min_heap_size: 1024m    # Minimum tomcat heap size
-#   java_max_heap_size: 1024m    # Maximum tomcat heap size
-#   java_min_perm_size: 128m     # Minimum tomcat permanent generation space
-#   java_max_perm_size: 128m     # Maximum tomcat permanent generation space
 #   java_variables: {}           # Dictionary to setup extra -D java variables
 #   java_raw_opts: []            # List of extra java raw options
 #
 ## PID file settings
 #
-#   pid_file: bin/tomcat.pid     # Path relative to  instance base path
+#   pid_file: logs/tomcat.pid    # Path relative to instance base path
 #
-## Soft link settings
+## Soft links settings
 #
-#   link: /opt/tomcat            # Where to put a soft link to the tomcat home
+#   home_link: /opt/tomcat       # Where to put a soft link to the tomcat
+#                                # instance home directory (optional)
+#   base_link: /srv/instance     # Where to put a soft link to the tomcat
+#                                # instance base directory (optional).
 #
 ## Contained managed security settings. Keep in mind that this config will
 ## replace all your CMS settings and left only the values specified here
@@ -94,19 +99,11 @@
 #   manager_hostnames_deny:
 #     - bad.*\.acme.com
 #
-# List of dicts with the files to provisione within the instance base. The
-# paths are relative to instance home. See amtega.files role for details of the
-# variable structure
-#
-# files:
-#   - path: application_logs
-#     state: directory
-#
 ## Tomcat binaries download setttings
 #
 #   download_mirror: >-          # Mirror to use to download Tomcat
 #     http://archive.apache.org
-#   download_path: /tmp          # Where to download tomcat redistributable
+#   download_dir: /tmp           # Where to download tomcat redistributable
 #   remove_download: true        # Remove or not downloaded bins after install
 #   server_download_url:         # Specific url to the the tomcat
 #                                # redistributable tarball path (without the
@@ -130,22 +127,28 @@
 #   cluster_deploy_temp_dir: cluster/temp/
 #   cluster_deploy_dir: cluster/dist/
 #   cluster_deploy_watch_dir: webapps/
-#   cluster_deploy_watch_enabled: true }}
+#   cluster_deploy_watch_enabled: true
+#
+## Uninstall settings.
+#
+# instance_uninstall_preserve:   # List of paths to preserve during uninstall
+#   - log                        # (state absent). The paths are relative to
+#                                # instance base
+# }
+#
 
-tomcat_instances:
-  - name: tomcat@server1
-    version: 8.0.9
+tomcat_instances: []
 
 # Default instance options to apply if no other ones are specified in the
 # specific instance dictionary of the tomcat_instances variable
-#
-# When tomcat_instance_base or tomcat_instance_home are used a subdirectoy
+
+# When tomcat_instance.base or tomcat_instance.home are used a subdirectoy
 # within the specified one will be created for the specific tomcat instance, so
 # you can think in this variables like the parent directories for base and home
 # paths of the instances that don't have anyone specified.
 
-tomcat_instance_base: /srv/tomcat
-tomcat_instance_home: /opt
+tomcat_instance.base: /srv/tomcat
+tomcat_instance.home: /opt
 tomcat_instance_state: started
 tomcat_instance_force_install: false
 tomcat_instance_use_native_daemon: true
@@ -165,13 +168,9 @@ tomcat_instance_server_ajp_max_threads: 400
 #tomcat_instance_server_engine_jvm_route:
 tomcat_instance_server_autodeploy: true
 tomcat_instance_java_home: /usr/lib/jvm/java-openjdk
-tomcat_instance_java_min_heap_size: 1024m
-tomcat_instance_java_max_heap_size: 1024m
-tomcat_instance_java_min_perm_size: 128m
-tomcat_instance_java_max_perm_size: 128m
 tomcat_instance_java_variables: []
 tomcat_instance_java_raw_opts: []
-tomcat_instance_pid_file: bin/tomcat.pid
+tomcat_instance_pid_file: logs/tomcat.pid
 tomcat_instance_cms_roles:
   - manager-gui
   - admin-gui
@@ -195,7 +194,7 @@ tomcat_instance_manager_hostnames_allow:
 tomcat_instance_manager_hostnames_deny: []
 tomcat_instance_files: []
 tomcat_instance_download_mirror: http://archive.apache.org
-tomcat_instance_download_path: /tmp
+tomcat_instance_download_dir: /tmp
 tomcat_instance_remove_download: true
 tomcat_instance_cluster: false
 tomcat_instance_cluster_channel_send_options: 8
@@ -214,6 +213,7 @@ tomcat_instance_cluster_deploy_temp_dir: cluster/temp
 tomcat_instance_cluster_deploy_dir: cluster/dist
 tomcat_instance_cluster_deploy_watch_dir: webapps
 tomcat_instance_cluster_deploy_watch_enabled: true
+tomcat_instance_uninstall_preserve: []
 
 #
 # Proxy settings

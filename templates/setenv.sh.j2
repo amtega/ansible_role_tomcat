@@ -1,16 +1,7 @@
 {{ ansible_managed | comment }}
 
 {%- set java_variables=instance.java_variables | default(tomcat_instance_java_variables) %}
-{%- set java_min_heap_size=instance.java_min_heap_size | default(tomcat_instance_java_min_heap_size) %}
-{%- set java_max_heap_size=instance.java_max_heap_size | default(tomcat_instance_java_max_heap_size) %}
-{%- set java_min_perm_size=instance.java_min_perm_size | default(tomcat_instance_java_min_perm_size) %}
-{%- set java_max_perm_size=instance.java_max_perm_size | default(tomcat_instance_java_max_perm_size) %}
 {%- set java_options=namespace(strings=[]) %}
-
-{%- if java_min_heap_size | length > 0 %}{% set java_options.strings=java_options.strings + [ "-Xms" + java_min_heap_size ] %}{% endif %}
-{%- if java_max_heap_size | length > 0 %}{% set java_options.strings=java_options.strings + [ "-Xmx" + java_max_heap_size ] %}{% endif %}
-{%- if java_min_perm_size | length > 0 %}{% set java_options.strings=java_options.strings + [ "-XX:PermSize=" + java_min_perm_size ] %}{% endif %}
-{%- if java_max_perm_size | length > 0 %}{% set java_options.strings=java_options.strings + [ "-XX:MaxPermSize=" + java_max_perm_size ] %}{% endif %}
 
 {%- for variable in java_variables %}
 {%- set java_options.strings=java_options.strings + ["-D" + variable + "=" + java_variables[variable]] %}
@@ -20,6 +11,9 @@
 
 JAVA_HOME="{{ instance.java_home | default(tomcat_instance_java_home) }}"
 JAVA_OPTS="{{ java_options.strings | join(' ') }}"
-CATALINA_HOME="{{ instance_home }}"
-CATALINA_BASE="{{ instance_base }}"
-CATALINA_PID="{{ instance_base }}/{{ instance.pid_file | default(tomcat_instance_pid_file) }}"
+
+{% if not instance.use_native_daemon | default(tomcat_instance_use_native_daemon) %}
+CATALINA_HOME="{{ instance.home }}"
+CATALINA_BASE="{{ instance.base }}"
+CATALINA_PID="{{ instance_pid }}"
+{% endif %}

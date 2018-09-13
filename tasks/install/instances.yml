@@ -3,51 +3,36 @@
 
 - block:
     - block:
-        - name: create base instances directory tree
+        - name: setup instances base directory tree
           file:
-            path: "{{ instance_base }}/{{ item.1 }}"
+            path: "{{ instance.base }}/{{ item.1 }}"
             state: directory
             owner: "{{ item.0.user | default(tomcat_instance_user) }}"
             group: "{{ item.0.group | default(tomcat_instance_group) }}"
             mode: "{{ tomcat_files_permissions }}"
           register: tomcat_create_instances_tree_result
-          loop: "{{ tomcat_instances | product(subdirs) | list }}"
+          loop: >-
+            {{ (tomcat_instances_state_present
+                + tomcat_instances_state_started)
+               | product(tomcat_instance_subdirs)
+               | list }}
           loop_control:
             label: "{{ item.0.name }} {{ item.1 }}"
-          vars:
-            subdirs:
-              - bin
-              - conf
-              - lib
-              - logs
-              - temp
-              - webapps
-              - work
-              - "{{ tomcat_manager_config | dirname }}"
 
-        - name: fill base instances directory tree
+        - name: fill instances base directory tree
           synchronize:
-            src: "{{ instance_home }}/{{ item.1.src }}"
-            dest: "{{ instance_base }}/{{ item.1.dest }}"
+            src: "{{ instance.home }}/{{ item.1 }}/"
+            dest: "{{ instance.base }}/{{ item.1 }}"
             archive: true
             rsync_opts:
               - "--exclude='{{ tomcat_manager_config | dirname }}'"
-          loop: "{{ tomcat_instances | product(subdirs) | list }}"
+          loop: >-
+            {{ (tomcat_instances_state_present
+                + tomcat_instances_state_started)
+               | product(tomcat_instance_subdirs_to_populate)
+               | list }}
           loop_control:
-            label: "{{ item.0.name }} {{ item.1.src }}"
-          vars:
-            subdirs:
-              - src: conf/
-                dest: conf
-              - src: webapps/manager
-                dest: webapps/manager
-              - src: bin/catalina.sh
-                dest: bin/catalina.sh
-              - src: bin/startup.sh
-                dest: bin/startup.sh
-              - src: bin/shutdown.sh
-                dest: bin/shutdown.sh
-          delegate_to: "{{ inventory_hostname }}"
+            label: "{{ item.0.name }} {{ item.1 }}"
           when: >-
             tomcat_extract_daemon_tarball_result.results
             | selectattr("instance.name", "equalto", item.0.name)
@@ -62,17 +47,9 @@
             | select("changed")
             | list
             | length > 0
+          delegate_to: "{{ inventory_hostname }}"
       vars:
         instance: "{{ item.0 }}"
-
-    - name: create additional files within instance tree
-      include_role:
-        name: amtega.files
-      with_items: "{{ tomcat_instances }}"
-      loop_control:
-        loop_var: instance
-      vars:
-        files: "{{ instance.files | default(tomcat_instance_files) }}"
   tags:
     - role::tomcat
     - role::tomcat::install

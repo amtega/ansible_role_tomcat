@@ -1,0 +1,33 @@
+---
+# Dirs owners tasks
+
+- block:
+    - name: ensure owners for instance home dirs
+      file:
+        path: "{{ instance.home }}"
+        owner: "{{ instance.user | default(tomcat_instance_user) }}"
+        group: "{{ instance.group | default(tomcat_instance_group) }}"
+        mode: "{{ tomcat_files_permissions }}"
+        recurse: yes
+      loop: >-
+        {{ tomcat_instances_state_present + tomcat_instances_state_started }}
+      loop_control:
+        loop_var: instance
+        label: "{{ instance.name }}"
+
+    - name: ensure owners for instance base dirs
+      file:
+        path: "{{ instance.base }}"
+        owner: "{{ instance.user | default(tomcat_instance_user) }}"
+        group: "{{ instance.group | default(tomcat_instance_group) }}"
+        mode: "{{ tomcat_files_permissions }}"
+        recurse: yes
+      loop: >-
+        {{ tomcat_instances_state_present + tomcat_instances_state_started }}
+      loop_control:
+        loop_var: instance
+        label: "{{ instance.name }}"
+  tags:
+    - role::tomcat
+    - role::tomcat::service
+    - role::tomcat::service::ownership

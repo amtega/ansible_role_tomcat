@@ -11,7 +11,8 @@
       register: tomcat_check_users_result
       changed_when: false
       failed_when: false
-      loop: "{{ tomcat_instances }}"
+      loop: >-
+        {{ tomcat_instances_state_present + tomcat_instances_state_started }}
       loop_control:
         loop_var: instance
         label: "{{ instance.name }}"
@@ -25,7 +26,10 @@
              | default(tomcat_instance_user_uid)
              | default(omit) }}
       when: tomcat_check_users_result.results[index].rc != 0
-      loop: "{{ tomcat_instances | flatten(levels=1) }}"
+      loop: >-
+        {{ tomcat_instances_state_present
+           + tomcat_instances_state_started
+           | flatten(levels=1) }}
       loop_control:
         loop_var: instance
         index_var: index

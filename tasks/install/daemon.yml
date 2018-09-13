@@ -2,17 +2,23 @@
 # Commons Daemon install tasks
 
 - block:
-    - name: remove daemon binary
+    - name: remove native daemon binary
       file:
         path: "{{ daemon_bin }}"
         state: absent
       when: >-
         instance.force_install | default(tomcat_instance_force_install)
-        or instance.use_native_daemon
-           | default(tomcat_instance_use_native_daemon)
-           != ansible_local[instance.name].use_native_daemon
+        or (ansible_local.tomcat is defined
+            and ansible_local.tomcat[instance.name] is defined
+            and (instance.use_native_daemon
+                 | default(tomcat_instance_use_native_daemon)
+                 != ansible_local.tomcat[instance.name].use_native_daemon
+                 or instance.java_home
+                    | default(tomcat_instance_java_home)
+                    != ansible_local.tomcat[instance.name].java_home))
       register: tomcat_daemon_remove_result
-      loop: "{{ tomcat_instances }}"
+      loop: >-
+        {{ tomcat_instances_state_present + tomcat_instances_state_started }}
       loop_control:
         loop_var: instance
         label: "{{ instance.name }}"
@@ -20,7 +26,7 @@
     - name: extract native daemon tarball
       unarchive:
         src: "{{ daemon_tarball }}"
-        dest: "{{ instance_home }}/bin"
+        dest: "{{ instance.home }}/bin"
         copy: no
         owner: "{{ instance.user | default(tomcat_instance_user) }}"
         group: "{{ instance.group | default(tomcat_instance_group) }}"
@@ -28,73 +34,103 @@
         list_files: true
         creates: "{{ daemon_bin }}"
       register: tomcat_daemon_extract_tarball_result
-      loop: "{{ tomcat_instances }}"
+      loop: >-
+        {{ tomcat_instances_state_present + tomcat_instances_state_started }}
       loop_control:
         loop_var: instance
         label: "{{ instance.name }}"
 
-    - name: configure native daemon compilation
-      shell: >-
-        ./configure
-        --with-java={{ instance.java_home
-                       | default(tomcat_instance_java_home) }}
-      args:
-        chdir: "{{ daemon_src_dir }}"
-        creates: "{{ daemon_bin }}"
-      loop: "{{ tomcat_instances | flatten }}"
-      loop_control:
-        loop_var: instance
-        index_var: index
-        label: "{{ instance.name }}"
+    - block:
+        - name: configure native daemon compilation
+          shell: >-
+            ./configure
+            --with-java={{ instance.java_home
+                           | default(tomcat_instance_java_home) }}
+          args:
+            chdir: "{{ daemon_src_dir }}"
+            creates: "{{ daemon_bin }}"
+          loop: >-
+            {{ (tomcat_instances_state_present + tomcat_instances_state_started) }}
+          loop_control:
+            loop_var: instance
+            index_var: index
+            label: "{{ instance.name }}"
 
-    - name: compile native daemon
-      shell: make
-      args:
-        chdir: "{{ daemon_src_dir }}"
-        creates: "{{ daemon_bin }}"
-      loop: "{{ tomcat_instances | flatten }}"
-      loop_control:
-        loop_var: instance
-        index_var: index
-        label: "{{ instance.name }}"
+        - name: compile native daemon
+          shell: make
+          args:
+            chdir: "{{ daemon_src_dir }}"
+            creates: "{{ daemon_bin }}"
+          loop: >-
+            {{ tomcat_instances_state_present
+               + tomcat_instances_state_started }}
+          loop_control:
+            loop_var: instance
+            index_var: index
+            label: "{{ instance.name }}"
 
-    - name: install native daemon binary
-      shell: "cp jsvc {{ instance_home }}/bin"
-      args:
-        chdir: "{{ daemon_src_dir }}"
-        creates: "{{ daemon_bin }}"
-      register: tomcat_daemon_install_result
-      loop: "{{ tomcat_instances | flatten }}"
-      loop_control:
-        loop_var: instance
-        index_var: index
-        label: "{{ instance.name }}"
+        - name: install native daemon binary
+          shell: "cp jsvc {{ instance.home }}/bin"
+          args:
+            chdir: "{{ daemon_src_dir }}"
+            creates: "{{ daemon_bin }}"
+          register: tomcat_daemon_install_result
+          loop: >-
+            {{ tomcat_instances_state_present
+               + tomcat_instances_state_started }}
+          loop_control:
+            loop_var: instance
+            index_var: index
+            label: "{{ instance.name }}"
 
-    - name: clean native daemon extracted tarball
-      file:
-        path: "{{ daemon_src_dir }}"
-        state: absent
-      loop: "{{ tomcat_instances | flatten }}"
-      loop_control:
-        loop_var: instance
-        index_var: index
-        label: "{{ instance.name }}"
+        - name: clean native daemon extracted tarball
+          file:
+            path: "{{ daemon_src_dir }}"
+            state: absent
+          loop: >-
+            {{ tomcat_instances_state_present
+               + tomcat_instances_state_started }}
+          loop_control:
+            loop_var: instance
+            index_var: index
+            label: "{{ instance.name }}"
+      when: tomcat_daemon_extract_tarball_result.results[index].files is defined
 
     - name: install native daemon startup script on instances
       synchronize:
-        src: "{{ instance_home }}/bin/daemon.sh"
-        dest: "{{ instance_base }}/bin/daemon.sh"
+        src: "{{ instance.home }}/{{ item.1 }}"
+        dest: "{{ instance.base }}/{{ item.1 }}"
         archive: true
-      loop: "{{ tomcat_instances }}"
+      when: tomcat_daemon_install_result is changed
+      loop: >-
+        {{ (tomcat_instances_state_present
+            + tomcat_instances_state_started)
+           | product(tomcat_daemon_scripts)
+           | list }}
       loop_control:
-        loop_var: instance
-        label: "{{ instance.name }}"
+        label: "{{ item.0.name }} {{ item.1 }}"
       delegate_to: "{{ inventory_hostname }}"
+      vars:
+        instance: "{{ item.0 }}"
+
+    - name: remove catalina scripts for native daemon based instances
+      file:
+        path: "{{ instance.base }}/{{ item.1 }}"
+        state: absent
+      loop: >-
+        {{ (tomcat_instances_state_present
+            + tomcat_instances_state_started)
+           | product(tomcat_catalina_scripts)
+           | list }}
+      loop_control:
+        label: "{{ item.0.name }} {{ item.1 }}"
+      vars:
+        instance: "{{ item.0 }}"
   when:
     - instance.use_native_daemon | default(tomcat_instance_use_native_daemon)
     - instance.version is version("7", ">=")
   vars:
-    instance_bin_dir: "{{ instance_home }}/bin"
+    instance_bin_dir: "{{ instance.home }}/bin"
     daemon_bin: "{{ instance_bin_dir }}/jsvc"
     daemon_tarball:  >-
       {{ instance_bin_dir

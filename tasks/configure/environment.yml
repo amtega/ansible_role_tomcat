@@ -1,17 +1,40 @@
 ---
 # Environment variables configuration tasks
 
-- name: setup tomcat instances environment variables
-  template:
-    src: setenv.sh.j2
-    dest: "{{ instance_base }}/bin/setenv.sh"
-    owner: "{{ instance.user | default(tomcat_instance_user) }}"
-    group: "{{ instance.group | default(tomcat_instance_group) }}"
-    mode: "{{ tomcat_files_permissions }}"
-  loop: "{{ tomcat_instances }}"
-  loop_control:
-    loop_var: instance
-    label: "{{ instance.name }}"
+- block:
+    - name: setup tomcat instances environment variables
+      template:
+        src: setenv.sh.j2
+        dest: "{{ instance.base }}/bin/setenv.sh"
+        owner: "{{ instance.user | default(tomcat_instance_user) }}"
+        group: "{{ instance.group | default(tomcat_instance_group) }}"
+        mode: "{{ tomcat_files_permissions }}"
+      loop: >-
+        {{ tomcat_instances_state_present + tomcat_instances_state_started }}
+      loop_control:
+        loop_var: instance
+        label: "{{ instance.name }}"
+
+    - name: include environment variables into native daemon startup script
+      blockinfile:
+        path: "{{ instance.base }}/bin/daemon.sh"
+        insertbefore: "# resolve links.*"
+        block: |
+          # Ensure that any user defined environment variables are used
+          CATALINA_HOME="{{ instance.home }}"
+          CATALINA_BASE="{{ instance.base }}"
+          CATALINA_PID="{{ instance.base
+                           + '/'
+                           + instance.pid_file
+                             | default(tomcat_instance_pid_file) }}"
+        state: present
+      when: >-
+        instance.use_native_daemon | default(tomcat_instance_use_native_daemon)
+      loop: >-
+        {{ tomcat_instances_state_present + tomcat_instances_state_started }}
+      loop_control:
+        loop_var: instance
+        label: "{{ instance.name }}"
   tags:
     - role::tomcat
     - role::tomcat::configure

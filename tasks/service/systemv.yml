@@ -9,7 +9,7 @@
     group: root
     mode: 0755
   when: ansible_facts.service_mgr != "systemd"
-  loop: "{{ tomcat_instances }}"
+  loop: "{{ tomcat_instances_state_present + tomcat_instances_state_started }}"
   loop_control:
     loop_var: instance
     label: "{{ instance.name }}"

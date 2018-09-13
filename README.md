@@ -13,7 +13,6 @@ A list of all the default variables for this role is available in `defaults/main
 ## Dependencies
 
 - [amtega.epel](https://galaxy.ansible.com/amtega/epel) role for CentOS/RHEL versions lower than 7.
-- [amtega.files](https://galaxy.ansible.com/amtega/files).
 
 ## Example Playbook
 
@@ -28,7 +27,7 @@ This is an example playbook:
       tomcat_instances:
         - name: tomcat@server1
           version: 8.0.9
-          link: /opt/tomcat8
+          state: started
 ```
 
 ## Testing
