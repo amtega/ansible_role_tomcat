@@ -5,7 +5,7 @@
     - name: search files to uninstall within tomcat instances base directory
       find:
         paths: "{{ instance.base }}"
-        file_type: any
+        file_type: directory
         recurse: yes
       register: tomcat_uninstall_instances_search_result
       loop: "{{ tomcat_instances_state_absent }}"
@@ -15,21 +15,18 @@
 
     - name: uninstall instance files in base directory tree
       file:
-        path: "{{ item.1.path }}"
+        path: "{{ item }}"
         state: absent
-      when: item.1.path is not tomcat_startswith(exclusions)
-      loop: >-
-        {{ tomcat_uninstall_instances_search_result.results
-           | subelements('files') }}
-      loop_control:
-        index_var: index
-        label: "{{ item.0.instance.name }} {{ item.1.path }}"
+      when: item is not tomcat_startswith(exclusions)
+      loop: "{{ files }}"
       vars:
-        instance: "{{ item.0.instance }}"
-        exclusions: >-
-          {{ tomcat_instance_uninstall_preserve
-             | map("regex_replace", "^(.*)", instance.base + "/\1")
+        files: >-
+          {{ tomcat_uninstall_instances_search_result.results
+             | map(attribute="files")
+             | sum(start=[])
+             | map(attribute="path")
              | list }}
+        exclusions: "{{ lookup('template', 'exclusions.yml.j2') | from_yaml }}"
 
     - name: remove instance base directory if possible
       shell: "rmdir {{ instance.base }}"
@@ -47,7 +44,7 @@
       file:
         path: "{{ instance.home }}"
         state: absent
-      when: instance.home not in lookup("template", "homes.j2") | from_yaml
+      when: instance.home not in lookup("template", "homes.yml.j2") | from_yaml
       loop: "{{ tomcat_instances_state_absent }}"
       loop_control:
         loop_var: instance
