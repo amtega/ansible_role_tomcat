@@ -142,13 +142,6 @@ tomcat_instances: []
 # Default instance options to apply if no other ones are specified in the
 # specific instance dictionary of the tomcat_instances variable
 
-# When tomcat_instance.base or tomcat_instance.home are used a subdirectoy
-# within the specified one will be created for the specific tomcat instance, so
-# you can think in this variables like the parent directories for base and home
-# paths of the instances that don't have anyone specified.
-
-tomcat_instance.base: /srv/tomcat
-tomcat_instance.home: /opt
 tomcat_instance_state: started
 tomcat_instance_force_install: false
 tomcat_instance_use_native_daemon: true
