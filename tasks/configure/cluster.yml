@@ -34,7 +34,7 @@
       vars:
         cluster_config: "{{ lookup('template', 'cluster.yml.j2') | from_yaml }}"
 
-  when: instance.cluster | default(false)
+  when: instance.cluster | default(tomcat_instance_cluster)
   vars:
     service_xpath: "/Server/Service[@name='Catalina']"
     engine_xpath: "{{ service_xpath }}/Engine[@name='Catalina']"
