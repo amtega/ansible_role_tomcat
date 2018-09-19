@@ -15,5 +15,5 @@ JAVA_OPTS="{{ java_options.strings | join(' ') }}"
 {% if not instance.use_native_daemon | default(tomcat_instance_use_native_daemon) %}
 CATALINA_HOME="{{ instance.home }}"
 CATALINA_BASE="{{ instance.base }}"
-CATALINA_PID="{{ instance_pid }}"
+CATALINA_PID="{{ instance_pid_file | default(tomcat_instance_pid_file) }}"
 {% endif %}
