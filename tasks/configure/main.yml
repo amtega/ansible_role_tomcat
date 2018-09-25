@@ -7,7 +7,6 @@
     - import_tasks: "{{ role_path }}/tasks/configure/cms.yml"
     - import_tasks: "{{ role_path }}/tasks/configure/manager.yml"
     - import_tasks: "{{ role_path }}/tasks/configure/cluster.yml"
-    - import_tasks: "{{ role_path }}/tasks/configure/limits.yml"
     - import_tasks: "{{ role_path }}/tasks/configure/facts.yml"
   tags:
     - role::tomcat

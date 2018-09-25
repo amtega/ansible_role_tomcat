@@ -20,6 +20,15 @@
 #   state: present               # Can be started (instance running), present
 #                                # (instance not running) or absent
 #                                # (instance removed)
+#   server_port: 8005            # Server port
+#   server_http_port: 8080       # Server HTTP port
+#   server_https_port: 844 3     # Server HTTPS port
+#   server_ajp_port: 8009        # Server AJP port
+#   server_ajp_max_threads: 400  # Maximum number of threads for AJP
+#   server_engine_jvm_route: >-  # Catalina engine identifier which must be used
+#     mytomcat-server-01         # in load balancing for session affinity
+#   server_autodeploy: false    # Enable or not tomcat autodeploy
+#
 #   force_install: true          # Force install even if the role detects that
 #                                # it is not necessary
 #   use_native_daemon: true      # Use native Commons Daemon. Only available
@@ -32,22 +41,6 @@
 #   user_uid: 2000               # UID for the instance user (optional)
 #   group: tomcat                # Instance system group
 #   group_uid: 2000              # GID for the instance group (optional)
-#
-## User soft and hard limits for number of files and processes
-#
-#   user_hard_nofile: 4096
-#   user_soft_nofile: 4096
-#   user_soft_nproc: 1000
-#   user_hard_nproc: 1000
-
-#   server_port: 8005            # Server port
-#   server_http_port: 8080       # Server HTTP port
-#   server_https_port: 844 3     # Server HTTPS port
-#   server_ajp_port: 8009        # Server AJP port
-#   server_ajp_max_threads: 400  # Maximum number of threads for AJP
-#   server_engine_jvm_route: >-  # Catalina engine identifier which must be used
-#     mytomcat-server-01         # in load balancing for session affinity
-#   server_autodeploy: false    # Enable or not tomcat autodeploy
 #
 ## Java settings
 #
@@ -149,10 +142,6 @@ tomcat_instance_user: tomcat
 #tomcat_instance_user_uid: 2000
 tomcat_instance_group: tomcat
 #tomcat_instance_group_gid: 2000
-tomcat_instance_user_soft_nofile: 4096
-tomcat_instance_user_hard_nofile: 4096
-tomcat_instance_user_soft_nproc: 1000
-tomcat_instance_user_hard_nproc: 1000
 tomcat_instance_server_port: 8005
 tomcat_instance_server_http_port: 8080
 tomcat_instance_server_https_port: 8443
