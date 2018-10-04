@@ -70,9 +70,9 @@
         loop_var: instance
         label: "{{ instance.name }}"
 
-    - name: remove tomcat server tarball if possible
+    - name: remove tomcat server package if possible
       file:
-        path: "{{ downloaded_tarball }}"
+        path: "{{ tomcat_package }}"
         state: absent
       when: >-
         (tomcat_instances_state_present + tomcat_instances_state_started)
@@ -83,16 +83,6 @@
       loop_control:
         loop_var: instance
         label: "{{ instance.name }}"
-      vars:
-        dist_tarball: >-
-          {{ "apache-tomcat-"
-             ~ instance.version
-             ~ ".tar.gz" }}
-        downloaded_tarball: >-
-          {{ instance.download_dir
-             | default(tomcat_instance_download_dir)
-             + "/"
-             + dist_tarball }}
   tags:
     - role::tomcat
     - role::tomcat::uninstall

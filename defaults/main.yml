@@ -92,15 +92,30 @@
 #   manager_hostnames_deny:
 #     - bad.*\.acme.com
 #
-## Tomcat binaries download setttings
+## Tomcat download setttings
 #
-#   download_mirror: >-          # Mirror to use to download Tomcat
-#     http://archive.apache.org
-#   download_dir: /tmp           # Where to download tomcat redistributable
-#   remove_download: true        # Remove or not downloaded bins after install
-#   server_download_url:         # Specific url to the the tomcat
-#                                # redistributable tarball path (without the
-#                                # filename)
+## The role will try to identify the tomcat artifact to download from the
+## the official site.
+##
+## If you want to download the artifact from another repository yo need to
+## configure the `artifact` variable to point to a local/public
+## repository that contains the required artifact
+##
+## Take a look to `amtega.artifact` role documentation to known about supported
+## types of artifacts, their specific settings and how to configure a proxy if
+## necessary. The attribute `id` of the artifact will be overriden, so it's not
+## mandatory
+#
+#   artifact:
+#     type: https
+#     host: "https://myhost"
+#     path: "/mirror/tomcat"
+#     file: "tomcat.tar.gz"
+#     dest: /tmp
+#     timeout: 120
+#     validate_certs: yes
+#
+#   remove_artifact: true    # Remove or not downloaded artifact after install
 #
 ## Clustering settings. See cluster-howto.html in tomcat documentation
 #
@@ -175,9 +190,15 @@ tomcat_instance_manager_hostnames_allow:
   - .*
 tomcat_instance_manager_hostnames_deny: []
 tomcat_instance_files: []
-tomcat_instance_download_mirror: http://archive.apache.org
-tomcat_instance_download_dir: /tmp
-tomcat_instance_remove_download: true
+tomcat_instance_artifact:
+    type: https
+    host: "{{ tomcat_mirror_host }}"
+    path: "{{ tomcat_download_path }}"
+    file: "{{ tomcat_download_file }}"
+    dest: /tmp
+    timeout: 120
+    validate_certs: yes
+tomcat_instance_remove_artifact: true
 tomcat_instance_cluster: false
 tomcat_instance_cluster_channel_send_options: 8
 tomcat_instance_cluster_expire_sessions_on_shutdown: false

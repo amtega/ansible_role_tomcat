@@ -23,9 +23,9 @@
         loop_var: instance
         label: "{{ instance.name }}"
 
-    - name: extract native daemon tarball
+    - name: extract native daemon package
       unarchive:
-        src: "{{ daemon_tarball }}"
+        src: "{{ daemon_package }}"
         dest: "{{ instance.home }}/bin"
         copy: no
         owner: "{{ instance.user | default(tomcat_instance_user) }}"
@@ -33,7 +33,7 @@
         mode: "{{ tomcat_files_permissions }}"
         list_files: true
         creates: "{{ daemon_bin }}"
-      register: tomcat_daemon_extract_tarball_result
+      register: tomcat_daemon_extract_package_result
       loop: >-
         {{ tomcat_instances_state_present + tomcat_instances_state_started }}
       loop_control:
@@ -83,7 +83,7 @@
             index_var: index
             label: "{{ instance.name }}"
 
-        - name: clean native daemon extracted tarball
+        - name: clean native daemon extracted package
           file:
             path: "{{ daemon_src_dir }}"
             state: absent
@@ -94,7 +94,7 @@
             loop_var: instance
             index_var: index
             label: "{{ instance.name }}"
-      when: tomcat_daemon_extract_tarball_result.results[index].files is defined
+      when: tomcat_daemon_extract_package_result.results[index].files is defined
 
     - name: install native daemon startup script on instances
       synchronize:
@@ -132,14 +132,14 @@
   vars:
     instance_bin_dir: "{{ instance.home }}/bin"
     daemon_bin: "{{ instance_bin_dir }}/jsvc"
-    daemon_tarball:  >-
+    daemon_package:  >-
       {{ instance_bin_dir
          + "/"
          + "commons-daemon-native.tar.gz" }}
     daemon_src_dir: >-
       {{ instance_bin_dir
          + "/"
-         + tomcat_daemon_extract_tarball_result.results[index].files
+         + tomcat_daemon_extract_package_result.results[index].files
            | select("search", "README")
            | list
            | first

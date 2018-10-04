@@ -21,8 +21,6 @@
   roles:
     - role: amtega.tomcat
   vars:
-    java_variables:
-
     tomcat_instances:
       - name: tomcat@server1
         version: 8.0.9
@@ -35,6 +33,10 @@
         user_soft_nproc: 500
         user_hard_nproc: 500
         group_uid: 3000
+        server_port: 8005
+        server_http_port: 8080
+        server_https_port: 8443
+        server_ajp_port: 8009
         manager_addresses_allow:
           - 192.168.5.2
           - 192.168.5.3
@@ -88,8 +90,12 @@
         server_ajp_port: 8012
         server_autodeploy: false
         link: /opt/tomcat6
-        download_url: >-
-          http://archive.apache.org/dist/tomcat/tomcat-6/v6.0.0/bin
+        artifact:
+          type: http
+          host: http://archive.apache.org
+          path: /dist/tomcat/tomcat-6/v6.0.0/bin
+          file: apache-tomcat-6.0.0.tar.gz
+          dest: /tmp
         commons_daemon_download_url: >-
           http://archive.apache.org/dist/commons/daemon/source
     tomcat_instance_user_uid: 2000
@@ -122,7 +128,7 @@
       register: check_http_result
       failed_when: >-
          not check_http_result.content
-             is search("you've successfully installed Tomcat")
+             is search("successfully")
       loop: "{{ tomcat_instances }}"
   tags:
     - idempotence
@@ -135,6 +141,9 @@
     tomcat_instances:
       - name: tomcat@server1
         version: 8.0.9
+        home: /opt/apache-tomcat-8.0.9
+        base: /srv/tomcat/server1
+        link: /opt/tomcat8
         state: absent
   tasks:
     - name: check server1 instance base dir

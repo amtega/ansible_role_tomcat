@@ -3,20 +3,22 @@
 
 - block:
     - block:
-        - name: download tomcat server tarball
-          get_url:
-            url: "{{ download_url }}"
-            dest: >-
-              {{ instance.download_dir
-                 | default(tomcat_instance_download_dir) }}
-          environment: "{{ tomcat_http_proxy_environment }}"
-          register: tomcat_download_tomcat_tarball_result
+        - name: download tomcat artifact
+          include_role:
+            name: amtega.artifact
           loop: >-
             {{ tomcat_instances_state_present
                + tomcat_instances_state_started }}
           loop_control:
             loop_var: instance
             label: "{{ instance.name }}"
+          vars:
+            override:
+              id: "tomcat_{{ tomcat_version_underlined }}"
+            artifact: >-
+              {{ instance.artifact
+                 | default(tomcat_instance_artifact)
+                 | combine(override) }}
 
         - name: create tomcat instances home dirs
           file:
@@ -32,9 +34,9 @@
             loop_var: instance
             label: "{{ instance.name }}"
 
-        - name: extract tomcat server tarball
+        - name: extract tomcat server package
           unarchive:
-            src: "{{ downloaded_tarball }}"
+            src: "{{ tomcat_package }}"
             dest: "{{ instance.home }}"
             copy: no
             owner: "{{ instance.user | default(tomcat_instance_user) }}"
@@ -42,7 +44,7 @@
             mode: "{{ tomcat_files_permissions }}"
             extra_opts:
               - "--strip-components=1"
-          register: tomcat_extract_daemon_tarball_result
+          register: tomcat_extract_daemon_package_result
           loop: >-
             {{ tomcat_instances_state_present
                + tomcat_instances_state_started }}
@@ -91,52 +93,25 @@
         loop_var: instance
         label: "{{ instance.name }}"
 
-    - name: delete tomcat server downloaded tarballs
+    - name: delete tomcat artifact
       file:
-        path: "{{ downloaded_tarball }}"
+        path: "{{ tomcat_package }}"
         state: absent
       loop: >-
         {{ (tomcat_instances_state_present
             + tomcat_instances_state_started)
-           | selectattr("remove_download", "defined")
-           | selectattr("remove_download", "equalto", true)
+           | selectattr("remove_artifact", "defined")
+           | selectattr("remove_artifact", "equalto", true)
            | list
-           + (tomcat_instance_remove_download)
+           + (tomcat_instance_remove_artifact)
              | ternary(tomcat_instances_state_present
                        + tomcat_instances_state_started
-                       | selectattr("remove_download", "undefined")
+                       | selectattr("remove_artifact", "undefined")
                        | list,
                        []) }}
       loop_control:
         loop_var: instance
         label: "{{ instance.name }}"
-  vars:
-    version_major: >-
-      {{ instance.version
-         | regex_replace("([0-9]+)\.([0-9]+)\.([0-9]+)", "\1") }}
-    dist_url: >-
-      {{ instance.download_mirror
-         | default(tomcat_instance_download_mirror)
-         ~ "/dist/tomcat"
-         ~ "/tomcat-"
-         ~ version_major
-         ~ "/v"
-         ~ instance.version
-         ~ "/bin" }}
-    dist_tarball: >-
-      {{ "apache-tomcat-"
-         ~ instance.version
-         ~ ".tar.gz" }}
-    download_url: >-
-      {{ (instance.server_download_url is defined)
-         | ternary(instance.server_download_url, dist_url)
-           + "/"
-           + dist_tarball }}
-    downloaded_tarball: >-
-      {{ instance.download_dir
-         | default(tomcat_instance_download_dir)
-         + "/"
-         + dist_tarball }}
   tags:
     - role::tomcat
     - role::tomcat::install
