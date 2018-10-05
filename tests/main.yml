@@ -49,6 +49,36 @@
         manager_hostnames_deny:
           - badhost1.acme.com
           - badhost2.acme.com
+        realms:
+          - name: myrealm
+            className: org.apache.catalina.realm.JNDIRealm
+            connectionURL: ldap://192.168.5.5:389
+            userBase: DC=acme,DC=com
+            userSearch: "(cn={0})"
+            userSubtree: true
+            userRoleName: memberOf
+            roleBase: DC=acme,DC=com
+            roleName: cn
+            roleSearch: "(member={0})"
+            roleSubtree: true
+            adCompat: true
+            connectionName: myuser
+            connectionPassword: mypassword
+
+          # - name: myrealm2
+          #   className: org.apache.catalina.realm.JNDIRealm
+          #   connectionURL: ldap://192.168.5.5:389
+          #   userBase: DC=acme,DC=com
+          #   userSearch: "(cn={0})"
+          #   userSubtree: true
+          #   userRoleName: memberOf
+          #   roleBase: DC=acme,DC=com
+          #   roleName: cn
+          #   roleSearch: "(member={0})"
+          #   roleSubtree: true
+          #   adCompat: true
+          #   connectionName: myuser
+          #   connectionPassword: mypassword
         cluster: true
 
       - name: tomcat@server2
@@ -130,44 +160,46 @@
          not check_http_result.content
              is search("successfully")
       loop: "{{ tomcat_instances }}"
+      loop_control:
+        label: "{{ item.name }}{{ item.server_http_port }}"
   tags:
     - idempotence
 
-- name: test tomcat role instance removal
-  hosts: docker_sandbox_containers
-  roles:
-    - role: amtega.tomcat
-  vars:
-    tomcat_instances:
-      - name: tomcat@server1
-        version: 8.0.9
-        home: /opt/apache-tomcat-8.0.9
-        base: /srv/tomcat/server1
-        link: /opt/tomcat8
-        state: absent
-  tasks:
-    - name: check server1 instance base dir
-      stat:
-        path: /srv/tomcat/tomcat@server1
-      register: check_server1_base_result
-
-    - name: check server1 instance home dir
-      stat:
-        path: /opt/apache-tomcat-8.0.9
-      register: check_server1_home_result
-
-    - name: check server1 instance base dir does not exist
-      assert:
-        that: not check_server1_base_result.stat.exists
-
-    - name: check server1 instance home dir does not exist
-      assert:
-        that: not check_server1_home_result.stat.exists
-
-- name: cleanup docker sandbox
-  hosts: localhost
-  roles:
-    - role: amtega.docker_sandbox
-      docker_sandbox_state: absent
-  tags:
-    - sandbox
+# - name: test tomcat role instance removal
+#   hosts: docker_sandbox_containers
+#   roles:
+#     - role: amtega.tomcat
+#   vars:
+#     tomcat_instances:
+#       - name: tomcat@server1
+#         version: 8.0.9
+#         home: /opt/apache-tomcat-8.0.9
+#         base: /srv/tomcat/server1
+#         link: /opt/tomcat8
+#         state: absent
+#   tasks:
+#     - name: check server1 instance base dir
+#       stat:
+#         path: /srv/tomcat/tomcat@server1
+#       register: check_server1_base_result
+#
+#     - name: check server1 instance home dir
+#       stat:
+#         path: /opt/apache-tomcat-8.0.9
+#       register: check_server1_home_result
+#
+#     - name: check server1 instance base dir does not exist
+#       assert:
+#         that: not check_server1_base_result.stat.exists
+#
+#     - name: check server1 instance home dir does not exist
+#       assert:
+#         that: not check_server1_home_result.stat.exists
+#
+# - name: cleanup docker sandbox
+#   hosts: localhost
+#   roles:
+#     - role: amtega.docker_sandbox
+#       docker_sandbox_state: absent
+#   tags:
+#     - sandbox

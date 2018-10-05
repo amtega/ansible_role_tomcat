@@ -1,0 +1,8 @@
+{% for instance in tomcat_instances_state_present + tomcat_instances_state_started %}
+{% for realm in instance.realms | default([]) %}
+- name: "{{ realm.name }}"
+  base: "{{ instance.base }}"
+  attributes_names: {{ realm.keys() | to_yaml }}
+  attributes_values: {{ realm | to_yaml }}
+{% endfor %}
+{% endfor %}

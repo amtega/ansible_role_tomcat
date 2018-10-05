@@ -225,3 +225,27 @@ tomcat_instance_uninstall_preserve: []
 tomcat_http_proxy: "{{ ansible_facts.env.http_proxy | default('') }}"
 tomcat_https_proxy: "{{ ansible_facts.env.https_proxy | default('') }}"
 tomcat_no_proxy: "{{ ansible_facts.env.no_proxy | default('') }}"
+
+
+
+# List of realms to provisione. The dicts must have the realms attributes you
+# want to use, for example this ones:
+#
+# {
+#  name: myrealm
+#  className: org.apache.catalina.realm.JNDIRealm
+#  connectionURL: ldap://192.168.5.5:389
+#  userBase: DC=acme,DC=com
+#  userSearch: "(cn={0})"
+#  userSubtree: true
+#  userRoleName: memberOf
+#  roleBase: DC=acme,DC=com
+#  roleName: cn
+#  roleSearch: "(member={0})"
+#  roleSubtree: true
+#  adCompat: true
+#  connectionName: myuser
+#  connectionPassword: mypassword
+# }
+
+tomcat_instance_realms: []

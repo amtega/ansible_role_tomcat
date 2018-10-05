@@ -23,6 +23,7 @@
           synchronize:
             src: "{{ instance.home }}/{{ item.1 }}/"
             dest: "{{ instance.base }}/{{ item.1 }}"
+            archive: no
             rsync_opts:
               - "--recursive"
               - "--links"
@@ -36,6 +37,7 @@
           loop_control:
             label: "{{ item.0.name }} {{ item.1 }}"
           delegate_to: "{{ inventory_hostname }}"
+          register: debug
       vars:
         instance: "{{ item.0 }}"
   tags:
