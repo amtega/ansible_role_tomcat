@@ -50,7 +50,7 @@
           - badhost1.acme.com
           - badhost2.acme.com
         realms:
-          - name: myrealm
+          - name: myrealm1
             className: org.apache.catalina.realm.JNDIRealm
             connectionURL: ldap://192.168.5.5:389
             userBase: DC=acme,DC=com
@@ -65,20 +65,20 @@
             connectionName: myuser
             connectionPassword: mypassword
 
-          # - name: myrealm2
-          #   className: org.apache.catalina.realm.JNDIRealm
-          #   connectionURL: ldap://192.168.5.5:389
-          #   userBase: DC=acme,DC=com
-          #   userSearch: "(cn={0})"
-          #   userSubtree: true
-          #   userRoleName: memberOf
-          #   roleBase: DC=acme,DC=com
-          #   roleName: cn
-          #   roleSearch: "(member={0})"
-          #   roleSubtree: true
-          #   adCompat: true
-          #   connectionName: myuser
-          #   connectionPassword: mypassword
+          - name: myrealm2
+            className: org.apache.catalina.realm.JNDIRealm
+            connectionURL: ldap://192.168.5.5:389
+            userBase: DC=acme,DC=com
+            userSearch: "(cn={0})"
+            userSubtree: true
+            userRoleName: memberOf
+            roleBase: DC=acme,DC=com
+            roleName: cn
+            roleSearch: "(member={0})"
+            roleSubtree: true
+            adCompat: true
+            connectionName: myuser
+            connectionPassword: mypassword
         cluster: true
 
       - name: tomcat@server2
@@ -93,6 +93,21 @@
         server_https_port: 8444
         server_ajp_port: 8010
         cluster: true
+        realms:
+          - name: myrealm1
+            className: org.apache.catalina.realm.JNDIRealm
+            connectionURL: ldap://192.168.5.5:389
+            userBase: DC=acme,DC=com
+            userSearch: "(cn={0})"
+            userSubtree: true
+            userRoleName: memberOf
+            roleBase: DC=acme,DC=com
+            roleName: cn
+            roleSearch: "(member={0})"
+            roleSubtree: true
+            adCompat: true
+            connectionName: myuser
+            connectionPassword: mypassword
 
       - name: tomcat@server3
         version: 7.0.88
@@ -109,6 +124,21 @@
         server_ajp_max_threads: 800
         server_engine_jvm_route: tomcat-server-2
         link: /opt/tomcat7
+        realms:
+          - name: myrealm1
+            className: org.apache.catalina.realm.JNDIRealm
+            connectionURL: ldap://192.168.5.5:389
+            userBase: DC=acme,DC=com
+            userSearch: "(cn={0})"
+            userSubtree: true
+            userRoleName: memberOf
+            roleBase: DC=acme,DC=com
+            roleName: cn
+            roleSearch: "(member={0})"
+            roleSubtree: true
+            adCompat: true
+            connectionName: myuser
+            connectionPassword: mypassword
 
       - name: tomcat@server4
         version: 6.0.0
@@ -128,9 +158,71 @@
           dest: /tmp
         commons_daemon_download_url: >-
           http://archive.apache.org/dist/commons/daemon/source
+        realms:
+          - name: myrealm1
+            className: org.apache.catalina.realm.JNDIRealm
+            connectionURL: ldap://192.168.5.5:389
+            userBase: DC=acme,DC=com
+            userSearch: "(cn={0})"
+            userSubtree: true
+            userRoleName: memberOf
+            roleBase: DC=acme,DC=com
+            roleName: cn
+            roleSearch: "(member={0})"
+            roleSubtree: true
+            adCompat: true
+            connectionName: myuser
+            connectionPassword: mypassword
     tomcat_instance_user_uid: 2000
     tomcat_instance_group_gid: 2000
   tasks:
+    - name: read realms config
+      xml:
+        path: "{{ item.base }}/conf/server.xml"
+        xpath: >-
+          {{ "/Server/Service[@name='Catalina']/Engine[@name='Catalina']"
+             + "/Realm" }}
+        content: attribute
+      register: realms
+      loop: "{{ tomcat_instances }}"
+      loop_control:
+        label: "{{ item.name }}"
+
+    - name: assert realms config matches inventory
+      assert:
+        that:
+          - file.name == inventory.name | string
+          - file.className == inventory.className | string
+          - file.connectionURL == inventory.connectionURL | string
+          - file.userBase == inventory.userBase | string
+          - file.userSearch == inventory.userSearch | string
+          - file.userSubtree == inventory.userSubtree | string
+          - file.userRoleName == inventory.userRoleName | string
+          - file.roleBase == inventory.roleBase | string
+          - file.roleName == inventory.roleName | string
+          - file.roleSearch == inventory.roleSearch | string
+          - file.roleSubtree == inventory.roleSubtree | string
+          - file.adCompat == inventory.adCompat | string
+          - file.connectionName == inventory.connectionName | string
+          - file.connectionPassword == inventory.connectionPassword | string
+      loop: "{{ tomcat_instances }}"
+      loop_control:
+        index_var: index
+        label: "{{ item.name }}"
+      vars:
+        file: >-
+          {{ (realms.results[index].matches
+              | map(attribute="Realm")
+              | rejectattr("name", "undefined")
+              | selectattr("name", "equalto", "myrealm1")
+              | list
+              | first) }}
+        inventory: >-
+          {{ item.realms
+             | selectattr("name", "equalto", "myrealm1")
+             | list
+             | first }}
+
     - name: check that provisioned instances are listening
       wait_for:
         port: >-
