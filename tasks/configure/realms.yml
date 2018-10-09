@@ -7,7 +7,7 @@
         path: "{{ instance.base }}/{{ tomcat_server_config }}"
         xpath: >-
           {{ "/Server/Service[@name='Catalina']/Engine[@name='Catalina']"
-                    "/Realm" }}
+             + "/Realm" }}
         content: attribute
       register: tomcat_read_realms_result
       loop: >-
@@ -55,7 +55,7 @@
         path: "{{ item.0.instance.base }}/{{ tomcat_server_config }}"
         xpath: >-
           {{ "/Server/Service[@name='Catalina']/Engine[@name='Catalina']"
-             "/Realm[@name='" + item.1.Realm.name + "'" }}
+             "/Realm[@name='" + item.1.Realm.name + "']" }}
         state: absent
         pretty_print: true
       register: tomcat_remove_realm_result
@@ -69,7 +69,7 @@
                  'matches') }}
       loop_control:
         label: >-
-          {{ item.0.name }}
+          {{ item.0.instance.name }}
           {{ item.1.Realm.name | default(item.1.Realm.className) }}
   tags:
     - role::tomcat
