@@ -60,6 +60,28 @@
 #   base_link: /srv/instance     # Where to put a soft link to the tomcat
 #                                # instance base directory (optional).
 #
+## Realms settings
+#
+# List of realms to provisione. The dicts must have the realm attributes you
+# want to use. Only realms with a name attribute will be managed by the role.
+# A sample config is this one:
+#
+# realms:
+#   - name: myrealm
+#     className: org.apache.catalina.realm.JNDIRealm
+#     connectionURL: ldap://192.168.5.5:389
+#     userBase: DC=acme,DC=com
+#     userSearch: "(cn={0})"
+#     userSubtree: true
+#     userRoleName: memberOf
+#     roleBase: DC=acme,DC=com
+#     roleName: cn
+#     roleSearch: "(member={0})"
+#     roleSubtree: true
+#     adCompat: true
+#     connectionName: myuser
+#     connectionPassword: mypassword
+#
 ## Contained managed security settings. Keep in mind that this config will
 ## replace all your CMS settings and left only the values specified here
 #
@@ -168,6 +190,7 @@ tomcat_instance_java_home: /usr/lib/jvm/java-openjdk
 tomcat_instance_java_variables: []
 tomcat_instance_java_raw_opts: []
 tomcat_instance_pid_file: logs/tomcat.pid
+tomcat_instance_realms: []
 tomcat_instance_cms_roles:
   - manager-gui
   - admin-gui
@@ -225,27 +248,3 @@ tomcat_instance_uninstall_preserve: []
 tomcat_http_proxy: "{{ ansible_facts.env.http_proxy | default('') }}"
 tomcat_https_proxy: "{{ ansible_facts.env.https_proxy | default('') }}"
 tomcat_no_proxy: "{{ ansible_facts.env.no_proxy | default('') }}"
-
-
-
-# List of realms to provisione. The dicts must have the realms attributes you
-# want to use, for example this ones:
-#
-# {
-#  name: myrealm
-#  className: org.apache.catalina.realm.JNDIRealm
-#  connectionURL: ldap://192.168.5.5:389
-#  userBase: DC=acme,DC=com
-#  userSearch: "(cn={0})"
-#  userSubtree: true
-#  userRoleName: memberOf
-#  roleBase: DC=acme,DC=com
-#  roleName: cn
-#  roleSearch: "(member={0})"
-#  roleSubtree: true
-#  adCompat: true
-#  connectionName: myuser
-#  connectionPassword: mypassword
-# }
-
-tomcat_instance_realms: []
