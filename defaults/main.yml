@@ -62,23 +62,30 @@
 #
 ## Realm settings
 #
-# Dict must have the realm attributes you want to use. You can remove a realm
-# attribute setting its value to `none`. A sample config is this one:
+# Dict must have the realm attributes you want to use. You can remove the realm
+# setting its value to empty. A sample config is this one:
 #
 # realm:
-#   className: org.apache.catalina.realm.JNDIRealm
-#   connectionURL: ldap://ldap.acme.com:389
-#   userBase: DC=acme,DC=com
-#   userSearch: "(cn={0})"
-#   userSubtree: true
-#   userRoleName: memberOf
-#   roleBase: DC=acme,DC=com
-#   roleName: cn
-#   roleSearch: "(member={0})"
-#   roleSubtree: true
-#   adCompat: true
-#   connectionName: myuser
-#   connectionPassword: mypassword
+#   className: org.apache.catalina.realm.LockOutRealm
+#
+# List of dicts with the nested realms in case you are using a combined realm
+# in the `realm` config variable. Each dict must have the realm attributes you
+# want to use. A sample config is this one:
+#
+# subrealms:
+#   - className: org.apache.catalina.realm.JNDIRealm
+#     connectionURL: ldap://ldap.acme.com:389
+#     userBase: DC=acme,DC=com
+#     userSearch: "(cn={0})"
+#     userSubtree: true
+#     userRoleName: memberOf
+#     roleBase: DC=acme,DC=com
+#     roleName: cn
+#     roleSearch: "(member={0})"
+#     roleSubtree: true
+#     adCompat: true
+#     connectionName: myuser
+#     connectionPassword: mypassword
 #
 ## Contained managed security settings. Keep in mind that this config will
 ## replace all your CMS settings and left only the values specified here
