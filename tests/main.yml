@@ -49,25 +49,11 @@
         manager_hostnames_deny:
           - badhost1.acme.com
           - badhost2.acme.com
-        realms:
-          - name: myrealm1
-            className: org.apache.catalina.realm.JNDIRealm
-            connectionURL: ldap://192.168.5.5:389
-            userBase: DC=acme,DC=com
-            userSearch: "(cn={0})"
-            userSubtree: true
-            userRoleName: memberOf
-            roleBase: DC=acme,DC=com
-            roleName: cn
-            roleSearch: "(member={0})"
-            roleSubtree: true
-            adCompat: true
-            connectionName: myuser
-            connectionPassword: mypassword
-
-          - name: myrealm2
-            className: org.apache.catalina.realm.JNDIRealm
-            connectionURL: ldap://192.168.5.5:389
+        realm:
+          className: org.apache.catalina.realm.LockOutRealm
+        subrealms:
+          - className: org.apache.catalina.realm.JNDIRealm
+            connectionURL: ldap://ldap.acme.com:389
             userBase: DC=acme,DC=com
             userSearch: "(cn={0})"
             userSubtree: true
@@ -93,10 +79,11 @@
         server_https_port: 8444
         server_ajp_port: 8010
         cluster: true
-        realms:
-          - name: myrealm1
-            className: org.apache.catalina.realm.JNDIRealm
-            connectionURL: ldap://192.168.5.5:389
+        realm:
+          className: org.apache.catalina.realm.LockOutRealm
+        subrealms:
+          - className: org.apache.catalina.realm.JNDIRealm
+            connectionURL: ldap://ldap.acme.com:389
             userBase: DC=acme,DC=com
             userSearch: "(cn={0})"
             userSubtree: true
@@ -124,10 +111,11 @@
         server_ajp_max_threads: 800
         server_engine_jvm_route: tomcat-server-2
         link: /opt/tomcat7
-        realms:
-          - name: myrealm1
-            className: org.apache.catalina.realm.JNDIRealm
-            connectionURL: ldap://192.168.5.5:389
+        realm:
+          className: org.apache.catalina.realm.LockOutRealm
+        subrealms:
+          - className: org.apache.catalina.realm.JNDIRealm
+            connectionURL: ldap://ldap.acme.com:389
             userBase: DC=acme,DC=com
             userSearch: "(cn={0})"
             userSubtree: true
@@ -158,40 +146,30 @@
           dest: /tmp
         commons_daemon_download_url: >-
           http://archive.apache.org/dist/commons/daemon/source
-        realms:
-          - name: myrealm1
-            className: org.apache.catalina.realm.JNDIRealm
-            connectionURL: ldap://192.168.5.5:389
-            userBase: DC=acme,DC=com
-            userSearch: "(cn={0})"
-            userSubtree: true
-            userRoleName: memberOf
-            roleBase: DC=acme,DC=com
-            roleName: cn
-            roleSearch: "(member={0})"
-            roleSubtree: true
-            adCompat: true
-            connectionName: myuser
-            connectionPassword: mypassword
+        realm:
+          className: org.apache.catalina.realm.UserDatabaseRealm
+          resourceName: UserDatabase
+
     tomcat_instance_user_uid: 2000
     tomcat_instance_group_gid: 2000
   tasks:
-    - name: read realms config
+    - name: read subrealm config
       xml:
-        path: "{{ item.base }}/conf/server.xml"
+        path: "{{ instance.base }}/conf/server.xml"
         xpath: >-
           {{ "/Server/Service[@name='Catalina']/Engine[@name='Catalina']"
-             + "/Realm" }}
+             + "/Realm/Realm" }}
         content: attribute
-      register: realms
+      register: subrealm_result
+      when: instance.subrealms is defined
       loop: "{{ tomcat_instances }}"
       loop_control:
-        label: "{{ item.name }}"
+        loop_var: instance
+        label: "{{ instance.name }}"
 
-    - name: assert realms config matches inventory
+    - name: assert subrealm config matches inventory
       assert:
         that:
-          - file.name == inventory.name | string
           - file.className == inventory.className | string
           - file.connectionURL == inventory.connectionURL | string
           - file.userBase == inventory.userBase | string
@@ -205,23 +183,15 @@
           - file.adCompat == inventory.adCompat | string
           - file.connectionName == inventory.connectionName | string
           - file.connectionPassword == inventory.connectionPassword | string
+      when: instance.subrealms is defined
       loop: "{{ tomcat_instances }}"
       loop_control:
+        loop_var: instance
         index_var: index
-        label: "{{ item.name }}"
+        label: "{{ instance.name }}"
       vars:
-        file: >-
-          {{ (realms.results[index].matches
-              | map(attribute="Realm")
-              | rejectattr("name", "undefined")
-              | selectattr("name", "equalto", "myrealm1")
-              | list
-              | first) }}
-        inventory: >-
-          {{ item.realms
-             | selectattr("name", "equalto", "myrealm1")
-             | list
-             | first }}
+        file: "{{ subrealm_result.results[index].matches[0].Realm }}"
+        inventory: "{{ instance.subrealms[0] }}"
 
     - name: check that provisioned instances are listening
       wait_for:
@@ -257,41 +227,41 @@
   tags:
     - idempotence
 
-# - name: test tomcat role instance removal
-#   hosts: docker_sandbox_containers
-#   roles:
-#     - role: amtega.tomcat
-#   vars:
-#     tomcat_instances:
-#       - name: tomcat@server1
-#         version: 8.0.9
-#         home: /opt/apache-tomcat-8.0.9
-#         base: /srv/tomcat/server1
-#         link: /opt/tomcat8
-#         state: absent
-#   tasks:
-#     - name: check server1 instance base dir
-#       stat:
-#         path: /srv/tomcat/tomcat@server1
-#       register: check_server1_base_result
-#
-#     - name: check server1 instance home dir
-#       stat:
-#         path: /opt/apache-tomcat-8.0.9
-#       register: check_server1_home_result
-#
-#     - name: check server1 instance base dir does not exist
-#       assert:
-#         that: not check_server1_base_result.stat.exists
-#
-#     - name: check server1 instance home dir does not exist
-#       assert:
-#         that: not check_server1_home_result.stat.exists
-#
-# - name: cleanup docker sandbox
-#   hosts: localhost
-#   roles:
-#     - role: amtega.docker_sandbox
-#       docker_sandbox_state: absent
-#   tags:
-#     - sandbox
+- name: test tomcat role instance removal
+  hosts: docker_sandbox_containers
+  roles:
+    - role: amtega.tomcat
+  vars:
+    tomcat_instances:
+      - name: tomcat@server1
+        version: 8.0.9
+        home: /opt/apache-tomcat-8.0.9
+        base: /srv/tomcat/server1
+        link: /opt/tomcat8
+        state: absent
+  tasks:
+    - name: check server1 instance base dir
+      stat:
+        path: /srv/tomcat/tomcat@server1
+      register: check_server1_base_result
+
+    - name: check server1 instance home dir
+      stat:
+        path: /opt/apache-tomcat-8.0.9
+      register: check_server1_home_result
+
+    - name: check server1 instance base dir does not exist
+      assert:
+        that: not check_server1_base_result.stat.exists
+
+    - name: check server1 instance home dir does not exist
+      assert:
+        that: not check_server1_home_result.stat.exists
+
+- name: cleanup docker sandbox
+  hosts: localhost
+  roles:
+    - role: amtega.docker_sandbox
+      docker_sandbox_state: absent
+  tags:
+    - sandbox
