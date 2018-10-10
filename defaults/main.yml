@@ -60,27 +60,25 @@
 #   base_link: /srv/instance     # Where to put a soft link to the tomcat
 #                                # instance base directory (optional).
 #
-## Realms settings
+## Realm settings
 #
-# List of realms to provisione. The dicts must have the realm attributes you
-# want to use. Only realms with a name attribute will be managed by the role.
-# A sample config is this one:
+# Dict must have the realm attributes you want to use. You can remove a realm
+# attribute setting its value to `none`. A sample config is this one:
 #
-# realms:
-#   - name: myrealm
-#     className: org.apache.catalina.realm.JNDIRealm
-#     connectionURL: ldap://192.168.5.5:389
-#     userBase: DC=acme,DC=com
-#     userSearch: "(cn={0})"
-#     userSubtree: true
-#     userRoleName: memberOf
-#     roleBase: DC=acme,DC=com
-#     roleName: cn
-#     roleSearch: "(member={0})"
-#     roleSubtree: true
-#     adCompat: true
-#     connectionName: myuser
-#     connectionPassword: mypassword
+# realm:
+#   className: org.apache.catalina.realm.JNDIRealm
+#   connectionURL: ldap://ldap.acme.com:389
+#   userBase: DC=acme,DC=com
+#   userSearch: "(cn={0})"
+#   userSubtree: true
+#   userRoleName: memberOf
+#   roleBase: DC=acme,DC=com
+#   roleName: cn
+#   roleSearch: "(member={0})"
+#   roleSubtree: true
+#   adCompat: true
+#   connectionName: myuser
+#   connectionPassword: mypassword
 #
 ## Contained managed security settings. Keep in mind that this config will
 ## replace all your CMS settings and left only the values specified here
@@ -190,7 +188,13 @@ tomcat_instance_java_home: /usr/lib/jvm/java-openjdk
 tomcat_instance_java_variables: []
 tomcat_instance_java_raw_opts: []
 tomcat_instance_pid_file: logs/tomcat.pid
-tomcat_instance_realms: []
+tomcat_instance_realm:
+  className: org.apache.catalina.realm.LockOutRealm
+tomcat_instance_subrealms:
+  Realm:
+    className: org.apache.catalina.realm.UserDatabaseRealm
+    resourceName: UserDatabase
+
 tomcat_instance_cms_roles:
   - manager-gui
   - admin-gui
@@ -226,7 +230,7 @@ tomcat_instance_cluster: false
 tomcat_instance_cluster_channel_send_options: 8
 tomcat_instance_cluster_expire_sessions_on_shutdown: false
 tomcat_instance_cluster_notify_listeners_on_replication: true
-tomcat_instance_cluster_mcast_address: 127.0.0.1
+tomcat_instance_cluster_mcast_address: 228.0.0.4
 tomcat_instance_cluster_mcast_port: 45000
 tomcat_instance_cluster_mcast_frequency: 500
 tomcat_instance_cluster_mcast_droptime: 3000

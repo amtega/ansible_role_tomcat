@@ -1,0 +1,13 @@
+{% if instance.realm | default(tomcat_instance_realm) is defined %}
+{% set ns = namespace(found=false) %}
+{% for subrealm in instance.subrealms | default([]) %}
+{% set ns.found = true %}
+- Realm:
+{% for attribute in subrealm.keys() %}
+    {{ attribute }}: "{{ subrealm[attribute] }}"
+{% endfor %}
+{% endfor %}
+{% endif %}
+{% if not ns.found %}
+[]
+{% endif %}
