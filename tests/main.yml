@@ -21,8 +21,6 @@
   roles:
     - role: amtega.tomcat
   vars:
-    java_variables:
-
     tomcat_instances:
       - name: tomcat@server1
         version: 8.0.9
@@ -35,6 +33,10 @@
         user_soft_nproc: 500
         user_hard_nproc: 500
         group_uid: 3000
+        server_port: 8005
+        server_http_port: 8080
+        server_https_port: 8443
+        server_ajp_port: 8009
         manager_addresses_allow:
           - 192.168.5.2
           - 192.168.5.3
@@ -47,6 +49,22 @@
         manager_hostnames_deny:
           - badhost1.acme.com
           - badhost2.acme.com
+        realm:
+          className: org.apache.catalina.realm.LockOutRealm
+        subrealms:
+          - className: org.apache.catalina.realm.JNDIRealm
+            connectionURL: ldap://ldap.acme.com:389
+            userBase: DC=acme,DC=com
+            userSearch: "(cn={0})"
+            userSubtree: true
+            userRoleName: memberOf
+            roleBase: DC=acme,DC=com
+            roleName: cn
+            roleSearch: "(member={0})"
+            roleSubtree: true
+            adCompat: true
+            connectionName: myuser
+            connectionPassword: mypassword
         cluster: true
 
       - name: tomcat@server2
@@ -61,6 +79,22 @@
         server_https_port: 8444
         server_ajp_port: 8010
         cluster: true
+        realm:
+          className: org.apache.catalina.realm.LockOutRealm
+        subrealms:
+          - className: org.apache.catalina.realm.JNDIRealm
+            connectionURL: ldap://ldap.acme.com:389
+            userBase: DC=acme,DC=com
+            userSearch: "(cn={0})"
+            userSubtree: true
+            userRoleName: memberOf
+            roleBase: DC=acme,DC=com
+            roleName: cn
+            roleSearch: "(member={0})"
+            roleSubtree: true
+            adCompat: true
+            connectionName: myuser
+            connectionPassword: mypassword
 
       - name: tomcat@server3
         version: 7.0.88
@@ -77,6 +111,22 @@
         server_ajp_max_threads: 800
         server_engine_jvm_route: tomcat-server-2
         link: /opt/tomcat7
+        realm:
+          className: org.apache.catalina.realm.LockOutRealm
+        subrealms:
+          - className: org.apache.catalina.realm.JNDIRealm
+            connectionURL: ldap://ldap.acme.com:389
+            userBase: DC=acme,DC=com
+            userSearch: "(cn={0})"
+            userSubtree: true
+            userRoleName: memberOf
+            roleBase: DC=acme,DC=com
+            roleName: cn
+            roleSearch: "(member={0})"
+            roleSubtree: true
+            adCompat: true
+            connectionName: myuser
+            connectionPassword: mypassword
 
       - name: tomcat@server4
         version: 6.0.0
@@ -88,13 +138,61 @@
         server_ajp_port: 8012
         server_autodeploy: false
         link: /opt/tomcat6
-        download_url: >-
-          http://archive.apache.org/dist/tomcat/tomcat-6/v6.0.0/bin
+        artifact:
+          type: http
+          host: http://archive.apache.org
+          path: /dist/tomcat/tomcat-6/v6.0.0/bin
+          file: apache-tomcat-6.0.0.tar.gz
+          dest: /tmp
         commons_daemon_download_url: >-
           http://archive.apache.org/dist/commons/daemon/source
+        realm:
+          className: org.apache.catalina.realm.UserDatabaseRealm
+          resourceName: UserDatabase
+
     tomcat_instance_user_uid: 2000
     tomcat_instance_group_gid: 2000
   tasks:
+    - name: read subrealm config
+      xml:
+        path: "{{ instance.base }}/conf/server.xml"
+        xpath: >-
+          {{ "/Server/Service[@name='Catalina']/Engine[@name='Catalina']"
+             + "/Realm/Realm" }}
+        content: attribute
+      register: subrealm_result
+      when: instance.subrealms is defined
+      loop: "{{ tomcat_instances }}"
+      loop_control:
+        loop_var: instance
+        label: "{{ instance.name }}"
+
+    - name: assert subrealm config matches inventory
+      assert:
+        that:
+          - file.className == inventory.className | string
+          - file.connectionURL == inventory.connectionURL | string
+          - file.userBase == inventory.userBase | string
+          - file.userSearch == inventory.userSearch | string
+          - file.userSubtree == inventory.userSubtree | string
+          - file.userRoleName == inventory.userRoleName | string
+          - file.roleBase == inventory.roleBase | string
+          - file.roleName == inventory.roleName | string
+          - file.roleSearch == inventory.roleSearch | string
+          - file.roleSubtree == inventory.roleSubtree | string
+          - file.adCompat == inventory.adCompat | string
+          - file.connectionName == inventory.connectionName | string
+          - file.connectionPassword == inventory.connectionPassword | string
+      when: instance.subrealms is defined
+      loop: "{{ tomcat_instances }}"
+      loop_control:
+        loop_var: instance
+        index_var: index
+        label: "{{ instance.name }}"
+      vars:
+        file: "{{ subrealm_result.results[index].matches[0].Realm }}"
+        inventory: "{{ instance.subrealms[0] }}"
+
     - name: check that provisioned instances are listening
       wait_for:
         port: >-
@@ -122,8 +220,10 @@
       register: check_http_result
       failed_when: >-
          not check_http_result.content
-             is search("you've successfully installed Tomcat")
+             is search("successfully")
       loop: "{{ tomcat_instances }}"
+      loop_control:
+        label: "{{ item.name }}{{ item.server_http_port }}"
   tags:
     - idempotence
 
@@ -135,6 +235,9 @@
     tomcat_instances:
       - name: tomcat@server1
         version: 8.0.9
+        home: /opt/apache-tomcat-8.0.9
+        base: /srv/tomcat/server1
+        link: /opt/tomcat8
         state: absent
   tasks:
     - name: check server1 instance base dir

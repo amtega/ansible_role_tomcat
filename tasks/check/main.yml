@@ -20,7 +20,9 @@
     - name: assert instances state is supported
       assert:
         that:
-          - instance.state in ['started', 'present', 'absent']
+          - >-
+            instance.state | default(tomcat_instance_state)
+            in ['started', 'present', 'absent']
       loop: "{{ tomcat_instances }}"
       loop_control:
         loop_var: instance

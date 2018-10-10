@@ -9,11 +9,12 @@
 
 {%- set java_options.strings=java_options.strings + instance.java_raw_opts | default(tomcat_instance_java_raw_opts) %}
 
-JAVA_HOME="{{ instance.java_home | default(tomcat_instance_java_home) }}"
+JAVA_HOME={{ instance.java_home | default(tomcat_instance_java_home) }}
 JAVA_OPTS="{{ java_options.strings | join(' ') }}"
 
-{% if not instance.use_native_daemon | default(tomcat_instance_use_native_daemon) %}
-CATALINA_HOME="{{ instance.home }}"
-CATALINA_BASE="{{ instance.base }}"
-CATALINA_PID="{{ instance_pid }}"
+{% if not instance.use_native_daemon | default(tomcat_instance_use_native_daemon)
+      or instance.version is version("7", "<") %}
+CATALINA_HOME={{ instance.home }}
+CATALINA_BASE={{ instance.base }}
+CATALINA_PID={{ instance.base }}/{{ instance.pid_file | default(tomcat_instance_pid_file) }}
 {% endif %}

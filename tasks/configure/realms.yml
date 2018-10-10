@@ -1,0 +1,89 @@
+---
+# Tasks to setup application dirs
+
+- block:
+    - name: setup tomcat instances realm
+      xml:
+        path: "{{ item.0.instance.base }}/{{ tomcat_server_config }}"
+        xpath: >-
+          {{ (not realm_attribute_to_remove)
+             | ternary(realm_xpath_base,
+                       realm_xpath_base
+                       + "/@"
+                       + realm_attribute) }}
+        attribute: >-
+          {{ (not realm_attribute_to_remove)
+             | ternary(realm_attribute, omit) }}
+        value: "{{ realm_value | string }}"
+        state: >-
+          {{ (not realm_attribute_to_remove)
+             | ternary("present", "absent") }}
+        pretty_print: true
+      register: tomcat_configure_realm_result
+      loop: >-
+        {{ query('subelements',
+                 lookup('template', 'realm.yml.j2') | from_yaml,
+                 'realm_attributes') }}
+      loop_control:
+        label: "{{ item.0.instance.name }} {{ item.1 }}"
+      vars:
+        service_xpath: "/Server/Service[@name='Catalina']"
+        engine_xpath: "{{ service_xpath }}/Engine[@name='Catalina']"
+        realm_xpath_base: "{{ engine_xpath }}/Realm"
+        realm_attribute: "{{ item.1 }}"
+        realm_value: "{{ item.0.realm_values[item.1] }}"
+        realm_attribute_to_remove: "{{ realm_attribute_value is none }}"
+
+    - name: setup tomcat instances subrealms
+      xml:
+        path: "{{ instance.base }}/{{ tomcat_server_config }}"
+        xpath: >-
+          /Server/Service[@name='Catalina']/Engine[@name='Catalina']/Realm
+        set_children: "{{ lookup('template', 'subrealms.yml.j2') | from_yaml }}"
+        input_type: yaml
+        state: present
+        pretty_print: true
+      register: tomcat_configure_subrealms_result
+      loop: >-
+        {{ tomcat_instances_state_present + tomcat_instances_state_started }}
+      loop_control:
+        loop_var: instance
+        label: "{{ instance.name }}"
+
+    - name: remove tomcat instances realm
+      xml:
+        path: "{{ instance.base }}/{{ tomcat_server_config }}"
+        xpath: >-
+          /Server/Service[@name='Catalina']/Engine[@name='Catalina']/Realm
+        state: absent
+        pretty_print: true
+      register: tomcat_remove_realm_result
+      when: >-
+        instance.realm | default(tomcat_instance_realm) is not defined
+        or instance.realm | default(tomcat_instance_realm) is none
+      loop: >-
+        {{ tomcat_instances_state_present + tomcat_instances_state_started }}
+      loop_control:
+        loop_var: instance
+        label: "{{ instance.name }}"
+
+    - name: remove tomcat instances subrealms
+      xml:
+        path: "{{ instance.base }}/{{ tomcat_server_config }}"
+        xpath: >-
+          /Server/Service[@name='Catalina']/Engine[@name='Catalina']/Realm/Realm
+        state: absent
+        pretty_print: true
+      register: tomcat_remove_subrealms_result
+      when:
+        - instance.realm | default(tomcat_instance_realm) is defined
+        - instance.subrealms is not defined
+      loop: >-
+        {{ tomcat_instances_state_present + tomcat_instances_state_started }}
+      loop_control:
+        loop_var: instance
+        label: "{{ instance.name }}"
+  tags:
+    - role::tomcat
+    - role::tomcat::configure
+    - role::tomcat::configure::realms

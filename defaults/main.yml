@@ -20,6 +20,15 @@
 #   state: present               # Can be started (instance running), present
 #                                # (instance not running) or absent
 #                                # (instance removed)
+#   server_port: 8005            # Server port
+#   server_http_port: 8080       # Server HTTP port
+#   server_https_port: 844 3     # Server HTTPS port
+#   server_ajp_port: 8009        # Server AJP port
+#   server_ajp_max_threads: 400  # Maximum number of threads for AJP
+#   server_engine_jvm_route: >-  # Catalina engine identifier which must be used
+#     mytomcat-server-01         # in load balancing for session affinity
+#   server_autodeploy: false    # Enable or not tomcat autodeploy
+#
 #   force_install: true          # Force install even if the role detects that
 #                                # it is not necessary
 #   use_native_daemon: true      # Use native Commons Daemon. Only available
@@ -32,22 +41,6 @@
 #   user_uid: 2000               # UID for the instance user (optional)
 #   group: tomcat                # Instance system group
 #   group_uid: 2000              # GID for the instance group (optional)
-#
-## User soft and hard limits for number of files and processes
-#
-#   user_hard_nofile: 4096
-#   user_soft_nofile: 4096
-#   user_soft_nproc: 1000
-#   user_hard_nproc: 1000
-
-#   server_port: 8005            # Server port
-#   server_http_port: 8080       # Server HTTP port
-#   server_https_port: 844 3     # Server HTTPS port
-#   server_ajp_port: 8009        # Server AJP port
-#   server_ajp_max_threads: 400  # Maximum number of threads for AJP
-#   server_engine_jvm_route: >-  # Catalina engine identifier which must be used
-#     mytomcat-server-01         # in load balancing for session affinity
-#   server_autodeploy: false    # Enable or not tomcat autodeploy
 #
 ## Java settings
 #
@@ -66,6 +59,33 @@
 #                                # instance home directory (optional)
 #   base_link: /srv/instance     # Where to put a soft link to the tomcat
 #                                # instance base directory (optional).
+#
+## Realm settings
+#
+# Dict must have the realm attributes you want to use. You can remove the realm
+# setting its value to empty. A sample config is this one:
+#
+# realm:
+#   className: org.apache.catalina.realm.LockOutRealm
+#
+# List of dicts with the nested realms in case you are using a combined realm
+# in the `realm` config variable. Each dict must have the realm attributes you
+# want to use. A sample config is this one:
+#
+# subrealms:
+#   - className: org.apache.catalina.realm.JNDIRealm
+#     connectionURL: ldap://ldap.acme.com:389
+#     userBase: DC=acme,DC=com
+#     userSearch: "(cn={0})"
+#     userSubtree: true
+#     userRoleName: memberOf
+#     roleBase: DC=acme,DC=com
+#     roleName: cn
+#     roleSearch: "(member={0})"
+#     roleSubtree: true
+#     adCompat: true
+#     connectionName: myuser
+#     connectionPassword: mypassword
 #
 ## Contained managed security settings. Keep in mind that this config will
 ## replace all your CMS settings and left only the values specified here
@@ -99,15 +119,30 @@
 #   manager_hostnames_deny:
 #     - bad.*\.acme.com
 #
-## Tomcat binaries download setttings
+## Tomcat download setttings
 #
-#   download_mirror: >-          # Mirror to use to download Tomcat
-#     http://archive.apache.org
-#   download_dir: /tmp           # Where to download tomcat redistributable
-#   remove_download: true        # Remove or not downloaded bins after install
-#   server_download_url:         # Specific url to the the tomcat
-#                                # redistributable tarball path (without the
-#                                # filename)
+## The role will try to identify the tomcat artifact to download from the
+## the official site.
+##
+## If you want to download the artifact from another repository yo need to
+## configure the `artifact` variable to point to a local/public
+## repository that contains the required artifact
+##
+## Take a look to `amtega.artifact` role documentation to known about supported
+## types of artifacts, their specific settings and how to configure a proxy if
+## necessary. The attribute `id` of the artifact will be overriden, so it's not
+## mandatory
+#
+#   artifact:
+#     type: https
+#     host: "https://myhost"
+#     path: "/mirror/tomcat"
+#     file: "tomcat.tar.gz"
+#     dest: /tmp
+#     timeout: 120
+#     validate_certs: yes
+#
+#   remove_artifact: true    # Remove or not downloaded artifact after install
 #
 ## Clustering settings. See cluster-howto.html in tomcat documentation
 #
@@ -142,13 +177,6 @@ tomcat_instances: []
 # Default instance options to apply if no other ones are specified in the
 # specific instance dictionary of the tomcat_instances variable
 
-# When tomcat_instance.base or tomcat_instance.home are used a subdirectoy
-# within the specified one will be created for the specific tomcat instance, so
-# you can think in this variables like the parent directories for base and home
-# paths of the instances that don't have anyone specified.
-
-tomcat_instance.base: /srv/tomcat
-tomcat_instance.home: /opt
 tomcat_instance_state: started
 tomcat_instance_force_install: false
 tomcat_instance_use_native_daemon: true
@@ -156,10 +184,6 @@ tomcat_instance_user: tomcat
 #tomcat_instance_user_uid: 2000
 tomcat_instance_group: tomcat
 #tomcat_instance_group_gid: 2000
-tomcat_instance_user_soft_nofile: 4096
-tomcat_instance_user_hard_nofile: 4096
-tomcat_instance_user_soft_nproc: 1000
-tomcat_instance_user_hard_nproc: 1000
 tomcat_instance_server_port: 8005
 tomcat_instance_server_http_port: 8080
 tomcat_instance_server_https_port: 8443
@@ -171,6 +195,13 @@ tomcat_instance_java_home: /usr/lib/jvm/java-openjdk
 tomcat_instance_java_variables: []
 tomcat_instance_java_raw_opts: []
 tomcat_instance_pid_file: logs/tomcat.pid
+tomcat_instance_realm:
+  className: org.apache.catalina.realm.LockOutRealm
+tomcat_instance_subrealms:
+  Realm:
+    className: org.apache.catalina.realm.UserDatabaseRealm
+    resourceName: UserDatabase
+
 tomcat_instance_cms_roles:
   - manager-gui
   - admin-gui
@@ -193,14 +224,20 @@ tomcat_instance_manager_hostnames_allow:
   - .*
 tomcat_instance_manager_hostnames_deny: []
 tomcat_instance_files: []
-tomcat_instance_download_mirror: http://archive.apache.org
-tomcat_instance_download_dir: /tmp
-tomcat_instance_remove_download: true
+tomcat_instance_artifact:
+    type: https
+    host: "{{ tomcat_mirror_host }}"
+    path: "{{ tomcat_download_path }}"
+    file: "{{ tomcat_download_file }}"
+    dest: /tmp
+    timeout: 120
+    validate_certs: yes
+tomcat_instance_remove_artifact: true
 tomcat_instance_cluster: false
 tomcat_instance_cluster_channel_send_options: 8
 tomcat_instance_cluster_expire_sessions_on_shutdown: false
 tomcat_instance_cluster_notify_listeners_on_replication: true
-tomcat_instance_cluster_mcast_address: 127.0.0.1
+tomcat_instance_cluster_mcast_address: 228.0.0.4
 tomcat_instance_cluster_mcast_port: 45000
 tomcat_instance_cluster_mcast_frequency: 500
 tomcat_instance_cluster_mcast_droptime: 3000

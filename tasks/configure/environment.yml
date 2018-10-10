@@ -28,8 +28,12 @@
                            + instance.pid_file
                              | default(tomcat_instance_pid_file) }}"
         state: present
-      when: >-
-        instance.use_native_daemon | default(tomcat_instance_use_native_daemon)
+      when:
+        - >-
+          instance.use_native_daemon
+          | default(tomcat_instance_use_native_daemon)
+        - >-
+          instance.version is version("7", ">=")
       loop: >-
         {{ tomcat_instances_state_present + tomcat_instances_state_started }}
       loop_control:

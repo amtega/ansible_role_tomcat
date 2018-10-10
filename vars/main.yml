@@ -89,6 +89,39 @@ tomcat_packages_python:
   centos_6:
     - lxml
 
+# Version variables
+
+tomcat_version_major: >-
+  {{ instance.version
+     | regex_replace("([0-9]+)\.([0-9]+)\.([0-9]+)", "\1") }}
+
+tomcat_version_underlined: >-
+  {{ instance.version
+     | regex_replace("\.", "_") }}
+
+# Download variables
+
+tomcat_mirror_host: http://archive.apache.org
+
+tomcat_download_path: >-
+  {{ "/dist/tomcat"
+     ~ "/tomcat-"
+     ~ tomcat_version_major
+     ~ "/v"
+     ~ instance.version
+     ~ "/bin" }}
+
+tomcat_download_file: >-
+  {{ "apache-tomcat-"
+     ~ instance.version
+     ~ ".tar.gz" }}
+
+tomcat_package: >-
+  {{ lookup('vars',
+            'artifact_result_tomcat_'
+            + tomcat_version_underlined,
+            default='')['download_path'] | default('') }}
+
 # Permissions to use in tomcat directories and files
 
 tomcat_files_permissions: "u=rwx,go=rx"

@@ -31,6 +31,38 @@
              | selectattr("item.0.name", "equalto", instance.name)
              | select("changed")
              | list }}
+        realm_config_changed: >-
+          {{ lookup('vars',
+                    'tomcat_configure_realm_result',
+                    default=empty)['results']
+             | default([])
+             | selectattr("item.0.instance.name", "equalto", instance.name)
+             | select("changed")
+             | list }}
+        realm_remove_changed: >-
+          {{ lookup('vars',
+                    'tomcat_remove_realm_result',
+                    default=empty)['results']
+             | default([])
+             | selectattr("instance.name", "equalto", instance.name)
+             | select("changed")
+             | list }}
+        subrealms_config_changed: >-
+          {{ lookup('vars',
+                    'tomcat_configure_subrealms_result',
+                    default=empty)['results']
+             | default([])
+             | selectattr("instance.name", "equalto", instance.name)
+             | select("changed")
+             | list }}
+        subrealms_remove_changed: >-
+          {{ lookup('vars',
+                    'tomcat_remove_subrealms_result',
+                    default=empty)['results']
+             | default([])
+             | selectattr("instance.name", "equalto", instance.name)
+             | select("changed")
+             | list }}
         cms_database_config_changed: >-
           {{ lookup('vars',
                     'tomcat_configure_cms_database_result',
@@ -74,6 +106,10 @@
         instance_state: "{{ instance.state | default(tomcat_instance_state) }}"
         required_state: >-
           {{ ((server_config_changed
+               + realm_config_changed
+               + realm_remove_changed
+               + subrealms_config_changed
+               + subrealms_remove_changed
                + cms_database_config_changed
                + cms_roles_users_config_changed
                + manager_config_changed
