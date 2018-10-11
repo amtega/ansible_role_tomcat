@@ -3,16 +3,9 @@
 
 - name: setup instances groups
   group:
-    name: "{{ instance.group | default(tomcat_instance_group) }}"
-    gid: >-
-      {{ instance.group_gid
-         | default(tomcat_instance_group_gid)
-         | default(omit) }}
-  loop: >-
-    {{ tomcat_instances_state_present + tomcat_instances_state_started }}
-  loop_control:
-    loop_var: instance
-    label: "{{ instance.name }}"
+    name: "{{ tomcat_instance_group }}"
+    gid: "{{ tomcat_instance_group_gid) | default(omit) }}"
+  when: tomcat_instance_state in ["present", "started"]
   tags:
     - role::tomcat
     - role::tomcat::install

@@ -7,33 +7,21 @@
     # with that user. So, first we check existence of the users as workaround
 
     - name: check required instance users
-      shell: "getent passwd {{ instance.user | default(tomcat_instance_user) }}"
+      shell: "getent passwd {{ tomcat_instance_user  }}"
       register: tomcat_check_users_result
       changed_when: false
       failed_when: false
-      loop: >-
-        {{ tomcat_instances_state_present + tomcat_instances_state_started }}
-      loop_control:
-        loop_var: instance
-        label: "{{ instance.name }}"
 
     - name: setup instances users
       user:
-        name: "{{ instance.user | default(tomcat_instance_user) }}"
-        group: "{{ instance.group | default(tomcat_instance_group) }}"
+        name: "{{ tomcat_instance_user }}"
+        group: "{{ tomcat_instance_group }}"
         uid: >-
-          {{ instance.user_uid
+          {{ tomcat_instance_user_uid
              | default(tomcat_instance_user_uid)
              | default(omit) }}
-      when: tomcat_check_users_result.results[index].rc != 0
-      loop: >-
-        {{ tomcat_instances_state_present
-           + tomcat_instances_state_started
-           | flatten(levels=1) }}
-      loop_control:
-        loop_var: instance
-        index_var: index
-        label: "{{ instance.name }}"
+      when: tomcat_check_users_result.rc != 0
+  when: tomcat_instance_state in ["present", "started"]
   tags:
     - role::tomcat
     - role::tomcat::install

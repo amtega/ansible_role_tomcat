@@ -4,15 +4,13 @@
 - name: setup tomcat instances system v init services
   template:
     src: "sysvinit.j2"
-    dest: "{{ tomcat_systemv_init_path }}/{{ instance.name }}"
+    dest: "{{ tomcat_systemv_init_path }}/{{ tomcat_instance_name }}"
     owner: root
     group: root
     mode: 0755
-  when: ansible_facts.service_mgr != "systemd"
-  loop: "{{ tomcat_instances_state_present + tomcat_instances_state_started }}"
-  loop_control:
-    loop_var: instance
-    label: "{{ instance.name }}"
+  when:
+    - tomcat_instance_state in ["present", "started"]
+    - ansible_facts.service_mgr != "systemd"
   tags:
     - role::tomcat
     - role::tomcat::service

@@ -7,130 +7,81 @@
         path: "{{ daemon_bin }}"
         state: absent
       when: >-
-        instance.force_install | default(tomcat_instance_force_install)
-        or (ansible_local.tomcat is defined
-            and ansible_local.tomcat[instance.name] is defined
-            and (instance.use_native_daemon
-                 | default(tomcat_instance_use_native_daemon)
-                 != ansible_local.tomcat[instance.name].use_native_daemon
-                 or instance.java_home
-                    | default(tomcat_instance_java_home)
-                    != ansible_local.tomcat[instance.name].java_home))
+        tomcat_instance_force_install
+        or (ansible_local_facts is defined
+            and (tomcat_instance_use_native_daemon
+                 != ansible_local_facts.use_native_daemon
+                 or tomcat_instance_java_home
+                    != ansible_local_facts.java_home))
       register: tomcat_daemon_remove_result
-      loop: >-
-        {{ tomcat_instances_state_present + tomcat_instances_state_started }}
-      loop_control:
-        loop_var: instance
-        label: "{{ instance.name }}"
+      vars:
+        ansible_local_facts: >-
+          {{ ansible_local["tomcat_" + tomcat_instance_name] }}
 
     - name: extract native daemon package
       unarchive:
         src: "{{ daemon_package }}"
-        dest: "{{ instance.home }}/bin"
+        dest: "{{ tomcat_instance_home }}/bin"
         copy: no
-        owner: "{{ instance.user | default(tomcat_instance_user) }}"
-        group: "{{ instance.group | default(tomcat_instance_group) }}"
+        owner: "{{ tomcat_instance_user) }}"
+        group: "{{ tomcat_instance_group) }}"
         mode: "{{ tomcat_files_permissions }}"
         list_files: true
         creates: "{{ daemon_bin }}"
       register: tomcat_daemon_extract_package_result
-      loop: >-
-        {{ tomcat_instances_state_present + tomcat_instances_state_started }}
-      loop_control:
-        loop_var: instance
-        label: "{{ instance.name }}"
 
     - block:
         - name: configure native daemon compilation
           shell: >-
             ./configure
-            --with-java={{ instance.java_home
-                           | default(tomcat_instance_java_home) }}
+            --with-java={{ tomcat_instance_java_home }}
           args:
             chdir: "{{ daemon_src_dir }}"
             creates: "{{ daemon_bin }}"
-          loop: >-
-            {{ (tomcat_instances_state_present + tomcat_instances_state_started) }}
           loop_control:
             loop_var: instance
             index_var: index
-            label: "{{ instance.name }}"
+            label: "{{ tomcat_instance_name }}"
 
         - name: compile native daemon
           shell: make
           args:
             chdir: "{{ daemon_src_dir }}"
             creates: "{{ daemon_bin }}"
-          loop: >-
-            {{ tomcat_instances_state_present
-               + tomcat_instances_state_started }}
-          loop_control:
-            loop_var: instance
-            index_var: index
-            label: "{{ instance.name }}"
 
         - name: install native daemon binary
-          shell: "cp jsvc {{ instance.home }}/bin"
+          shell: "cp jsvc {{ tomcat_instance_home }}/bin"
           args:
             chdir: "{{ daemon_src_dir }}"
             creates: "{{ daemon_bin }}"
           register: tomcat_daemon_install_result
-          loop: >-
-            {{ tomcat_instances_state_present
-               + tomcat_instances_state_started }}
-          loop_control:
-            loop_var: instance
-            index_var: index
-            label: "{{ instance.name }}"
 
         - name: clean native daemon extracted package
           file:
             path: "{{ daemon_src_dir }}"
             state: absent
-          loop: >-
-            {{ tomcat_instances_state_present
-               + tomcat_instances_state_started }}
-          loop_control:
-            loop_var: instance
-            index_var: index
-            label: "{{ instance.name }}"
-      when: tomcat_daemon_extract_package_result.results[index].files is defined
+      when: tomcat_daemon_extract_package_result.files is defined
 
     - name: install native daemon startup script on instances
       synchronize:
-        src: "{{ instance.home }}/{{ item.1 }}"
-        dest: "{{ instance.base }}/{{ item.1 }}"
+        src: "{{ tomcat_instance_home }}/{{ item }}"
+        dest: "{{ tomcat_instance_base }}/{{ item }}"
         archive: true
       when: tomcat_daemon_install_result is changed
-      loop: >-
-        {{ (tomcat_instances_state_present
-            + tomcat_instances_state_started)
-           | product(tomcat_daemon_scripts)
-           | list }}
-      loop_control:
-        label: "{{ item.0.name }} {{ item.1 }}"
+      loop: "{{ tomcat_daemon_scripts }}"
       delegate_to: "{{ inventory_hostname }}"
-      vars:
-        instance: "{{ item.0 }}"
 
     - name: remove catalina scripts for native daemon based instances
       file:
-        path: "{{ instance.base }}/{{ item.1 }}"
+        path: "{{ tomcat_instance_base }}/{{ item }}"
         state: absent
-      loop: >-
-        {{ (tomcat_instances_state_present
-            + tomcat_instances_state_started)
-           | product(tomcat_catalina_scripts)
-           | list }}
-      loop_control:
-        label: "{{ item.0.name }} {{ item.1 }}"
-      vars:
-        instance: "{{ item.0 }}"
+      loop: "{{ tomcat_daemon_scripts }}"
   when:
-    - instance.use_native_daemon | default(tomcat_instance_use_native_daemon)
-    - instance.version is version("7", ">=")
+    - tomcat_instance_state in ["present", "started"]
+    - tomcat_instance_use_native_daemon
+    - tomcat_instannce_version is version("7", ">=")
   vars:
-    instance_bin_dir: "{{ instance.home }}/bin"
+    instance_bin_dir: "{{ tomcat_instance_home }}/bin"
     daemon_bin: "{{ instance_bin_dir }}/jsvc"
     daemon_package:  >-
       {{ instance_bin_dir
@@ -139,7 +90,7 @@
     daemon_src_dir: >-
       {{ instance_bin_dir
          + "/"
-         + tomcat_daemon_extract_package_result.results[index].files
+         + tomcat_daemon_extract_package_result.files
            | select("search", "README")
            | list
            | first

@@ -4,16 +4,13 @@
 - block:
     - name: disable and stop tomcat instances
       service:
-        name: "{{ instance.name }}"
+        name: "{{ tomcat_instance_name }}"
         state: stopped
         enabled: false
-      when:
-        - ansible_local.tomcat is defined
-        - ansible_local.tomcat[instance.name] is defined
-      loop: "{{ tomcat_instances_state_absent }}"
-      loop_control:
-        loop_var: instance
-        label: "{{ instance.name }}"
+      when: ansible_local_facts is defined
+      vars:
+        ansible_local_facts: >-
+          {{ ansible_local["tomcat_" + tomcat_instance_name] }}
       ignore_errors: true
 
     - block:
@@ -22,33 +19,22 @@
             path: >-
               {{ tomcat_systemd_services_path
                  + "/"
-                 + instance.name
+                 + tomcat_instance_name
                  + ".service" }}
             state: absent
           register: tomcat_remove_systemd_services_result
-          loop: "{{ tomcat_instances_state_absent }}"
-          loop_control:
-            loop_var: instance
-            label: "{{ instance.name }}"
 
         - name: reload systemd
           command: systemctl daemon-reload
-          when: >-
-            tomcat_remove_systemd_services_result.results
-            | select("changed")
-            | list
-            | length > 0
+          when: tomcat_remove_systemd_services_result is changed
       when: ansible_facts.service_mgr == "systemd"
 
     - name: uninstall tomcat instances system v init services
       file:
-        path: "{{ tomcat_systemv_init_path }}/{{ instance.name }}"
+        path: "{{ tomcat_systemv_init_path }}/{{ tomcat_instance_name }}"
         state: absent
       when: ansible_facts.service_mgr != "systemd"
-      loop: "{{ tomcat_instances_state_absent }}"
-      loop_control:
-        loop_var: instance
-        label: "{{ instance.name }}"
+  when: tomcat_instance_state == "absent"
   tags:
     - role::tomcat
     - role::tomcat::uninstall

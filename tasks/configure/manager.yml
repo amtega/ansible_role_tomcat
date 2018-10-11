@@ -4,15 +4,12 @@
 - name: setup tomcat manager
   template:
     src: "manager.xml.j2"
-    dest: "{{ instance.base }}/{{ tomcat_manager_config }}"
-    owner: "{{ instance.user | default(tomcat_instance_user) }}"
-    group: "{{ instance.group | default(tomcat_instance_group) }}"
+    dest: "{{ tomcat_instance_base }}/{{ tomcat_manager_config }}"
+    owner: "{{ tomcat_instance_user }}"
+    group: "{{ tomcat_instance_group }}"
     mode: 0755
   register: tomcat_configure_manager_result
-  loop: "{{ tomcat_instances_state_present + tomcat_instances_state_started }}"
-  loop_control:
-    loop_var: instance
-    label: "{{ instance.name }}"
+  when: tomcat_instance_state in ["present", "started"]
   tags:
     - role::tomcat
     - role::tomcat::configure

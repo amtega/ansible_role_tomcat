@@ -16,12 +16,12 @@
             state: "latest"
           loop: >-
             {{ tomcat_packages_python[distribution] | default([]) }}
-          environment: "{{ tomcat_http_proxy_environment }}"
       vars:
         distribution: >-
           {{ ansible_facts.distribution
              | lower
              + "_" + ansible_facts.distribution_major_version }}
+      environment: "{{ tomcat_http_proxy_environment }}"
   tags:
     - role::tomcat
     - role::tomcat::install

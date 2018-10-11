@@ -250,7 +250,8 @@ tomcat_instance_cluster_deploy_temp_dir: cluster/temp
 tomcat_instance_cluster_deploy_dir: cluster/dist
 tomcat_instance_cluster_deploy_watch_dir: webapps
 tomcat_instance_cluster_deploy_watch_enabled: true
-tomcat_instance_uninstall_preserve: []
+tomcat_instance_uninstall_preserve:
+  - webapps
 
 #
 # Proxy settings

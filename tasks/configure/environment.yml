@@ -5,40 +5,32 @@
     - name: setup tomcat instances environment variables
       template:
         src: setenv.sh.j2
-        dest: "{{ instance.base }}/bin/setenv.sh"
-        owner: "{{ instance.user | default(tomcat_instance_user) }}"
-        group: "{{ instance.group | default(tomcat_instance_group) }}"
+        dest: "{{ tomcat_instance_base }}/bin/setenv.sh"
+        owner: "{{ tomcat_instance_user }}"
+        group: "{{ tomcat_instance_group }}"
         mode: "{{ tomcat_files_permissions }}"
-      loop: >-
-        {{ tomcat_instances_state_present + tomcat_instances_state_started }}
-      loop_control:
-        loop_var: instance
-        label: "{{ instance.name }}"
 
     - name: include environment variables into native daemon startup script
       blockinfile:
-        path: "{{ instance.base }}/bin/daemon.sh"
+        path: "{{ tomcat_instance_base }}/bin/daemon.sh"
         insertbefore: "# resolve links.*"
         block: |
           # Ensure that any user defined environment variables are used
-          CATALINA_HOME="{{ instance.home }}"
-          CATALINA_BASE="{{ instance.base }}"
-          CATALINA_PID="{{ instance.base
+          CATALINA_HOME="{{ tomcat_instance_home }}"
+          CATALINA_BASE="{{ tomcat_instance_base }}"
+          CATALINA_PID="{{ tomcat_instance_base
                            + '/'
-                           + instance.pid_file
-                             | default(tomcat_instance_pid_file) }}"
+                           + tomcat_instance_pid_file }}"
         state: present
       when:
-        - >-
-          instance.use_native_daemon
-          | default(tomcat_instance_use_native_daemon)
-        - >-
-          instance.version is version("7", ">=")
+        - tomcat_instance_use_native_daemon
+        - tomcat_instance_version is version("7", ">=")
       loop: >-
         {{ tomcat_instances_state_present + tomcat_instances_state_started }}
       loop_control:
         loop_var: instance
-        label: "{{ instance.name }}"
+        label: "{{ tomcat_instance_name }}"
+  when: tomcat_instance_state in ["present", "started"]
   tags:
     - role::tomcat
     - role::tomcat::configure

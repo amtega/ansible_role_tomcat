@@ -155,7 +155,7 @@
   tasks:
     - name: read subrealm config
       xml:
-        path: "{{ instance.base }}/conf/server.xml"
+        path: "{{ tomcat_instance_base }}/conf/server.xml"
         xpath: >-
           {{ "/Server/Service[@name='Catalina']/Engine[@name='Catalina']"
              + "/Realm/Realm" }}
@@ -165,7 +165,7 @@
       loop: "{{ tomcat_instances }}"
       loop_control:
         loop_var: instance
-        label: "{{ instance.name }}"
+        label: "{{ tomcat_instance_name }}"
 
     - name: assert subrealm config matches inventory
       assert:
@@ -188,7 +188,7 @@
       loop_control:
         loop_var: instance
         index_var: index
-        label: "{{ instance.name }}"
+        label: "{{ tomcat_instance_name }}"
       vars:
         file: "{{ subrealm_result.results[index].matches[0].Realm }}"
         inventory: "{{ instance.subrealms[0] }}"

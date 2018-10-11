@@ -2,9 +2,9 @@
 
 <Context privileged="true">
   <Valve className="org.apache.catalina.valves.RemoteAddrValve"
-         allow="{{ instance.manager_addresses_allow | default(tomcat_instance_manager_addresses_allow) | join('|') }}"/>
-         deny="{{ instance.manager_addresses_deny | default(tomcat_instance_manager_addresses_deny) | join('|') }}"/>
+         allow="{{ tomcat_instance_manager_addresses_allow | join('|') }}"/>
+         deny="{{ tomcat_instance_manager_addresses_deny | join('|') }}"/>
   <Valve className="org.apache.catalina.valves.RemoteHostValve"
-         allow="{{ instance.manager_hostnames_allow | default(tomcat_instance_manager_hostnames_allow) | join('|') }}"/>
-         deny="{{ instance.manager_hostnames_deny | default(tomcat_instance_manager_hostnames_deny) | join('|') }}"/>
+         allow="{{ tomcat_instance_manager_hostnames_allow | join('|') }}"/>
+         deny="{{ tomcat_instance_manager_hostnames_deny | join('|') }}"/>
 </Context>

@@ -6,112 +6,62 @@
         - name: download tomcat artifact
           include_role:
             name: amtega.artifact
-          loop: >-
-            {{ tomcat_instances_state_present
-               + tomcat_instances_state_started }}
-          loop_control:
-            loop_var: instance
-            label: "{{ instance.name }}"
           vars:
             override:
               id: "tomcat_{{ tomcat_version_underlined }}"
-            artifact: >-
-              {{ instance.artifact
-                 | default(tomcat_instance_artifact)
-                 | combine(override) }}
+            artifact: "{{ tomcat_instance_artifact | combine(override) }}"
+            artifact_http_proxy: "{{ tomcat_http_proxy }}"
+            artifact_https_proxy: "{{ tomcat_https_proxy }}"
+            artifact_no_proxy: "{{ tomcat_no_proxy }}"
 
         - name: create tomcat instances home dirs
           file:
-            path: "{{ instance.home }}"
+            path: "{{ tomcat_instance_home }}"
             state: directory
-            owner: "{{ instance.user | default(tomcat_instance_user) }}"
-            group: "{{ instance.group | default(tomcat_instance_group) }}"
+            owner: "{{ tomcat_instance_user }}"
+            group: "{{ tomcat_instance_group }}"
             mode: "{{ tomcat_files_permissions }}"
-          loop: >-
-            {{ tomcat_instances_state_present
-               + tomcat_instances_state_started }}
-          loop_control:
-            loop_var: instance
-            label: "{{ instance.name }}"
 
         - name: extract tomcat server package
           unarchive:
             src: "{{ tomcat_package }}"
-            dest: "{{ instance.home }}"
+            dest: "{{ tomcat_instance_home }}"
             copy: no
-            owner: "{{ instance.user | default(tomcat_instance_user) }}"
-            group: "{{ instance.group | default(tomcat_instance_group) }}"
+            owner: "{{ tomcat_instance_user }}"
+            group: "{{ tomcat_instance_group }}"
             mode: "{{ tomcat_files_permissions }}"
             extra_opts:
               - "--strip-components=1"
           register: tomcat_extract_daemon_package_result
-          loop: >-
-            {{ tomcat_instances_state_present
-               + tomcat_instances_state_started }}
-          loop_control:
-            loop_var: instance
-            label: "{{ instance.name }}"
       when: >-
-        ansible_local.tomcat is undefined
-        or ansible_local.tomcat[instance.name] is undefined
-        or instance.version
-           is not version(ansible_local.tomcat[instance.name].version, "==")
-        or instance.force_install | default(tomcat_instance_force_install)
+        ansible_local_facts is undefined
+        or tomcat_instance_version
+           is not version(ansible_local_facts.version, "==")
+        or tomcat_instance_force_install
       vars:
-        instance_provisioned: >-
-          ansible.tomcat.instances
-             | selectattr("name", "equalto", instance.name)
-             | list
+        ansible_local_facts: >-
+          {{ ansible_local["tomcat_" + tomcat_instance_name] }}
 
     - name: create tomcat home symlinks
       file:
-        src: "{{ instance.home }}"
-        dest: "{{ instance.home_link }}"
+        src: "{{ tomcat_instance_home }}"
+        dest: "{{ tomcat_instance_home_link }}"
         state: link
         mode: "{{ tomcat_files_permissions }}"
-      loop: >-
-        {{ (tomcat_instances_state_present
-            + tomcat_instances_state_started)
-           | selectattr('home_link', 'defined')
-           | list }}
-      loop_control:
-        loop_var: instance
-        label: "{{ instance.name }}"
 
     - name: create tomcat instances base symlinks
       file:
-        src: "{{ instance.base }}"
-        dest: "{{ instance.base_link }}"
+        src: "{{ tomcat_instance_base }}"
+        dest: "{{ tomcat_instance_base_link }}"
         state: link
         mode: "{{ tomcat_files_permissions }}"
-      loop: >-
-        {{ (tomcat_instances_state_present
-            + tomcat_instances_state_started)
-           | selectattr('base_link', 'defined')
-           | list }}
-      loop_control:
-        loop_var: instance
-        label: "{{ instance.name }}"
 
     - name: delete tomcat artifact
       file:
         path: "{{ tomcat_package }}"
         state: absent
-      loop: >-
-        {{ (tomcat_instances_state_present
-            + tomcat_instances_state_started)
-           | selectattr("remove_artifact", "defined")
-           | selectattr("remove_artifact", "equalto", true)
-           | list
-           + (tomcat_instance_remove_artifact)
-             | ternary(tomcat_instances_state_present
-                       + tomcat_instances_state_started
-                       | selectattr("remove_artifact", "undefined")
-                       | list,
-                       []) }}
-      loop_control:
-        loop_var: instance
-        label: "{{ instance.name }}"
+      when: tomcat_instance_remove_artifact
+  when: tomcat_instance_state in ["present", "started"]
   tags:
     - role::tomcat
     - role::tomcat::install

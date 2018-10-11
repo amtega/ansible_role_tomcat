@@ -1,5 +1,4 @@
-{% for instance in tomcat_instances_state_absent %}
-{% for path in instance.uninstall_preserve | default(tomcat_instance_uninstall_preserve) %}
-- {{ path | regex_replace("^(.*)", instance.base + "/\\1") }}
-{% endfor %}
+{% for path in tomcat_instance_uninstall_preserve %}
+- {{ path | regex_replace("^(.*)", tomcat_instance_base + "/\\1") }}
+- {{ path | regex_replace("^(.*)", tomcat_instance_home + "/\\1") }}
 {% endfor %}
