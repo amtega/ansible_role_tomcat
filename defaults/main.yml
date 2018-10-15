@@ -1,214 +1,154 @@
 ---
 # Role default lower priority variables
 
-# List of dicts with tomcat instances to provisione. The dicts have the
-# following structure:
-#
-# {
-## General information about instance config java_variables
-#
-# Most of the instance config variables have default values.
-# Take a look to the tomcat_instance_* variables defined later in this file to
-# known what defaults will be used.
-#
-## Global settings
-#
-#   name: server                 # Name of the instance
-#   version: 8.0.9               # Tomcat version
-#   base: /srv/tomcat            # Base path for tomcat instance
-#   home: /opt/tomcat            # Home path for tomcat binaries
-#   state: present               # Can be started (instance running), present
-#                                # (instance not running) or absent
-#                                # (instance removed)
-#   server_port: 8005            # Server port
-#   server_http_port: 8080       # Server HTTP port
-#   server_https_port: 844 3     # Server HTTPS port
-#   server_ajp_port: 8009        # Server AJP port
-#   server_ajp_max_threads: 400  # Maximum number of threads for AJP
-#   server_engine_jvm_route: >-  # Catalina engine identifier which must be used
-#     mytomcat-server-01         # in load balancing for session affinity
-#   server_autodeploy: false    # Enable or not tomcat autodeploy
-#
-#   force_install: true          # Force install even if the role detects that
-#                                # it is not necessary
-#   use_native_daemon: true      # Use native Commons Daemon. Only available
-#                                # for tomcat >= 7. If false Catalina scripts
-#                                # will be used instead.
-#
-## User and group settings
-#
-#   user: tomcat                 # Instance system user
-#   user_uid: 2000               # UID for the instance user (optional)
-#   group: tomcat                # Instance system group
-#   group_uid: 2000              # GID for the instance group (optional)
-#
-## Java settings
-#
-#   java_home: >-                # Java home to use
-#     /usr/lib/jvm/jre
-#   java_variables: {}           # Dictionary to setup extra -D java variables
-#   java_raw_opts: []            # List of extra java raw options
-#
-## PID file settings
-#
-#   pid_file: logs/tomcat.pid    # Path relative to instance base path
-#
-## Soft links settings
-#
-#   home_link: /opt/tomcat       # Where to put a soft link to the tomcat
-#                                # instance home directory (optional)
-#   base_link: /srv/instance     # Where to put a soft link to the tomcat
-#                                # instance base directory (optional).
-#
-## Realm settings
-#
+################################################################################
+# Main settings
+################################################################################
+
+# Name of the tomcat server (for identification purposes)
+
+tomcat_name: tomcat
+
+# Tomcat version
+
+tomcat_version: 8.0.0
+
+# Home path for tomcat binaries
+
+tomcat_home: /opt/tomcat
+
+# Base path for tomcat binaries
+
+tomcat_base: /srv/tomcat
+
+# Tomcat state. Can be started (server running), present (server not
+# running) or absent (server removed)
+
+tomcat_state: started
+
+# Use native Commons Daemon for startup/stop scripts. This is only available for
+# tomcat >= 7. If false Catalina scripts will be used instead.
+
+tomcat_use_native_daemon: true
+
+# Path to PID file (relative to tomcat base path)
+
+tomcat_pid_file: logs/tomcat.pid
+
+# Enable or not tomcat autodeploy
+
+tomcat_server_autodeploy: true
+
+################################################################################
+# Server networking settings
+################################################################################
+
+# Server port
+
+tomcat_server_port: 8005
+
+# Server HTTP port
+
+tomcat_server_http_port: 8080
+
+# Server HTTPS port
+
+tomcat_server_https_port: 8443
+
+# Server AJP port
+
+tomcat_server_ajp_port: 8009
+
+# Maximum number of threads for AJP
+
+tomcat_server_ajp_max_threads: 400
+
+# Catalina engine identifier which must be used in load balancing for session
+# affinity
+
+#tomcat_server_engine_jvm_route:
+
+################################################################################
+# User and group settings
+################################################################################
+
+# System user
+
+tomcat_user: tomcat
+
+# UID for the system user (optional)
+
+#tomcat_user_uid: 2000
+
+# System group
+
+tomcat_group: tomcat
+
+# GID for the system group (optional)
+
+#tomcat_group_gid: 2000
+
+################################################################################
+# Java settings
+################################################################################
+
+# Java home to use
+
+tomcat_java_home: /usr/lib/jvm/java-openjdk
+
+# Dictionary to setup extra -D java variables
+
+tomcat_java_variables: []
+
+# List of extra java raw options
+
+tomcat_java_raw_opts: []
+
+################################################################################
+# Soft links setting
+################################################################################
+
+# Where to put a soft link to the tomcat home directory (optional)
+
+# tomcat_home_link:
+
+# Where to put a soft link to the tomcat base directory (optional).
+
+# base_base_link:
+
+################################################################################
+# Realm settings
+################################################################################
+
 # Dict must have the realm attributes you want to use. You can remove the realm
-# setting its value to empty. A sample config is this one:
-#
-# realm:
-#   className: org.apache.catalina.realm.LockOutRealm
-#
+# setting its value to empty
+
+tomcat_realm:
+  className: org.apache.catalina.realm.LockOutRealm
+
 # List of dicts with the nested realms in case you are using a combined realm
 # in the `realm` config variable. Each dict must have the realm attributes you
-# want to use. A sample config is this one:
-#
-# subrealms:
-#   - className: org.apache.catalina.realm.JNDIRealm
-#     connectionURL: ldap://ldap.acme.com:389
-#     userBase: DC=acme,DC=com
-#     userSearch: "(cn={0})"
-#     userSubtree: true
-#     userRoleName: memberOf
-#     roleBase: DC=acme,DC=com
-#     roleName: cn
-#     roleSearch: "(member={0})"
-#     roleSubtree: true
-#     adCompat: true
-#     connectionName: myuser
-#     connectionPassword: mypassword
-#
-## Contained managed security settings. Keep in mind that this config will
-## replace all your CMS settings and left only the values specified here
-#
-#   cms_roles:                   # Roles
-#     - manager-gui
-#     - admin-gui
-#     - manager-script
-#     - manager-jmx
-#     - manager-status
-#   cms_users:                   # Users and roles to assing to them
-#     - username: admin
-#       password: admin
-#       roles:
-#         - admin-gui
-#         - manager-gui
-#         - manager-script
-#         - manager-jmx
-#         - manager-status
-#
-## Manager web interface access settings. These variables contains the list of
-## regular expressions that define the remote addresses and hostnames to allow
-## or deny access
-#
-#   manager_addresses_allow:
-#     - 127\.\d+\.\d+\.\d+
-#   manager_addresses_deny:
-#     - 127.13.13.5
-#   manager_hostnames_allow:
-#     - d+\.acme.com
-#   manager_hostnames_deny:
-#     - bad.*\.acme.com
-#
-## Tomcat download setttings
-#
-## The role will try to identify the tomcat artifact to download from the
-## the official site.
-##
-## If you want to download the artifact from another repository yo need to
-## configure the `artifact` variable to point to a local/public
-## repository that contains the required artifact
-##
-## Take a look to `amtega.artifact` role documentation to known about supported
-## types of artifacts, their specific settings and how to configure a proxy if
-## necessary. The attribute `id` of the artifact will be overriden, so it's not
-## mandatory
-#
-#   artifact:
-#     type: https
-#     host: "https://myhost"
-#     path: "/mirror/tomcat"
-#     file: "tomcat.tar.gz"
-#     dest: /tmp
-#     timeout: 120
-#     validate_certs: yes
-#
-#   remove_artifact: true    # Remove or not downloaded artifact after install
-#
-## Clustering settings. See cluster-howto.html in tomcat documentation
-#
-#   cluster: false
-#   cluster_channel_send_options: 8
-#   cluster_expire_sessions_on_shutdown: false
-#   cluster_notify_listeners_on_replication: true
-#   cluster_mcast_address: 127.0.0.1
-#   cluster_mcast_port: 45000
-#   cluster_mcast_frequency: 500
-#   cluster_mcast_droptime: 3000
-#   cluster_nio_address: auto
-#   cluster_nio_port: 4000
-#   cluster_nio_autobind: 100
-#   cluster_nio_selector_timeout: 5000
-#   cluster_nio_max_threads: 6
-#   cluster_deploy_temp_dir: cluster/temp/
-#   cluster_deploy_dir: cluster/dist/
-#   cluster_deploy_watch_dir: webapps/
-#   cluster_deploy_watch_enabled: true
-#
-## Uninstall settings.
-#
-# instance_uninstall_preserve:   # List of paths to preserve during uninstall
-#   - log                        # (state absent). The paths are relative to
-#                                # instance base
-# }
-#
+# want to use
 
-tomcat_instances: []
-
-# Default instance options to apply if no other ones are specified in the
-# specific instance dictionary of the tomcat_instances variable
-
-tomcat_instance_state: started
-tomcat_instance_force_install: false
-tomcat_instance_use_native_daemon: true
-tomcat_instance_user: tomcat
-#tomcat_instance_user_uid: 2000
-tomcat_instance_group: tomcat
-#tomcat_instance_group_gid: 2000
-tomcat_instance_server_port: 8005
-tomcat_instance_server_http_port: 8080
-tomcat_instance_server_https_port: 8443
-tomcat_instance_server_ajp_port: 8009
-tomcat_instance_server_ajp_max_threads: 400
-#tomcat_instance_server_engine_jvm_route:
-tomcat_instance_server_autodeploy: true
-tomcat_instance_java_home: /usr/lib/jvm/java-openjdk
-tomcat_instance_java_variables: []
-tomcat_instance_java_raw_opts: []
-tomcat_instance_pid_file: logs/tomcat.pid
-tomcat_instance_realm:
-  className: org.apache.catalina.realm.LockOutRealm
-tomcat_instance_subrealms:
-  Realm:
-    className: org.apache.catalina.realm.UserDatabaseRealm
+tomcat_subrealms:
+  - className: org.apache.catalina.realm.UserDatabaseRealm
     resourceName: UserDatabase
 
-tomcat_instance_cms_roles:
+################################################################################
+# Contained managed security settings (roles and users)
+################################################################################
+
+# Keep in mind that this config will  replace all your CMS settings and left only
+# the values specified here
+
+tomcat_cms_roles:
   - manager-gui
   - admin-gui
   - manager-script
   - manager-jmx
   - manager-status
-tomcat_instance_cms_users:
+
+tomcat_cms_users:
   - username: admin
     password: admin
     roles:
@@ -217,14 +157,38 @@ tomcat_instance_cms_users:
       - manager-script
       - manager-jmx
       - manager-status
-tomcat_instance_manager_addresses_allow:
+
+################################################################################
+# Manager web interface access settings
+################################################################################
+
+# These variables contains the list of regular expressions that define the
+# remote addresses and hostnames to allow or deny access
+
+tomcat_manager_addresses_allow:
   - d+\.d+\.\d+\.\d+
-tomcat_instance_manager_addresses_deny: []
-tomcat_instance_manager_hostnames_allow:
+tomcat_manager_addresses_deny: []
+tomcat_manager_hostnames_allow:
   - .*
-tomcat_instance_manager_hostnames_deny: []
-tomcat_instance_files: []
-tomcat_instance_artifact:
+tomcat_manager_hostnames_deny: []
+
+################################################################################
+# Tomcat download setttings
+################################################################################
+
+# The role will try to identify the tomcat artifact to download from the the
+# official site.
+#
+# If you want to download the artifact from another repository yo need to
+# configure the `tomcat_artifact` variable to point to a local/public repository
+# that contains the required artifact
+#
+# Take a look to `amtega.artifact` role documentation to known about supported
+# types of artifacts, their specific settings and how to configure a proxy if
+# necessary. The attribute `id` of the artifact will be overriden, so it's not
+# mandatory
+
+tomcat_artifact:
     type: https
     host: "{{ tomcat_mirror_host }}"
     path: "{{ tomcat_download_path }}"
@@ -232,30 +196,50 @@ tomcat_instance_artifact:
     dest: /tmp
     timeout: 120
     validate_certs: yes
-tomcat_instance_remove_artifact: true
-tomcat_instance_cluster: false
-tomcat_instance_cluster_channel_send_options: 8
-tomcat_instance_cluster_expire_sessions_on_shutdown: false
-tomcat_instance_cluster_notify_listeners_on_replication: true
-tomcat_instance_cluster_mcast_address: 228.0.0.4
-tomcat_instance_cluster_mcast_port: 45000
-tomcat_instance_cluster_mcast_frequency: 500
-tomcat_instance_cluster_mcast_droptime: 3000
-tomcat_instance_cluster_nio_address: auto
-tomcat_instance_cluster_nio_port: 4000
-tomcat_instance_cluster_nio_autobind: 100
-tomcat_instance_cluster_nio_selector_timeout: 5000
-tomcat_instance_cluster_nio_max_threads: 6
-tomcat_instance_cluster_deploy_temp_dir: cluster/temp
-tomcat_instance_cluster_deploy_dir: cluster/dist
-tomcat_instance_cluster_deploy_watch_dir: webapps
-tomcat_instance_cluster_deploy_watch_enabled: true
-tomcat_instance_uninstall_preserve:
+
+# Remove or not downloaded artifact after install
+
+tomcat_remove_artifact: true
+
+################################################################################
+# Clustering settings. See cluster-howto.html in tomcat documentation
+################################################################################
+
+tomcat_cluster: false
+tomcat_cluster_channel_send_options: 8
+tomcat_cluster_expire_sessions_on_shutdown: false
+tomcat_cluster_notify_listeners_on_replication: true
+tomcat_cluster_mcast_address: 228.0.0.4
+tomcat_cluster_mcast_port: 45000
+tomcat_cluster_mcast_frequency: 500
+tomcat_cluster_mcast_droptime: 3000
+tomcat_cluster_nio_address: auto
+tomcat_cluster_nio_port: 4000
+tomcat_cluster_nio_autobind: 100
+tomcat_cluster_nio_selector_timeout: 5000
+tomcat_cluster_nio_max_threads: 6
+tomcat_cluster_deploy_temp_dir: cluster/temp
+tomcat_cluster_deploy_dir: cluster/dist
+tomcat_cluster_deploy_watch_dir: webapps
+tomcat_cluster_deploy_watch_enabled: true
+
+################################################################################
+# Install and uninstall settings
+################################################################################
+
+# Force install even if the role detects that it is not necessary
+
+tomcat_force_install: false
+
+# List of paths to preserve during uninstall (state absent). The paths are
+# relative to tomcat base directory
+
+tomcat_uninstall_preserve:
   - webapps
 
-#
+################################################################################
 # Proxy settings
-#
+################################################################################
 
 tomcat_http_proxy: "{{ ansible_facts.env.http_proxy | default('') }}"
 tomcat_https_proxy: "{{ ansible_facts.env.https_proxy | default('') }}"

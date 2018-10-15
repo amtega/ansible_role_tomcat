@@ -1,17 +1,17 @@
 - Manager:
     className: org.apache.catalina.ha.session.DeltaManager
-    expireSessionsOnShutdown: "{{ tomcat_instance_cluster_expire_sessions_on_shutdown }}"
-    notifyListenersOnReplication: "{{ tomcat_instance_cluster_notify_listeners_on_replication }}"
+    expireSessionsOnShutdown: "{{ tomcat_cluster_expire_sessions_on_shutdown }}"
+    notifyListenersOnReplication: "{{ tomcat_cluster_notify_listeners_on_replication }}"
 
 - Channel:
     className: org.apache.catalina.tribes.group.GroupChannel
     _:
       - Membership:
           className: org.apache.catalina.tribes.membership.McastService
-          address: "{{ tomcat_instance_cluster_mcast_address }}"
-          port: "{{ tomcat_instance_cluster_mcast_port }}"
-          frequency: "{{ tomcat_instance_cluster_mcast_frequency }}"
-          dropTime: "{{ tomcat_instance_cluster_mcast_droptime }}"
+          address: "{{ tomcat_cluster_mcast_address }}"
+          port: "{{ tomcat_cluster_mcast_port }}"
+          frequency: "{{ tomcat_cluster_mcast_frequency }}"
+          dropTime: "{{ tomcat_cluster_mcast_droptime }}"
 
       - Sender:
           className: org.apache.catalina.tribes.transport.ReplicationTransmitter
@@ -21,11 +21,11 @@
 
       - Receiver:
           className: org.apache.catalina.tribes.transport.nio.NioReceiver
-          address: "{{ tomcat_instance_cluster_nio_address }}"
-          port: "{{ tomcat_instance_cluster_nio_port }}"
-          autoBind: "{{ tomcat_instance_cluster_nio_autobind }}"
-          selectorTimeout: "{{ tomcat_instance_cluster_nio_selector_timeout }}"
-          maxThreads: "{{ tomcat_instance_cluster_nio_max_threads }}"
+          address: "{{ tomcat_cluster_nio_address }}"
+          port: "{{ tomcat_cluster_nio_port }}"
+          autoBind: "{{ tomcat_cluster_nio_autobind }}"
+          selectorTimeout: "{{ tomcat_cluster_nio_selector_timeout }}"
+          maxThreads: "{{ tomcat_cluster_nio_max_threads }}"
 
       - Interceptor:
           className: org.apache.catalina.tribes.group.interceptors.TcpFailureDetector
@@ -42,10 +42,10 @@
 
 - Deployer:
     className: org.apache.catalina.ha.deploy.FarmWarDeployer
-    tempDir: "{{ tomcat_instance_cluster_deploy_temp_dir }}"
-    deployDir: "{{ tomcat_instance_cluster_deploy_dir }}"
-    watchDir: "{{ tomcat_instance_cluster_deploy_watch_dir }}"
-    watchEnabled: "{{ tomcat_instance_cluster_deploy_watch_enabled }}"
+    tempDir: "{{ tomcat_cluster_deploy_temp_dir }}"
+    deployDir: "{{ tomcat_cluster_deploy_dir }}"
+    watchDir: "{{ tomcat_cluster_deploy_watch_dir }}"
+    watchEnabled: "{{ tomcat_cluster_deploy_watch_enabled }}"
 
 - ClusterListener:
     className: org.apache.catalina.ha.session.ClusterSessionListener

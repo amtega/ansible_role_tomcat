@@ -2,24 +2,21 @@
 # Uninstall services
 
 - block:
-    - name: disable and stop tomcat instances
+    - name: disable and stop tomcat services
       service:
-        name: "{{ tomcat_instance_name }}"
+        name: "{{ tomcat_name }}"
         state: stopped
         enabled: false
-      when: ansible_local_facts is defined
-      vars:
-        ansible_local_facts: >-
-          {{ ansible_local["tomcat_" + tomcat_instance_name] }}
+      when: "'tomcat_' + tomcat_name in ansible_local"
       ignore_errors: true
 
     - block:
-        - name: uninstall tomcat instances systemd services
+        - name: uninstall tomcat systemd services
           file:
             path: >-
               {{ tomcat_systemd_services_path
                  + "/"
-                 + tomcat_instance_name
+                 + tomcat_name
                  + ".service" }}
             state: absent
           register: tomcat_remove_systemd_services_result
@@ -29,12 +26,12 @@
           when: tomcat_remove_systemd_services_result is changed
       when: ansible_facts.service_mgr == "systemd"
 
-    - name: uninstall tomcat instances system v init services
+    - name: uninstall tomcat system v init services
       file:
-        path: "{{ tomcat_systemv_init_path }}/{{ tomcat_instance_name }}"
+        path: "{{ tomcat_systemv_init_path }}/{{ tomcat_name }}"
         state: absent
       when: ansible_facts.service_mgr != "systemd"
-  when: tomcat_instance_state == "absent"
+  when: tomcat_state == "absent"
   tags:
     - role::tomcat
     - role::tomcat::uninstall

@@ -1,15 +1,15 @@
 ---
-# Uninstall instances
+# Uninstall files tasks
 
 - block:
     - name: search tomcat files to uninstall
       find:
         paths:
-          - "{{ tomcat_instance_base }}"
-          - "{{ tomcat_instance_home }}"
+          - "{{ tomcat_base }}"
+          - "{{ tomcat_home }}"
         file_type: directory
         recurse: yes
-      when: tomcat_instance_state == "absent"
+      when: tomcat_state == "absent"
       register: tomcat_uninstall_search_result
 
     - name: uninstall tomcat files
@@ -26,39 +26,39 @@
         exclusions: "{{ lookup('template', 'exclusions.yml.j2') | from_yaml }}"
 
     - name: remove tomcat base directory if possible
-      shell: "rmdir {{ tomcat_instance_base }}"
+      shell: "rmdir {{ tomcat_base }}"
       args:
         warn: false
-      register: tomcat_uninstall_instances_remove_base_result
+      register: tomcat_uninstall_remove_base_result
       failed_when: false
-      changed_when: tomcat_uninstall_instances_remove_base_result.rc == 0
+      changed_when: tomcat_uninstall_remove_base_result.rc == 0
 
     - name: remove tomcat home directory if possible
-      shell: "rmdir {{ tomcat_instance_home }}"
+      shell: "rmdir {{ tomcat_home }}"
       args:
         warn: false
-      register: tomcat_uninstall_instances_remove_home_result
+      register: tomcat_uninstall_remove_home_result
       failed_when: false
-      changed_when: tomcat_uninstall_instances_remove_home_result.rc == 0
+      changed_when: tomcat_uninstall_remove_home_result.rc == 0
 
-    - name: remove tomcat instance home symlink
+    - name: remove tomcat home symlink
       file:
-        path: "{{ tomcat_instance_home_link }}"
+        path: "{{ tomcat_home_link }}"
         state: absent
-      when: tomcat_instance_home_link is defined
+      when: tomcat_home_link is defined
 
-    - name: remove tomcat instance base symlink
+    - name: remove tomcat base symlink
       file:
-        path: "{{ tomcat_instance_base_link }}"
+        path: "{{ tomcat_base_link }}"
         state: absent
-      when: tomcat_instance_base_link is defined
+      when: tomcat_base_link is defined
 
     - name: remove tomcat server package if possible
       file:
         path: "{{ tomcat_package }}"
         state: absent
-  when: tomcat_instance_state == "absent"
+  when: tomcat_state == "absent"
   tags:
     - role::tomcat
     - role::tomcat::uninstall
-    - role::tomcat::uninstall::instances
+    - role::tomcat::uninstall::files

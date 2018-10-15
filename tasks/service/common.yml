@@ -1,0 +1,39 @@
+---
+# Role service tasks
+
+- block:
+    - name: disable and stop tomcat
+      service:
+        name: "{{ tomcat_name }}"
+        state: stopped
+        enabled: false
+      when: tomcat_state == "present"
+
+    - name: enable and start tomcat
+      service:
+        name: "{{ tomcat_name }}"
+        state: "{{ required_state }}"
+        enabled: "{{ enabled }}"
+      when: tomcat_state == "started"
+      vars:
+        required_state: >-
+          {{ (((tomcat_configure_server_result is changed)
+               or (tomcat_configure_realm_result is changed)
+               or (tomcat_remove_realm_result is changed)
+               or (tomcat_configure_subrealms_result is changed)
+               or (tomcat_remove_subrealms_result is changed)
+               or (tomcat_configure_cms_database_result is changed)
+               or (tomcat_configure_cms_roles_users_result is changed)
+               or (tomcat_configure_manager_result is changed)
+               or (tomcat_daemon_remove_result is changed)
+               or (tomcat_daemon_install_result) is changed)
+              and tomcat_state == "started")
+             | ternary("restarted", tomcat_state) }}
+        enabled: >-
+          {{ (required_state in ['started', 'restarted'])
+             | ternary(true, false) }}
+  when: tomcat_configure_server_result is defined
+  tags:
+    - role::tomcat
+    - role::tomcat::service
+    - role::tomcat::service::common

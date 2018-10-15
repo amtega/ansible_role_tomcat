@@ -4,16 +4,16 @@
 - block:
     - name: create cluster section in server config
       xml:
-        path: "{{ tomcat_instance_base }}/{{ tomcat_server_config }}"
+        path: "{{ tomcat_base }}/{{ tomcat_server_config }}"
         xpath: "{{ cluster_xpath }}"
         attribute: "channelSendOptions"
-        value: "{{ tomcat_instance_cluster_channel_send_options) }}"
+        value: "{{ tomcat_cluster_channel_send_options | string }}"
         state: present
         pretty_print: true
 
     - name: setup cluster section properties in server config
       xml:
-        path: "{{ tomcat_instance_base }}/{{ tomcat_server_config }}"
+        path: "{{ tomcat_base }}/{{ tomcat_server_config }}"
         xpath: "{{ cluster_xpath }}"
         set_children: >-
           {{ lookup('template', 'cluster.yml.j2') | from_yaml }}
@@ -21,8 +21,8 @@
         pretty_print: true
       register: tomcat_configure_cluster_result
   when:
-    - tomcat_instance_state in ["present", "started"]
-    - tomcat_instance_cluster
+    - tomcat_state in ["present", "started"]
+    - tomcat_cluster
   vars:
     service_xpath: "/Server/Service[@name='Catalina']"
     engine_xpath: "{{ service_xpath }}/Engine[@name='Catalina']"

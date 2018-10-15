@@ -92,12 +92,10 @@ tomcat_packages_python:
 # Version variables
 
 tomcat_version_major: >-
-  {{ instance.version
+  {{ tomcat_version
      | regex_replace("([0-9]+)\.([0-9]+)\.([0-9]+)", "\1") }}
 
-tomcat_version_underlined: >-
-  {{ instance.version
-     | regex_replace("\.", "_") }}
+tomcat_version_underlined: '{{ tomcat_version | regex_replace("\.", "_") }}'
 
 # Download variables
 
@@ -108,12 +106,12 @@ tomcat_download_path: >-
      ~ "/tomcat-"
      ~ tomcat_version_major
      ~ "/v"
-     ~ instance.version
+     ~ tomcat_version
      ~ "/bin" }}
 
 tomcat_download_file: >-
   {{ "apache-tomcat-"
-     ~ instance.version
+     ~ tomcat_version
      ~ ".tar.gz" }}
 
 tomcat_package: >-
@@ -133,9 +131,9 @@ tomcat_users_config: conf/tomcat-users.xml
 tomcat_manager_config: conf/Catalina/localhost/manager.xml
 tomcat_limits_config: /etc/security/limits.d
 
-# Tomcat instances subdirs
+# Tomcat subdirs
 
-tomcat_instance_subdirs:
+tomcat_subdirs:
   - bin
   - conf
   - lib
@@ -145,9 +143,9 @@ tomcat_instance_subdirs:
   - work
   - "{{ tomcat_manager_config | dirname }}"
 
-# Tomcat instance subdirectories to populate
+# Tomcat subdirectories to populate
 
-tomcat_instance_subdirs_to_populate:
+tomcat_subdirs_to_populate:
   - conf
   - webapps/manager
   - webapps/manager

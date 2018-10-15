@@ -4,12 +4,12 @@
 - name: setup tomcat manager
   template:
     src: "manager.xml.j2"
-    dest: "{{ tomcat_instance_base }}/{{ tomcat_manager_config }}"
-    owner: "{{ tomcat_instance_user }}"
-    group: "{{ tomcat_instance_group }}"
+    dest: "{{ tomcat_base }}/{{ tomcat_manager_config }}"
+    owner: "{{ tomcat_user }}"
+    group: "{{ tomcat_group }}"
     mode: 0755
   register: tomcat_configure_manager_result
-  when: tomcat_instance_state in ["present", "started"]
+  when: tomcat_state in ["present", "started"]
   tags:
     - role::tomcat
     - role::tomcat::configure

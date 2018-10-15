@@ -7,15 +7,13 @@
           package:
             name: "{{ item }}"
             state: present
-          loop: >-
-            {{ tomcat_packages[distribution] | default([]) }}
+          loop: "{{ tomcat_packages[distribution] | default([]) }}"
 
         - name: install required python packages
           pip:
             name: "{{ item }}"
             state: "latest"
-          loop: >-
-            {{ tomcat_packages_python[distribution] | default([]) }}
+          loop: "{{ tomcat_packages_python[distribution] | default([]) }}"
       vars:
         distribution: >-
           {{ ansible_facts.distribution

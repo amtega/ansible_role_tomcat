@@ -16,224 +16,229 @@
   tags:
     - sandbox
 
-- name: test tomcat role instance provisioning
+- name: test basic tomcat provisioning with cluster
   hosts: docker_sandbox_containers
   roles:
     - role: amtega.tomcat
   vars:
-    tomcat_instances:
-      - name: tomcat@server1
-        version: 8.0.9
-        home: /opt/apache-tomcat-8.0.9
-        base: /srv/tomcat/server1
-        link: /opt/tomcat8
-        user_uid: 3000
-        user_soft_nofile: 1024
-        user_hard_nofile: 1024
-        user_soft_nproc: 500
-        user_hard_nproc: 500
-        group_uid: 3000
-        server_port: 8005
-        server_http_port: 8080
-        server_https_port: 8443
-        server_ajp_port: 8009
-        manager_addresses_allow:
-          - 192.168.5.2
-          - 192.168.5.3
-        manager_addresses_deny:
-          - 192.168.5.13
-          - 192.168.5.14
-        manager_hostnames_allow:
-          - host1.acme.com
-          - host2.acme.com
-        manager_hostnames_deny:
-          - badhost1.acme.com
-          - badhost2.acme.com
-        realm:
-          className: org.apache.catalina.realm.LockOutRealm
-        subrealms:
-          - className: org.apache.catalina.realm.JNDIRealm
-            connectionURL: ldap://ldap.acme.com:389
-            userBase: DC=acme,DC=com
-            userSearch: "(cn={0})"
-            userSubtree: true
-            userRoleName: memberOf
-            roleBase: DC=acme,DC=com
-            roleName: cn
-            roleSearch: "(member={0})"
-            roleSubtree: true
-            adCompat: true
-            connectionName: myuser
-            connectionPassword: mypassword
-        cluster: true
+    tomcat_name: server1
+    tomcat_version: 8.0.9
+    tomcat_home: /opt/apache-tomcat-8.0.9
+    tomcat_base: /srv/tomcat/server1
+    tomcat_link: /opt/tomcat8
+    tomcat_user_uid: 3000
+    tomcat_user_soft_nofile: 1024
+    tomcat_user_hard_nofile: 1024
+    tomcat_user_soft_nproc: 500
+    tomcat_user_hard_nproc: 500
+    tomcat_group_uid: 3000
+    tomcat_server_port: 8005
+    tomcat_server_http_port: 8080
+    tomcat_server_https_port: 8443
+    tomcat_server_ajp_port: 8009
+    tomcat_manager_addresses_allow:
+      - 192.168.5.2
+      - 192.168.5.3
+    tomcat_manager_addresses_deny:
+      - 192.168.5.13
+      - 192.168.5.14
+    tomcat_manager_hostnames_allow:
+      - host1.acme.com
+      - host2.acme.com
+    tomcat_manager_hostnames_deny:
+      - badhost1.acme.com
+      - badhost2.acme.com
+    tomcat_realm:
+      className: org.apache.catalina.realm.LockOutRealm
+    tomcat_subrealms:
+      - className: org.apache.catalina.realm.UserDatabaseRealm
+        resourceName: UserDatabase
 
-      - name: tomcat@server2
-        version: 8.0.9
-        home: /opt/apache-tomcat-8.0.9
-        base: /srv/tomcat/server2
-        link: /opt/tomcat8
-        user_uid: 3000
-        group_uid: 3000
-        server_port: 8006
-        server_http_port: 8081
-        server_https_port: 8444
-        server_ajp_port: 8010
-        cluster: true
-        realm:
-          className: org.apache.catalina.realm.LockOutRealm
-        subrealms:
-          - className: org.apache.catalina.realm.JNDIRealm
-            connectionURL: ldap://ldap.acme.com:389
-            userBase: DC=acme,DC=com
-            userSearch: "(cn={0})"
-            userSubtree: true
-            userRoleName: memberOf
-            roleBase: DC=acme,DC=com
-            roleName: cn
-            roleSearch: "(member={0})"
-            roleSubtree: true
-            adCompat: true
-            connectionName: myuser
-            connectionPassword: mypassword
-
-      - name: tomcat@server3
-        version: 7.0.88
-        home: /opt/apache-tomcat-7.0.88
-        base: /srv/tomcat/server3
-        use_native_daemon: false
-        java_variables:
-          var1: VAR1
-          var2: VAR2
-        server_port: 8007
-        server_http_port: 8082
-        server_https_port: 8445
-        server_ajp_port: 8011
-        server_ajp_max_threads: 800
-        server_engine_jvm_route: tomcat-server-2
-        link: /opt/tomcat7
-        realm:
-          className: org.apache.catalina.realm.LockOutRealm
-        subrealms:
-          - className: org.apache.catalina.realm.JNDIRealm
-            connectionURL: ldap://ldap.acme.com:389
-            userBase: DC=acme,DC=com
-            userSearch: "(cn={0})"
-            userSubtree: true
-            userRoleName: memberOf
-            roleBase: DC=acme,DC=com
-            roleName: cn
-            roleSearch: "(member={0})"
-            roleSubtree: true
-            adCompat: true
-            connectionName: myuser
-            connectionPassword: mypassword
-
-      - name: tomcat@server4
-        version: 6.0.0
-        home: /opt/apache-tomcat-6.0.0
-        base: /srv/tomcat/server4
-        server_port: 8008
-        server_http_port: 8083
-        server_https_port: 8446
-        server_ajp_port: 8012
-        server_autodeploy: false
-        link: /opt/tomcat6
-        artifact:
-          type: http
-          host: http://archive.apache.org
-          path: /dist/tomcat/tomcat-6/v6.0.0/bin
-          file: apache-tomcat-6.0.0.tar.gz
-          dest: /tmp
-        commons_daemon_download_url: >-
-          http://archive.apache.org/dist/commons/daemon/source
-        realm:
-          className: org.apache.catalina.realm.UserDatabaseRealm
-          resourceName: UserDatabase
-
-    tomcat_instance_user_uid: 2000
-    tomcat_instance_group_gid: 2000
+    tomcat_cluster: true
   tasks:
     - name: read subrealm config
       xml:
-        path: "{{ tomcat_instance_base }}/conf/server.xml"
+        path: "{{ tomcat_base }}/conf/server.xml"
         xpath: >-
           {{ "/Server/Service[@name='Catalina']/Engine[@name='Catalina']"
              + "/Realm/Realm" }}
         content: attribute
       register: subrealm_result
-      when: instance.subrealms is defined
-      loop: "{{ tomcat_instances }}"
-      loop_control:
-        loop_var: instance
-        label: "{{ tomcat_instance_name }}"
 
     - name: assert subrealm config matches inventory
       assert:
         that:
           - file.className == inventory.className | string
-          - file.connectionURL == inventory.connectionURL | string
-          - file.userBase == inventory.userBase | string
-          - file.userSearch == inventory.userSearch | string
-          - file.userSubtree == inventory.userSubtree | string
-          - file.userRoleName == inventory.userRoleName | string
-          - file.roleBase == inventory.roleBase | string
-          - file.roleName == inventory.roleName | string
-          - file.roleSearch == inventory.roleSearch | string
-          - file.roleSubtree == inventory.roleSubtree | string
-          - file.adCompat == inventory.adCompat | string
-          - file.connectionName == inventory.connectionName | string
-          - file.connectionPassword == inventory.connectionPassword | string
-      when: instance.subrealms is defined
-      loop: "{{ tomcat_instances }}"
-      loop_control:
-        loop_var: instance
-        index_var: index
-        label: "{{ tomcat_instance_name }}"
       vars:
-        file: "{{ subrealm_result.results[index].matches[0].Realm }}"
-        inventory: "{{ instance.subrealms[0] }}"
+        file: "{{ subrealm_result.matches[0].Realm }}"
+        inventory: "{{ tomcat_subrealms[0] }}"
 
-    - name: check that provisioned instances are listening
+    - name: check that tomcat is listening
       wait_for:
-        port: >-
-          {{ item.0[item.1] | default(vars["tomcat_instance_" + item.1]) }}
+        port: "{{ item}}"
         timeout: 5
-      when: >-
-        item.1 != "server_port"
-        or (item.1 == "server_port"
-            and (not item.0.use_native_daemon
-                     | default(tomcat_instance_use_native_daemon)
-                 or item.0.version is version("7", "<")))
-      loop: "{{ query('nested', tomcat_instances, ports) }}"
-      loop_control:
-        label: "{{ item.0.name }} {{ item.1 }}"
-      vars:
-        ports:
-          - server_port
-          - server_http_port
-          - server_ajp_port
+      loop:
+        - "{{ tomcat_server_port }}"
+        - "{{ tomcat_server_http_port }}"
+        - "{{ tomcat_server_ajp_port }}"
 
-    - name: check that provisioned instances http port is working
+    - name: check that tomcat http port returns welcome page
       uri:
-        url: "http://localhost:{{ item.server_http_port }}"
+        url: "http://localhost:{{ server_http_port }}"
         return_content: yes
       register: check_http_result
       failed_when: >-
          not check_http_result.content
              is search("successfully")
-      loop: "{{ tomcat_instances }}"
-      loop_control:
-        label: "{{ item.name }}{{ item.server_http_port }}"
   tags:
     - idempotence
 
-- name: test tomcat role instance removal
+- name: test basic tomcat role without cluster
   hosts: docker_sandbox_containers
   roles:
     - role: amtega.tomcat
   vars:
-    tomcat_instances:
-      - name: tomcat@server1
+    tomcat_name: server2
+    tomcat_version: 8.0.9
+    tomcat_home: /opt/apache-tomcat-8.0.9
+    tomcat_base: /srv/tomcat/server2
+    tomcat_link: /opt/tomcat8
+    tomcat_user_uid: 3000
+    tomcat_group_uid: 3000
+    tomcat_server_port: 8006
+    tomcat_server_http_port: 8081
+    tomcat_server_https_port: 8444
+    tomcat_server_ajp_port: 8010
+    tomcat_cluster: true
+    tomcat_realm:
+      className: org.apache.catalina.realm.LockOutRealm
+    tomcat_subrealms:
+      - className: org.apache.catalina.realm.UserDatabaseRealm
+        resourceName: UserDatabase
+
+  tasks:
+    - name: check that tomcat is listening
+      wait_for:
+        port: "{{ item}}"
+        timeout: 5
+      loop:
+        - "{{ tomcat_server_port }}"
+        - "{{ tomcat_server_http_port }}"
+        - "{{ tomcat_server_ajp_port }}"
+
+    - name: check that tomcat http port returns welcome page
+      uri:
+        url: "http://localhost:{{ server_http_port }}"
+        return_content: yes
+      register: check_http_result
+      failed_when: >-
+         not check_http_result.content
+             is search("successfully")
+  tags:
+    - idempotence
+
+- name: test basic tomcat role without native daemon
+  hosts: docker_sandbox_containers
+  roles:
+    - role: amtega.tomcat
+  vars:
+    tomcat_name: server3
+    tomcat_version: 7.0.88
+    tomcat_home: /opt/apache-tomcat-7.0.88
+    tomcat_base: /srv/tomcat/server3
+    tomcat_use_native_daemon: false
+    tomcat_java_variables:
+      var1: VAR1
+      var2: VAR2
+    tomcat_server_port: 8007
+    tomcat_server_http_port: 8082
+    tomcat_server_https_port: 8445
+    tomcat_server_ajp_port: 8011
+    tomcat_server_ajp_max_threads: 800
+    tomcat_server_engine_jvm_route: tomcat-server-2
+    tomcat_link: /opt/tomcat7
+    tomcat_realm:
+      className: org.apache.catalina.realm.LockOutRealm
+    tomcat_subrealms:
+      - className: org.apache.catalina.realm.UserDatabaseRealm
+        resourceName: UserDatabase
+  tasks:
+    - name: check that tomcat is listening
+      wait_for:
+        port: "{{ item}}"
+        timeout: 5
+      loop:
+        - "{{ tomcat_server_port }}"
+        - "{{ tomcat_server_http_port }}"
+        - "{{ tomcat_server_ajp_port }}"
+
+    - name: check that tomcat http port returns welcome page
+      uri:
+        url: "http://localhost:{{ server_http_port }}"
+        return_content: yes
+      register: check_http_result
+      failed_when: >-
+         not check_http_result.content
+             is search("successfully")
+  tags:
+    - idempotence
+
+- name: test basic tomcat role with custom artifact
+  hosts: docker_sandbox_containers
+  roles:
+    - role: amtega.tomcat
+  vars:
+    tomcat_name: server4
+    tomcat_version: 6.0.0
+    tomcat_home: /opt/apache-tomcat-6.0.0
+    tomcat_base: /srv/tomcat/server4
+    tomcat_server_port: 8008
+    tomcat_server_http_port: 8083
+    tomcat_server_https_port: 8446
+    tomcat_server_ajp_port: 8012
+    tomcat_server_autodeploy: false
+    tomcat_link: /opt/tomcat6
+    tomcat_artifact:
+      type: http
+      host: http://archive.apache.org
+      path: /dist/tomcat/tomcat-6/v6.0.0/bin
+      file: apache-tomcat-6.0.0.tar.gz
+      dest: /tmp
+    tomcat_commons_daemon_download_url: >-
+      http://archive.apache.org/dist/commons/daemon/source
+    tomcat_realm:
+      className: org.apache.catalina.realm.UserDatabaseRealm
+      resourceName: UserDatabase
+    tomcat_user_uid: 2000
+    tomcat_group_uid: 2000
+  tasks:
+    - name: check that tomcat is listening
+      wait_for:
+        port: "{{ item}}"
+        timeout: 5
+      loop:
+        - "{{ tomcat_server_port }}"
+        - "{{ tomcat_server_http_port }}"
+        - "{{ tomcat_server_ajp_port }}"
+
+    - name: check that tomcat http port returns welcome page
+      uri:
+        url: "http://localhost:{{ server_http_port }}"
+        return_content: yes
+      register: check_http_result
+      failed_when: >-
+         not check_http_result.content
+             is search("successfully")
+  tags:
+    - idempotence
+
+- name: test tomcat server removal
+  hosts: docker_sandbox_containers
+  roles:
+    - role: amtega.tomcat
+  vars:
+    tomcat_s:
+      - name: server1
         version: 8.0.9
         home: /opt/apache-tomcat-8.0.9
         base: /srv/tomcat/server1
@@ -242,7 +247,7 @@
   tasks:
     - name: check server1 instance base dir
       stat:
-        path: /srv/tomcat/tomcat@server1
+        path: /srv/tomcat/server1
       register: check_server1_base_result
 
     - name: check server1 instance home dir

@@ -4,7 +4,7 @@
 - block:
     - name: configure tomcat user database
       xml:
-        path: "{{ tomcat_instance_base }}/{{ tomcat_server_config }}"
+        path: "{{ tomcat_base }}/{{ tomcat_server_config }}"
         xpath: "/Server/GlobalNamingResources/Resource[@name='UserDatabase']"
         attribute: readonly
         value: "true"
@@ -14,12 +14,12 @@
     - name: setup contained managed security roles and users
       template:
         src: "tomcat-users.xml.j2"
-        dest: "{{ tomcat_instance_base }}/{{ tomcat_users_config }}"
-        owner: "{{ tomcat_instance_user | default(tomcat_instance_user) }}"
-        group: "{{ tomcat_instance_group | default(tomcat_instance_group) }}"
+        dest: "{{ tomcat_base }}/{{ tomcat_users_config }}"
+        owner: "{{ tomcat_user | default(tomcat_user) }}"
+        group: "{{ tomcat_group | default(tomcat_group) }}"
         mode: 0755
       register: tomcat_configure_cms_roles_users_result
-  when: tomcat_instance_state in ["present", "started"]
+  when: tomcat_state in ["present", "started"]
   tags:
     - role::tomcat
     - role::tomcat::configure

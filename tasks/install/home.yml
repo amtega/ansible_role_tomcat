@@ -1,5 +1,5 @@
 ---
-# Tomcat server itself install tasks
+# Home directory install tasks
 
 - block:
     - block:
@@ -9,59 +9,61 @@
           vars:
             override:
               id: "tomcat_{{ tomcat_version_underlined }}"
-            artifact: "{{ tomcat_instance_artifact | combine(override) }}"
+            artifact: "{{ tomcat_artifact | combine(override) }}"
             artifact_http_proxy: "{{ tomcat_http_proxy }}"
             artifact_https_proxy: "{{ tomcat_https_proxy }}"
             artifact_no_proxy: "{{ tomcat_no_proxy }}"
 
-        - name: create tomcat instances home dirs
+        - name: create tomcat home directory
           file:
-            path: "{{ tomcat_instance_home }}"
+            path: "{{ tomcat_home }}"
             state: directory
-            owner: "{{ tomcat_instance_user }}"
-            group: "{{ tomcat_instance_group }}"
+            owner: "{{ tomcat_user }}"
+            group: "{{ tomcat_group }}"
             mode: "{{ tomcat_files_permissions }}"
 
         - name: extract tomcat server package
           unarchive:
             src: "{{ tomcat_package }}"
-            dest: "{{ tomcat_instance_home }}"
+            dest: "{{ tomcat_home }}"
             copy: no
-            owner: "{{ tomcat_instance_user }}"
-            group: "{{ tomcat_instance_group }}"
+            owner: "{{ tomcat_user }}"
+            group: "{{ tomcat_group }}"
             mode: "{{ tomcat_files_permissions }}"
             extra_opts:
               - "--strip-components=1"
           register: tomcat_extract_daemon_package_result
       when: >-
-        ansible_local_facts is undefined
-        or tomcat_instance_version
-           is not version(ansible_local_facts.version, "==")
-        or tomcat_instance_force_install
+        tomcat_version
+        is not version(ansible_local_facts.version | default(0),
+                       "==")
+        or tomcat_force_install
       vars:
         ansible_local_facts: >-
-          {{ ansible_local["tomcat_" + tomcat_instance_name] }}
+          {{ ansible_local["tomcat_" + tomcat_name] | default({}) }}
 
-    - name: create tomcat home symlinks
+    - name: create tomcat home symlink
       file:
-        src: "{{ tomcat_instance_home }}"
-        dest: "{{ tomcat_instance_home_link }}"
+        src: "{{ tomcat_home }}"
+        dest: "{{ tomcat_home_link }}"
         state: link
         mode: "{{ tomcat_files_permissions }}"
+      when: tomcat_home_link is defined
 
-    - name: create tomcat instances base symlinks
+    - name: create tomcat base symlink
       file:
-        src: "{{ tomcat_instance_base }}"
-        dest: "{{ tomcat_instance_base_link }}"
+        src: "{{ tomcat_base }}"
+        dest: "{{ tomcat_base_link }}"
         state: link
         mode: "{{ tomcat_files_permissions }}"
+      when: tomcat_base_link is defined
 
     - name: delete tomcat artifact
       file:
         path: "{{ tomcat_package }}"
         state: absent
-      when: tomcat_instance_remove_artifact
-  when: tomcat_instance_state in ["present", "started"]
+      when: tomcat_remove_artifact
+  when: tomcat_state in ["present", "started"]
   tags:
     - role::tomcat
     - role::tomcat::install

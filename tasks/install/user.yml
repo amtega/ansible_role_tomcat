@@ -6,22 +6,19 @@
     # with an existen user (with no uid change) and there are processes running
     # with that user. So, first we check existence of the users as workaround
 
-    - name: check required instance users
-      shell: "getent passwd {{ tomcat_instance_user  }}"
+    - name: check required system user
+      shell: "getent passwd {{ tomcat_user  }}"
       register: tomcat_check_users_result
       changed_when: false
       failed_when: false
 
-    - name: setup instances users
+    - name: setup system user
       user:
-        name: "{{ tomcat_instance_user }}"
-        group: "{{ tomcat_instance_group }}"
-        uid: >-
-          {{ tomcat_instance_user_uid
-             | default(tomcat_instance_user_uid)
-             | default(omit) }}
+        name: "{{ tomcat_user }}"
+        group: "{{ tomcat_group }}"
+        uid: "{{ tomcat_user_uid | default(tomcat_user_uid) | default(omit) }}"
       when: tomcat_check_users_result.rc != 0
-  when: tomcat_instance_state in ["present", "started"]
+  when: tomcat_state in ["present", "started"]
   tags:
     - role::tomcat
     - role::tomcat::install

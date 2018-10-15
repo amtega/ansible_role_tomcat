@@ -12,10 +12,10 @@
       vars:
         distribution: "{{ ansible_facts.distribution | lower }}"
 
-    - name: assert instance state is supported
+    - name: assert state is supported
       assert:
         that:
-          - tomcat_instance_state in ['started', 'present', 'absent']
+          - tomcat_state in ['started', 'present', 'absent']
   tags:
     - role::tomcat
     - role::tomcat::check

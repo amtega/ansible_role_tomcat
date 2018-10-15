@@ -1,20 +1,20 @@
 {{ ansible_managed | comment }}
 
-{%- set java_variables=tomcat_instance_java_variables %}
+{%- set java_variables=tomcat_java_variables %}
 {%- set java_options=namespace(strings=[]) %}
 
 {%- for variable in java_variables %}
 {%- set java_options.strings=java_options.strings + ["-D" + variable + "=" + java_variables[variable]] %}
 {%- endfor %}
 
-{%- set java_options.strings=java_options.strings + tomcat_instance_java_raw_opts %}
+{%- set java_options.strings=java_options.strings + tomcat_java_raw_opts %}
 
-JAVA_HOME={{ tomcat_instance_java_home }}
+JAVA_HOME={{ tomcat_java_home }}
 JAVA_OPTS="{{ java_options.strings | join(' ') }}"
 
-{% if not tomcat_instance_use_native_daemon
-      or instance.version is version("7", "<") %}
-CATALINA_HOME={{ tomcat_instance_home }}
-CATALINA_BASE={{ tomcat_instance_base }}
-CATALINA_PID={{ tomcat_instance_base }}/{{ tomcat_instance_pid_file }}
+{% if not tomcat_use_native_daemon
+      or tomcat_version is version("7", "<") %}
+CATALINA_HOME={{ tomcat_home }}
+CATALINA_BASE={{ tomcat_base }}
+CATALINA_PID={{ tomcat_base }}/{{ tomcat_pid_file }}
 {% endif %}

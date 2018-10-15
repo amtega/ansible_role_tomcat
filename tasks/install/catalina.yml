@@ -2,23 +2,24 @@
 # Catalina scripts install tasks
 
 - block:
-    - name: install catalina startup scripts on instances
+    - name: install catalina startup scripts
       synchronize:
-        src: "{{ tomcat_instance_home }}/{{ item.1 }}"
-        dest: "{{ tomcat_instance_base }}/{{ item.1 }}"
+        src: "{{ tomcat_home }}/{{ item }}"
+        dest: "{{ tomcat_base }}/{{ item }}"
         archive: true
       loop: "{{ tomcat_catalina_scripts }}"
+      delegate_to: "{{ inventory_hostname }}"
 
-    - name: remove native daemon script for catalina based instances
+    - name: remove native daemon startup scripts
       file:
-        path: "{{ tomcat_instance_base }}/{{ item.1 }}"
+        path: "{{ tomcat_base }}/{{ item }}"
         state: absent
       loop: "{{ tomcat_daemon_scripts }}"
   when:
-    - tomcat_instance_state in ["present", "started"]
+    - tomcat_state in ["present", "started"]
     - >-
-      not tomcat_instance_use_native_daemon
-      or tomcat_instance_version is version("7", "<")
+      not tomcat_use_native_daemon
+      or tomcat_version is version("7", "<")
   tags:
     - role::tomcat
     - role::tomcat::install

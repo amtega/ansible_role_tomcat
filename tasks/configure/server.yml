@@ -1,9 +1,9 @@
 ---
-# Server instances configuration tasks
+# Server configuration tasks
 
-- name: setup tomcat instances server config
+- name: setup tomcat server config
   xml:
-    path: "{{ tomcat_instance_base }}/{{ tomcat_server_config }}"
+    path: "{{ tomcat_base }}/{{ tomcat_server_config }}"
     xpath: >-
       {{ (value != "<NONE/>")
          | ternary(item.xpath, item.xpath + "/@" + item.attribute) }}
@@ -18,7 +18,7 @@
          | ternary(omit, "absent") }}
     pretty_print: true
   register: tomcat_configure_server_result
-  when: tomcat_instance_state in ["present", "started"]
+  when: tomcat_state in ["present", "started"]
   loop: "{{ config }}"
   loop_control:
     label: >-
@@ -31,8 +31,9 @@
     host_xpath: "{{ engine_xpath }}/Host[@name='localhost']"
     value: >-
       {{ lookup('vars',
-                'tomcat_instance_'
-                + item.value, default="<NONE/>")) }}
+                'tomcat_'
+                + item.value,
+                default="<NONE/>") }}
     valuestr: >-
       {{ (value is sameas(true) or value is sameas(false))
          | ternary(value | string | lower, value | string) }}
