@@ -31,6 +31,26 @@ tomcat_state: started
 
 tomcat_use_native_daemon: true
 
+# Where to put the compiled native daemon. This is useful if you want to share
+# the same tomcat home dir with several instances that use different java
+# versions. In this case you can change the location to the base directory
+
+tomcat_native_daemon_dir: "{{ tomcat_home }}/bin"
+
+# Use Apache Portable Runtime based native library. This is only available for
+# tomcat >= 7, CentOS/RHEL >= 7 and Fedora systems
+
+tomcat_use_native_apr_library: true
+
+# Where to put the compiled native apr library stuff. This is useful if you want
+# to share the same tomcat home dir with several instances that use different
+# java versions. In this case you can change the location to the base directory
+#
+# Keep in mind that within this path several subdirectories (e.g lib) will be
+# created
+
+tomcat_native_apr_library_prefix_dir: "{{ tomcat_home }}"
+
 # Path to PID file (relative to tomcat base path)
 
 tomcat_pid_file: logs/tomcat.pid

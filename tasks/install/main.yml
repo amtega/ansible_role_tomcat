@@ -8,6 +8,7 @@
     - import_tasks: "{{ role_path }}/tasks/install/home.yml"
     - import_tasks: "{{ role_path }}/tasks/install/base.yml"
     - import_tasks: "{{ role_path }}/tasks/install/daemon.yml"
+    - import_tasks: "{{ role_path }}/tasks/install/apr.yml"
     - import_tasks: "{{ role_path }}/tasks/install/catalina.yml"
   tags:
     - role::tomcat

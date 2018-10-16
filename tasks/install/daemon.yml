@@ -20,7 +20,7 @@
     - name: extract native daemon package
       unarchive:
         src: "{{ daemon_package }}"
-        dest: "{{ tomcat_home }}/bin"
+        dest: "{{ tomcat_native_daemon_dir }}"
         copy: no
         owner: "{{ tomcat_user }}"
         group: "{{ tomcat_group }}"
@@ -45,7 +45,7 @@
             creates: "{{ daemon_bin }}"
 
         - name: install native daemon binary
-          shell: "cp jsvc {{ tomcat_home }}/bin"
+          shell: "cp jsvc {{ tomcat_native_daemon_dir }}"
           args:
             chdir: "{{ daemon_src_dir }}"
             creates: "{{ daemon_bin }}"
@@ -76,12 +76,12 @@
     - tomcat_use_native_daemon
     - tomcat_version is version("7", ">=")
   vars:
-    bin_dir: "{{ tomcat_home }}/bin"
-    daemon_bin: "{{ bin_dir }}/jsvc"
+    bin_dir: "{{ tomcat_native_daemon_dir }}"
+    daemon_bin: "{{ bin_dir }}/{{ tomcat_native_daemon_bin_filename }}"
     daemon_package:  >-
       {{ bin_dir
          + "/"
-         + "commons-daemon-native.tar.gz" }}
+         + tomcat_native_daemon_package_filename }}
     daemon_src_dir: >-
       {{ bin_dir
          + "/"

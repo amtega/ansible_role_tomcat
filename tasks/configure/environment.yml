@@ -21,6 +21,10 @@
           CATALINA_PID="{{ tomcat_base
                            + '/'
                            + tomcat_pid_file }}"
+          CATALINA_OPTS="{{ '-Djava.library.path='
+                             + tomcat_native_apr_library_prefix_dir
+                             + '/lib' }}"
+          JSVC="{{ tomcat_native_daemon_dir }}/jsvc"
         state: present
       when:
         - tomcat_use_native_daemon

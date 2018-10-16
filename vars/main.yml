@@ -19,6 +19,8 @@ tomcat_supported_versions:
 
 tomcat_packages:
   centos_6:
+    - apr-devel
+    - apr-util-devel
     - gcc
     - java
     - java-devel
@@ -28,56 +30,74 @@ tomcat_packages:
     - libxslt-devel
     - libxslt-python
     - make
+    - openssl-devel
     - python-devel
     - python-pip
     - rsync
     - tar
   centos_7:
+    - apr-devel
+    - apr-util-devel
     - gcc
     - java
     - java-devel
     - libcap-devel
     - make
+    - openssl-devel
     - python-lxml
     - rsync
     - tar
     - unzip
   fedora_27:
+    - apr-devel
+    - apr-util-devel
+    - compat-openssl10-devel
     - gcc
     - java
     - java-devel
     - libcap-devel
     - make
     - python-lxml
+    - redhat-rpm-config
     - rsync
     - tar
     - unzip
   fedora_28:
+    - apr-devel
+    - apr-util-devel
+    - compat-openssl10-devel
     - gcc
     - java
     - java-devel
     - libcap-devel
     - make
     - python-lxml
+    - redhat-rpm-config
     - rsync
     - tar
     - unzip
   rhel_6:
+    - apr-devel
+    - apr-util-devel
     - gcc
     - java
     - java-devel
     - libcap-devel
     - make
+    - openssl-devel
     - python-lxml
     - rsync
     - tar
     - unzip
   rhel_7:
+    - apr-devel
+    - apr-util-devel
     - gcc
     - java
     - java-devel
     - libcap-devel
     - make
+    - openssl-devel
     - python-lxml
     - rsync
     - tar
@@ -87,6 +107,8 @@ tomcat_packages:
 
 tomcat_packages_python:
   centos_6:
+    - lxml
+  rhel_6:
     - lxml
 
 # Version variables
@@ -170,6 +192,17 @@ tomcat_systemd_services_path: /usr/lib/systemd/system
 # System V init variables
 
 tomcat_systemv_init_path: /etc/init.d
+
+# Daemon native library variables
+
+tomcat_native_daemon_package_filename: commons-daemon-native.tar.gz
+tomcat_native_daemon_bin_filename: jsvc
+
+# APR native library variables
+
+tomcat_apr_library_package_filename: tomcat-native.tar.gz
+tomcat_apr_libray_filename: libtcnative-1.so.0
+tomcat_apr_config_bin_path: /usr/bin/apr-1-config
 
 # Proxy environment settings
 

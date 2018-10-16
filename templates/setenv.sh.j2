@@ -17,4 +17,5 @@ JAVA_OPTS="{{ java_options.strings | join(' ') }}"
 CATALINA_HOME={{ tomcat_home }}
 CATALINA_BASE={{ tomcat_base }}
 CATALINA_PID={{ tomcat_base }}/{{ tomcat_pid_file }}
+CATALINA_OPTS="-Djava.library.path={{ tomcat_native_apr_library_prefix_dir }}/lib"
 {% endif %}

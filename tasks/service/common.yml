@@ -17,16 +17,18 @@
       when: tomcat_state == "started"
       vars:
         required_state: >-
-          {{ (((tomcat_configure_server_result is changed)
-               or (tomcat_configure_realm_result is changed)
-               or (tomcat_remove_realm_result is changed)
-               or (tomcat_configure_subrealms_result is changed)
-               or (tomcat_remove_subrealms_result is changed)
-               or (tomcat_configure_cms_database_result is changed)
-               or (tomcat_configure_cms_roles_users_result is changed)
-               or (tomcat_configure_manager_result is changed)
-               or (tomcat_daemon_remove_result is changed)
-               or (tomcat_daemon_install_result) is changed)
+          {{ ((tomcat_configure_server_result is changed
+               or tomcat_configure_realm_result is changed
+               or tomcat_remove_realm_result is changed
+               or tomcat_configure_subrealms_result is changed
+               or tomcat_remove_subrealms_result is changed
+               or tomcat_configure_cms_database_result is changed
+               or tomcat_configure_cms_roles_users_result is changed
+               or tomcat_configure_manager_result is changed
+               or tomcat_daemon_remove_result is changed
+               or tomcat_daemon_install_result is changed
+               or tomcat_apr_remove_result is changed
+               or tomcat_apr_install_result is changed)
               and tomcat_state == "started")
              | ternary("restarted", tomcat_state) }}
         enabled: >-

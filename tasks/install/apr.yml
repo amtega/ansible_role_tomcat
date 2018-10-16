@@ -2,96 +2,86 @@
 # apache portable runtime based native library install tasks
 
 - block:
-    - name: remove apr native binary
+    - name: remove native apr library
       file:
-        path: "{{ daemon_bin }}"
+        path: "{{ apr_libray_path }}"
         state: absent
       when: >-
         tomcat_force_install
-        or tomcat_use_native_daemon
-           != ansible_local_facts.use_native_daemon | default(false)
+        or tomcat_use_native_apr_library
+           != ansible_local_facts.use_native_apr_library | default(false)
         or tomcat_java_home
            != ansible_local_facts.java_home | default("")
-      register: tomcat_daemon_remove_result
+      register: tomcat_apr_remove_result
       vars:
         ansible_local_facts: >-
           {{ ansible_local["tomcat_" + tomcat_name] | default({}) }}
 
-    - name: extract native daemon package
+    - name: extract native apr library package
       unarchive:
-        src: "{{ daemon_package }}"
-        dest: "{{ tomcat_home }}/bin"
+        src: "{{ apr_library_package }}"
+        dest: "{{ tomcat_native_apr_library_prefix_dir }}"
         copy: no
         owner: "{{ tomcat_user }}"
         group: "{{ tomcat_group }}"
         mode: "{{ tomcat_files_permissions }}"
         list_files: true
-        creates: "{{ daemon_bin }}"
-      register: tomcat_daemon_extract_package_result
+        creates: "{{ apr_libray_path }}"
+      register: tomcat_apr_extract_package_result
 
     - block:
-        - name: configure native daemon compilation
+        - name: configure native apr library compilation
           shell: >-
             ./configure
-            --with-java={{ tomcat_java_home }}
+            --with-apr={{ tomcat_apr_config_bin_path }}
+            --with-java-home={{ tomcat_java_home }}
+            --prefix={{ tomcat_native_apr_library_prefix_dir }}
           args:
-            chdir: "{{ daemon_src_dir }}"
-            creates: "{{ daemon_bin }}"
+            chdir: "{{ apr_library_src_dir }}"
+            creates: "{{ apr_libray_path }}"
 
-        - name: compile native daemon
+        - name: compile native apr library
           shell: make
           args:
-            chdir: "{{ daemon_src_dir }}"
-            creates: "{{ daemon_bin }}"
+            chdir: "{{ apr_library_src_dir }}"
+            creates: "{{ apr_libray_path }}"
 
-        - name: install native daemon binary
-          shell: "cp jsvc {{ tomcat_home }}/bin"
+        - name: install native apr library
+          shell: make install
           args:
-            chdir: "{{ daemon_src_dir }}"
-            creates: "{{ daemon_bin }}"
-          register: tomcat_daemon_install_result
+            chdir: "{{ apr_library_src_dir }}"
+            creates: "{{ apr_libray_path }}"
+          register: tomcat_apr_install_result
 
-        - name: clean native daemon extracted package
+        - name: clean native apr library extracted package
           file:
-            path: "{{ daemon_src_dir }}"
+            path: "{{ apr_library_extraction_dir }}"
             state: absent
-      when: tomcat_daemon_extract_package_result.files is defined
-
-    - name: install native daemon startup script
-      synchronize:
-        src: "{{ tomcat_home }}/{{ item }}"
-        dest: "{{ tomcat_base }}/{{ item }}"
-        archive: true
-      when: tomcat_daemon_install_result is changed
-      loop: "{{ tomcat_daemon_scripts }}"
-      delegate_to: "{{ inventory_hostname }}"
-
-    - name: remove catalina scripts
-      file:
-        path: "{{ tomcat_base }}/{{ item }}"
-        state: absent
-      loop: "{{ tomcat_catalina_scripts }}"
+      when: tomcat_apr_extract_package_result.files is defined
   when:
     - tomcat_state in ["present", "started"]
-    - tomcat_use_native_daemon
+    - tomcat_use_native_apr_library
+    - ansible_facts.distribution_major_version is version("6", ">")
     - tomcat_version is version("7", ">=")
   vars:
     bin_dir: "{{ tomcat_home }}/bin"
-    daemon_bin: "{{ bin_dir }}/jsvc"
-    daemon_package:  >-
+    lib_dir: "{{ tomcat_home }}/lib"
+    apr_libray_path: "{{ lib_dir }}/{{ tomcat_apr_libray_filename }}"
+    apr_library_package: >-
+      {{ bin_dir }}/{{ tomcat_apr_library_package_filename }}
+    apr_library_extraction_dir: >-
       {{ bin_dir
          + "/"
-         + "commons-daemon-native.tar.gz" }}
-    daemon_src_dir: >-
-      {{ bin_dir
-         + "/"
-         + tomcat_daemon_extract_package_result.files
+         + tomcat_apr_extract_package_result.files
            | select("search", "README")
            | list
            | first
-           | dirname
-         + "/unix" }}
+           | dirname }}
+    apr_library_src_dir: >-
+      {{ apr_library_extraction_dir
+         + (tomcat_version is version("8", ">="))
+           | ternary("/jni/native", "/native") }}
   tags:
     - role::tomcat
     - role::tomcat::install
-    - role::tomcat::install::daemon
+    - role::tomcat::install::apr
