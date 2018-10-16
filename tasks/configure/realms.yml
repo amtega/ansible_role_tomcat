@@ -62,6 +62,7 @@
       when:
         - tomcat_realm is defined
         - tomcat_subrealms is not defined
+  when: tomcat_state in ['present', 'started']
   tags:
     - role::tomcat
     - role::tomcat::configure

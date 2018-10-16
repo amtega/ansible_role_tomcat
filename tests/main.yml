@@ -73,18 +73,19 @@
         file: "{{ subrealm_result.matches[0].Realm }}"
         inventory: "{{ tomcat_subrealms[0] }}"
 
+    # We don't check tomcat_server_port because native daemon doesn't use it
+
     - name: check that tomcat is listening
       wait_for:
         port: "{{ item}}"
-        timeout: 5
+        timeout: 10
       loop:
-        - "{{ tomcat_server_port }}"
         - "{{ tomcat_server_http_port }}"
         - "{{ tomcat_server_ajp_port }}"
 
     - name: check that tomcat http port returns welcome page
       uri:
-        url: "http://localhost:{{ server_http_port }}"
+        url: "http://localhost:{{ tomcat_server_http_port }}"
         return_content: yes
       register: check_http_result
       failed_when: >-
@@ -117,18 +118,19 @@
         resourceName: UserDatabase
 
   tasks:
+    # We don't check tomcat_server_port because native daemon doesn't use it
+
     - name: check that tomcat is listening
       wait_for:
         port: "{{ item}}"
-        timeout: 5
+        timeout: 10
       loop:
-        - "{{ tomcat_server_port }}"
         - "{{ tomcat_server_http_port }}"
         - "{{ tomcat_server_ajp_port }}"
 
     - name: check that tomcat http port returns welcome page
       uri:
-        url: "http://localhost:{{ server_http_port }}"
+        url: "http://localhost:{{ tomcat_server_http_port }}"
         return_content: yes
       register: check_http_result
       failed_when: >-
@@ -166,7 +168,7 @@
     - name: check that tomcat is listening
       wait_for:
         port: "{{ item}}"
-        timeout: 5
+        timeout: 10
       loop:
         - "{{ tomcat_server_port }}"
         - "{{ tomcat_server_http_port }}"
@@ -174,7 +176,7 @@
 
     - name: check that tomcat http port returns welcome page
       uri:
-        url: "http://localhost:{{ server_http_port }}"
+        url: "http://localhost:{{ tomcat_server_http_port }}"
         return_content: yes
       register: check_http_result
       failed_when: >-
@@ -212,18 +214,19 @@
     tomcat_user_uid: 2000
     tomcat_group_uid: 2000
   tasks:
+    # We don't check tomcat_server_port because native daemon doesn't use it
+
     - name: check that tomcat is listening
       wait_for:
         port: "{{ item}}"
-        timeout: 5
+        timeout: 10
       loop:
-        - "{{ tomcat_server_port }}"
         - "{{ tomcat_server_http_port }}"
         - "{{ tomcat_server_ajp_port }}"
 
     - name: check that tomcat http port returns welcome page
       uri:
-        url: "http://localhost:{{ server_http_port }}"
+        url: "http://localhost:{{ tomcat_server_http_port }}"
         return_content: yes
       register: check_http_result
       failed_when: >-
@@ -237,31 +240,36 @@
   roles:
     - role: amtega.tomcat
   vars:
-    tomcat_s:
-      - name: server1
-        version: 8.0.9
-        home: /opt/apache-tomcat-8.0.9
-        base: /srv/tomcat/server1
-        link: /opt/tomcat8
-        state: absent
+    tomcat_name: server1
+    tomcat_version: 8.0.9
+    tomcat_home: /opt/apache-tomcat-8.0.9
+    tomcat_base: /srv/tomcat/server1
+    tomcat_link: /opt/tomcat8
+    tomcat_state: absent
   tasks:
     - name: check server1 instance base dir
-      stat:
-        path: /srv/tomcat/server1
+      find:
+        paths: /srv/tomcat/server1
+        file_type: directory
       register: check_server1_base_result
 
     - name: check server1 instance home dir
-      stat:
+      find:
         path: /opt/apache-tomcat-8.0.9
+        file_type: directory
       register: check_server1_home_result
 
-    - name: check server1 instance base dir does not exist
+    - name: check server1 instance base dir contains only preserved dir
       assert:
-        that: not check_server1_base_result.stat.exists
+        that:
+          - check_server1_base_result.files | length == 1
+          - >-
+            check_server1_base_result.files[0].path
+            == "/srv/tomcat/server1/webapps"
 
-    - name: check server1 instance home dir does not exist
+    - name: check server1 instance home dir contains only preserved dir
       assert:
-        that: not check_server1_home_result.stat.exists
+        that: check_server1_home_result.files | length == 0
 
 - name: cleanup docker sandbox
   hosts: localhost
@@ -270,3 +278,4 @@
       docker_sandbox_state: absent
   tags:
     - sandbox
+    - cleanup

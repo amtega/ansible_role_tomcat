@@ -11,7 +11,7 @@ tomcat_name: tomcat
 
 # Tomcat version
 
-tomcat_version: 8.0.0
+tomcat_version: 8.0.1
 
 # Home path for tomcat binaries
 
@@ -231,11 +231,13 @@ tomcat_cluster_deploy_watch_enabled: true
 
 tomcat_force_install: false
 
-# List of paths to preserve during uninstall (state absent). The paths are
-# relative to tomcat base directory
+# List of paths to preserve during uninstall (state absent) in home and base
+# directory. The paths are relative to tomcat home/base directory
 
-tomcat_uninstall_preserve:
-  - webapps
+tomcat_uninstall_home_preserve: []
+
+tomcat_uninstall_base_preserve:
+    - webapps
 
 ################################################################################
 # Proxy settings

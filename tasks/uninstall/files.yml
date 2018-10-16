@@ -7,10 +7,19 @@
         paths:
           - "{{ tomcat_base }}"
           - "{{ tomcat_home }}"
+        file_type: file
+      when: tomcat_state == "absent"
+      register: tomcat_uninstall_search_files_result
+
+    - name: search tomcat directories to uninstall
+      find:
+        paths:
+          - "{{ tomcat_base }}"
+          - "{{ tomcat_home }}"
         file_type: directory
         recurse: yes
       when: tomcat_state == "absent"
-      register: tomcat_uninstall_search_result
+      register: tomcat_uninstall_search_dirs_result
 
     - name: uninstall tomcat files
       file:
@@ -20,7 +29,8 @@
       loop: "{{ files }}"
       vars:
         files: >-
-          {{ tomcat_uninstall_search_result.files
+          {{ (tomcat_uninstall_search_files_result.files
+              + tomcat_uninstall_search_dirs_result.files)
              | map(attribute="path")
              | list }}
         exclusions: "{{ lookup('template', 'exclusions.yml.j2') | from_yaml }}"
