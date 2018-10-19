@@ -18,7 +18,6 @@
          | ternary(omit, "absent") }}
     pretty_print: true
   register: tomcat_configure_server_result
-  when: tomcat_state in ["present", "started"]
   loop: "{{ config }}"
   loop_control:
     label: >-

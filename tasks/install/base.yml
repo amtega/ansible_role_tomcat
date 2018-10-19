@@ -23,7 +23,6 @@
           - "--update"
       loop: "{{ tomcat_subdirs_to_populate }}"
       delegate_to: "{{ inventory_hostname }}"
-  when: tomcat_state in ["present", "started"]
   tags:
     - role::tomcat
     - role::tomcat::install

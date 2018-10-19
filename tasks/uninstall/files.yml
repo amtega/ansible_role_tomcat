@@ -51,23 +51,38 @@
       failed_when: false
       changed_when: tomcat_uninstall_remove_home_result.rc == 0
 
+    - name: check tomcat home symlink
+      stat:
+        path: "{{ tomcat_home_link }}"
+      register: tomcat_check_home_symlink
+      when: tomcat_home_link is defined
+
     - name: remove tomcat home symlink
       file:
         path: "{{ tomcat_home_link }}"
         state: absent
-      when: tomcat_home_link is defined
+      when:
+        - tomcat_home_link is defined
+        - tomcat_check_home_symlink.lnk_source == tomcat_home_link
+
+    - name: check tomcat base symlink
+      stat:
+        path: "{{ tomcat_base_link }}"
+      register: tomcat_check_base_symlink
+      when: tomcat_base_link is defined
 
     - name: remove tomcat base symlink
       file:
         path: "{{ tomcat_base_link }}"
         state: absent
-      when: tomcat_base_link is defined
+      when:
+        - tomcat_base_link is defined
+        - tomcat_check_base_symlink.lnk_source == tomcat_base_link
 
     - name: remove tomcat server package if possible
       file:
         path: "{{ tomcat_package }}"
         state: absent
-  when: tomcat_state == "absent"
   tags:
     - role::tomcat
     - role::tomcat::uninstall

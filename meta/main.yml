@@ -2,11 +2,12 @@
 # Role dependencies
 
 galaxy_info:
+  role_name: tomcat
   author: Juan Antonio Valiño García
   description: Setup tomcat application server
   company: AMTEGA - Xunta de Galicia
   license: GPLv3 or EUPL
-  min_ansible_version: 2.6
+  min_ansible_version: 2.7
   platforms:
   - name: Fedora
     versions:

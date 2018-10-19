@@ -2,31 +2,34 @@
 # Role tasks
 
 - name: sanity checks
-  import_tasks: check/main.yml
+  include_tasks: check/main.yml
   tags:
     - role::tomcat
     - role::tomcat::check
 
 - name: uninstall tomcat
-  import_tasks: uninstall/main.yml
+  include_tasks: uninstall/main.yml
   tags:
     - role::tomcat
     - role::tomcat::uninstall
+  when: tomcat_state == "absent"
 
-- name: install tomcat
-  import_tasks: install/main.yml
-  tags:
-    - role::tomcat
-    - role::tomcat::install
+- block:
+    - name: install tomcat
+      include_tasks: install/main.yml
+      tags:
+        - role::tomcat
+        - role::tomcat::install
 
-- name: configure tomcat
-  import_tasks: configure/main.yml
-  tags:
-    - role::tomcat
-    - role::tomcat::configure
+    - name: configure tomcat
+      include_tasks: configure/main.yml
+      tags:
+        - role::tomcat
+        - role::tomcat::configure
 
-- name: setup tomcat service
-  import_tasks: service/main.yml
-  tags:
-    - role::tomcat
-    - role::tomcat::service
+    - name: setup tomcat service
+      include_tasks: service/main.yml
+      tags:
+        - role::tomcat
+        - role::tomcat::service
+  when: tomcat_state in ["present", "started"]

@@ -42,14 +42,11 @@ tomcat_native_daemon_dir: "{{ tomcat_home }}/bin"
 
 tomcat_use_native_apr_library: true
 
-# Where to put the compiled native apr library stuff. This is useful if you want
-# to share the same tomcat home dir with several instances that use different
-# java versions. In this case you can change the location to the base directory
-#
-# Keep in mind that within this path several subdirectories (e.g lib) will be
-# created
+# Where to put the compiled native apr library  This is useful if you want to
+# share the same tomcat home dir with several instances that use different java
+# versions. In this case you can change the location to the base directory
 
-tomcat_native_apr_library_prefix_dir: "{{ tomcat_home }}"
+tomcat_native_apr_library_dir: "{{ tomcat_home }}/lib"
 
 # Path to PID file (relative to tomcat base path)
 

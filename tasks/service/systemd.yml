@@ -18,9 +18,7 @@
     - name: reload systemd daemon
       command: systemctl daemon-reload
       when: tomcat_setup_systemd_services_result is changed
-  when:
-    - tomcat_state in ["present", "started"]
-    - ansible_facts.service_mgr == "systemd"
+  when: ansible_facts.service_mgr == "systemd"
   tags:
     - role::tomcat
     - role::tomcat::service

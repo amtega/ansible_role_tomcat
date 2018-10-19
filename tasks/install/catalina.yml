@@ -15,11 +15,7 @@
         path: "{{ tomcat_base }}/{{ item }}"
         state: absent
       loop: "{{ tomcat_daemon_scripts }}"
-  when:
-    - tomcat_state in ["present", "started"]
-    - >-
-      not tomcat_use_native_daemon
-      or tomcat_version is version("7", "<")
+  when: not tomcat_use_native_daemon or tomcat_version is version("7", "<")
   tags:
     - role::tomcat
     - role::tomcat::install

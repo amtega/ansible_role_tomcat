@@ -16,128 +16,127 @@
   tags:
     - sandbox
 
-# - name: test basic tomcat provisioning with cluster
-#   hosts: docker_sandbox_containers
-#   roles:
-#     - role: amtega.tomcat
-#   vars:
-#     tomcat_name: server1
-#     tomcat_version: 8.0.9
-#     tomcat_home: /opt/apache-tomcat-8.0.9
-#     tomcat_base: /srv/tomcat/server1
-#     tomcat_link: /opt/tomcat8
-#     tomcat_user_uid: 3000
-#     tomcat_user_soft_nofile: 1024
-#     tomcat_user_hard_nofile: 1024
-#     tomcat_user_soft_nproc: 500
-#     tomcat_user_hard_nproc: 500
-#     tomcat_group_uid: 3000
-#     tomcat_server_port: 8005
-#     tomcat_server_http_port: 8080
-#     tomcat_server_https_port: 8443
-#     tomcat_server_ajp_port: 8009
-#     tomcat_manager_addresses_allow:
-#       - 192.168.5.2
-#       - 192.168.5.3
-#     tomcat_manager_addresses_deny:
-#       - 192.168.5.13
-#       - 192.168.5.14
-#     tomcat_manager_hostnames_allow:
-#       - host1.acme.com
-#       - host2.acme.com
-#     tomcat_manager_hostnames_deny:
-#       - badhost1.acme.com
-#       - badhost2.acme.com
-#     tomcat_realm:
-#       className: org.apache.catalina.realm.LockOutRealm
-#     tomcat_subrealms:
-#       - className: org.apache.catalina.realm.UserDatabaseRealm
-#         resourceName: UserDatabase
-#
-#     tomcat_cluster: true
-#   tasks:
-#     - name: read subrealm config
-#       xml:
-#         path: "{{ tomcat_base }}/conf/server.xml"
-#         xpath: >-
-#           {{ "/Server/Service[@name='Catalina']/Engine[@name='Catalina']"
-#              + "/Realm/Realm" }}
-#         content: attribute
-#       register: subrealm_result
-#
-#     - name: assert subrealm config matches inventory
-#       assert:
-#         that:
-#           - file.className == inventory.className | string
-#       vars:
-#         file: "{{ subrealm_result.matches[0].Realm }}"
-#         inventory: "{{ tomcat_subrealms[0] }}"
-#
-#     # We don't check tomcat_server_port because native daemon doesn't use it
-#
-#     - name: check that tomcat is listening
-#       wait_for:
-#         port: "{{ item}}"
-#         timeout: 10
-#       loop:
-#         - "{{ tomcat_server_http_port }}"
-#         - "{{ tomcat_server_ajp_port }}"
-#
-#     - name: check that tomcat http port returns welcome page
-#       uri:
-#         url: "http://localhost:{{ tomcat_server_http_port }}"
-#         return_content: yes
-#       register: check_http_result
-#       failed_when: >-
-#          not check_http_result.content
-#              is search("successfully")
-#   tags:
-#     - idempotence
-#
-# - name: test basic tomcat role without cluster
-#   hosts: docker_sandbox_containers
-#   roles:
-#     - role: amtega.tomcat
-#   vars:
-#     tomcat_name: server2
-#     tomcat_version: 8.0.9
-#     tomcat_home: /opt/apache-tomcat-8.0.9
-#     tomcat_base: /srv/tomcat/server2
-#     tomcat_link: /opt/tomcat8
-#     tomcat_user_uid: 3000
-#     tomcat_group_uid: 3000
-#     tomcat_server_port: 8006
-#     tomcat_server_http_port: 8081
-#     tomcat_server_https_port: 8444
-#     tomcat_server_ajp_port: 8010
-#     tomcat_cluster: true
-#     tomcat_realm:
-#       className: org.apache.catalina.realm.LockOutRealm
-#     tomcat_subrealms:
-#       - className: org.apache.catalina.realm.UserDatabaseRealm
-#         resourceName: UserDatabase
-#
-#   tasks:
-#     # We don't check tomcat_server_port because native daemon doesn't use it
-#
-#     - name: check that tomcat is listening
-#       wait_for:
-#         port: "{{ item}}"
-#         timeout: 10
-#       loop:
-#         - "{{ tomcat_server_http_port }}"
-#         - "{{ tomcat_server_ajp_port }}"
-#
-#     - name: check that tomcat http port returns welcome page
-#       uri:
-#         url: "http://localhost:{{ tomcat_server_http_port }}"
-#         return_content: yes
-#       register: check_http_result
-#       failed_when: >-
-#          not check_http_result.content
-#              is search("successfully")
-#   tags:
-#     - idempotence
+- name: test basic tomcat provisioning with cluster
+  hosts: docker_sandbox_containers
+  roles:
+    - role: amtega.tomcat
+  vars:
+    tomcat_name: server1
+    tomcat_version: 8.0.9
+    tomcat_home: /opt/apache-tomcat-8.0.9
+    tomcat_base: /srv/tomcat/server1
+    tomcat_link: /opt/tomcat8
+    tomcat_user_uid: 3000
+    tomcat_user_soft_nofile: 1024
+    tomcat_user_hard_nofile: 1024
+    tomcat_user_soft_nproc: 500
+    tomcat_user_hard_nproc: 500
+    tomcat_group_uid: 3000
+    tomcat_server_port: 8005
+    tomcat_server_http_port: 8080
+    tomcat_server_https_port: 8443
+    tomcat_server_ajp_port: 8009
+    tomcat_manager_addresses_allow:
+      - 192.168.5.2
+      - 192.168.5.3
+    tomcat_manager_addresses_deny:
+      - 192.168.5.13
+      - 192.168.5.14
+    tomcat_manager_hostnames_allow:
+      - host1.acme.com
+      - host2.acme.com
+    tomcat_manager_hostnames_deny:
+      - badhost1.acme.com
+      - badhost2.acme.com
+    tomcat_realm:
+      className: org.apache.catalina.realm.LockOutRealm
+    tomcat_subrealms:
+      - className: org.apache.catalina.realm.UserDatabaseRealm
+        resourceName: UserDatabase
+    tomcat_cluster: true
+  tasks:
+    - name: read subrealm config
+      xml:
+        path: "{{ tomcat_base }}/conf/server.xml"
+        xpath: >-
+          {{ "/Server/Service[@name='Catalina']/Engine[@name='Catalina']"
+             + "/Realm/Realm" }}
+        content: attribute
+      register: subrealm_result
+
+    - name: assert subrealm config matches inventory
+      assert:
+        that:
+          - file.className == inventory.className | string
+      vars:
+        file: "{{ subrealm_result.matches[0].Realm }}"
+        inventory: "{{ tomcat_subrealms[0] }}"
+
+    # We don't check tomcat_server_port because native daemon doesn't use it
+
+    - name: check that tomcat is listening
+      wait_for:
+        port: "{{ item}}"
+        timeout: 10
+      loop:
+        - "{{ tomcat_server_http_port }}"
+        - "{{ tomcat_server_ajp_port }}"
+
+    - name: check that tomcat http port returns welcome page
+      uri:
+        url: "http://localhost:{{ tomcat_server_http_port }}"
+        return_content: yes
+      register: check_http_result
+      failed_when: >-
+         not check_http_result.content
+             is search("successfully")
+  tags:
+    - idempotence
+
+- name: test basic tomcat role without cluster
+  hosts: docker_sandbox_containers
+  roles:
+    - role: amtega.tomcat
+  vars:
+    tomcat_name: server2
+    tomcat_version: 8.0.9
+    tomcat_home: /opt/apache-tomcat-8.0.9
+    tomcat_base: /srv/tomcat/server2
+    tomcat_link: /opt/tomcat8
+    tomcat_user_uid: 3000
+    tomcat_group_uid: 3000
+    tomcat_server_port: 8006
+    tomcat_server_http_port: 8081
+    tomcat_server_https_port: 8444
+    tomcat_server_ajp_port: 8010
+    tomcat_cluster: true
+    tomcat_realm:
+      className: org.apache.catalina.realm.LockOutRealm
+    tomcat_subrealms:
+      - className: org.apache.catalina.realm.UserDatabaseRealm
+        resourceName: UserDatabase
+
+  tasks:
+    # We don't check tomcat_server_port because native daemon doesn't use it
+
+    - name: check that tomcat is listening
+      wait_for:
+        port: "{{ item}}"
+        timeout: 10
+      loop:
+        - "{{ tomcat_server_http_port }}"
+        - "{{ tomcat_server_ajp_port }}"
+
+    - name: check that tomcat http port returns welcome page
+      uri:
+        url: "http://localhost:{{ tomcat_server_http_port }}"
+        return_content: yes
+      register: check_http_result
+      failed_when: >-
+         not check_http_result.content
+             is search("successfully")
+  tags:
+    - idempotence
 
 - name: test basic tomcat role without native daemon
   hosts: docker_sandbox_containers
@@ -149,6 +148,7 @@
     tomcat_home: /opt/apache-tomcat-7.0.88
     tomcat_base: /srv/tomcat/server3
     tomcat_use_native_daemon: false
+    tomcat_use_native_apr_library: false
     tomcat_java_variables:
       var1: VAR1
       var2: VAR2

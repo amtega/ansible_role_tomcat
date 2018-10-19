@@ -5,7 +5,6 @@
   group:
     name: "{{ tomcat_group }}"
     gid: "{{ tomcat_group_gid | default(omit) }}"
-  when: tomcat_state in ["present", "started"]
   tags:
     - role::tomcat
     - role::tomcat::install

@@ -22,6 +22,8 @@
       register: tomcat_configure_realm_result
       when: tomcat_realm is defined
       loop: "{{ tomcat_realm.keys() }}"
+      loop_control:
+        label: "{{ realm_attribute }} {{ realm_value }}"
       vars:
         service_xpath: "/Server/Service[@name='Catalina']"
         engine_xpath: "{{ service_xpath }}/Engine[@name='Catalina']"
@@ -62,7 +64,6 @@
       when:
         - tomcat_realm is defined
         - tomcat_subrealms is not defined
-  when: tomcat_state in ['present', 'started']
   tags:
     - role::tomcat
     - role::tomcat::configure

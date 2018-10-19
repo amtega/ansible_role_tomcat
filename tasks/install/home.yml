@@ -3,12 +3,20 @@
 
 - block:
     - block:
+        - name: check tomcat home directory
+          stat:
+            path: "{{ tomcat_home }}/bin/catalina.sh"
+          register: tomcat_home_check_result
+
         - name: download tomcat artifact
           include_role:
             name: amtega.artifact
           vars:
             override:
               id: "tomcat_{{ tomcat_version_underlined }}"
+              download: >-
+                {{ not tomcat_home_check_result.stat.exists
+                   or tomcat_force_install }}
             artifact: "{{ tomcat_artifact | combine(override) }}"
             artifact_http_proxy: "{{ tomcat_http_proxy }}"
             artifact_https_proxy: "{{ tomcat_https_proxy }}"
@@ -33,10 +41,10 @@
             extra_opts:
               - "--strip-components=1"
           register: tomcat_extract_daemon_package_result
+          when: not tomcat_home_check_result.stat.exists
       when: >-
         tomcat_version
-        is not version(ansible_local_facts.version | default(0),
-                       "==")
+        is not version(ansible_local_facts.version | default(0), "==")
         or tomcat_force_install
       vars:
         ansible_local_facts: >-
@@ -63,8 +71,7 @@
         path: "{{ tomcat_package }}"
         state: absent
       when: tomcat_remove_artifact
-  when: tomcat_state in ["present", "started"]
   tags:
     - role::tomcat
     - role::tomcat::install
-    - role::tomcat::install::server
+    - role::tomcat::install::home

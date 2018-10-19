@@ -31,7 +31,6 @@
         path: "{{ tomcat_systemv_init_path }}/{{ tomcat_name }}"
         state: absent
       when: ansible_facts.service_mgr != "systemd"
-  when: tomcat_state == "absent"
   tags:
     - role::tomcat
     - role::tomcat::uninstall

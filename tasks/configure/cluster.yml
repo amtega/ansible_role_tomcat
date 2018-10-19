@@ -20,9 +20,7 @@
         input_type: yaml
         pretty_print: true
       register: tomcat_configure_cluster_result
-  when:
-    - tomcat_state in ["present", "started"]
-    - tomcat_cluster
+  when: tomcat_cluster
   vars:
     service_xpath: "/Server/Service[@name='Catalina']"
     engine_xpath: "{{ service_xpath }}/Engine[@name='Catalina']"

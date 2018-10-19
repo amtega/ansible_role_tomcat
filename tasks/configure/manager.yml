@@ -9,7 +9,6 @@
     group: "{{ tomcat_group }}"
     mode: 0755
   register: tomcat_configure_manager_result
-  when: tomcat_state in ["present", "started"]
   tags:
     - role::tomcat
     - role::tomcat::configure

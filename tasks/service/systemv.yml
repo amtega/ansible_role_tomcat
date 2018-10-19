@@ -8,9 +8,7 @@
     owner: root
     group: root
     mode: 0755
-  when:
-    - tomcat_state in ["present", "started"]
-    - ansible_facts.service_mgr != "systemd"
+  when: ansible_facts.service_mgr != "systemd"
   tags:
     - role::tomcat
     - role::tomcat::service

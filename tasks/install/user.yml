@@ -18,7 +18,6 @@
         group: "{{ tomcat_group }}"
         uid: "{{ tomcat_user_uid | default(tomcat_user_uid) | default(omit) }}"
       when: tomcat_check_users_result.rc != 0
-  when: tomcat_state in ["present", "started"]
   tags:
     - role::tomcat
     - role::tomcat::install

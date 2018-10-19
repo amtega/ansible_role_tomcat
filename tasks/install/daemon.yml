@@ -4,14 +4,16 @@
 - block:
     - name: remove native daemon binary
       file:
-        path: "{{ daemon_bin }}"
+        path: "{{ daemon_path }}"
         state: absent
       when: >-
         tomcat_force_install
         or tomcat_use_native_daemon
-           != ansible_local_facts.use_native_daemon | default(false)
+           != ansible_local_facts.use_native_daemon
+              | default(tomcat_use_native_daemon)
         or tomcat_java_home
-           != ansible_local_facts.java_home | default("")
+           != ansible_local_facts.java_home
+              | default(tomcat_java_home)
       register: tomcat_daemon_remove_result
       vars:
         ansible_local_facts: >-
@@ -26,7 +28,7 @@
         group: "{{ tomcat_group }}"
         mode: "{{ tomcat_files_permissions }}"
         list_files: true
-        creates: "{{ daemon_bin }}"
+        creates: "{{ daemon_path }}"
       register: tomcat_daemon_extract_package_result
 
     - block:
@@ -36,19 +38,19 @@
             --with-java={{ tomcat_java_home }}
           args:
             chdir: "{{ daemon_src_dir }}"
-            creates: "{{ daemon_bin }}"
+            creates: "{{ daemon_path }}"
 
         - name: compile native daemon
           shell: make
           args:
             chdir: "{{ daemon_src_dir }}"
-            creates: "{{ daemon_bin }}"
+            creates: "{{ daemon_path }}"
 
         - name: install native daemon binary
-          shell: "cp jsvc {{ tomcat_native_daemon_dir }}"
+          shell: "cp -p jsvc {{ tomcat_native_daemon_dir }}"
           args:
             chdir: "{{ daemon_src_dir }}"
-            creates: "{{ daemon_bin }}"
+            creates: "{{ daemon_path }}"
           register: tomcat_daemon_install_result
 
         - name: clean native daemon extracted package
@@ -62,7 +64,8 @@
         src: "{{ tomcat_home }}/{{ item }}"
         dest: "{{ tomcat_base }}/{{ item }}"
         archive: true
-      when: tomcat_daemon_install_result is changed
+        rsync_opts:
+          - "--update"
       loop: "{{ tomcat_daemon_scripts }}"
       delegate_to: "{{ inventory_hostname }}"
 
@@ -72,18 +75,15 @@
         state: absent
       loop: "{{ tomcat_catalina_scripts }}"
   when:
-    - tomcat_state in ["present", "started"]
     - tomcat_use_native_daemon
     - tomcat_version is version("7", ">=")
   vars:
-    bin_dir: "{{ tomcat_native_daemon_dir }}"
-    daemon_bin: "{{ bin_dir }}/{{ tomcat_native_daemon_bin_filename }}"
+    daemon_path: >-
+      {{ tomcat_native_daemon_dir }}/{{ tomcat_native_daemon_filename }}
     daemon_package:  >-
-      {{ bin_dir
-         + "/"
-         + tomcat_native_daemon_package_filename }}
+      {{ tomcat_home + "/bin/" + tomcat_native_daemon_package_filename }}
     daemon_src_dir: >-
-      {{ bin_dir
+      {{ tomcat_native_daemon_dir
          + "/"
          + tomcat_daemon_extract_package_result.files
            | select("search", "README")

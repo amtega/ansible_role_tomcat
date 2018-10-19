@@ -22,14 +22,14 @@
                            + '/'
                            + tomcat_pid_file }}"
           CATALINA_OPTS="{{ '-Djava.library.path='
-                             + tomcat_native_apr_library_prefix_dir
-                             + '/lib' }}"
-          JSVC="{{ tomcat_native_daemon_dir }}/jsvc"
+                             + tomcat_native_apr_library_dir }}"
+          JSVC="{{ tomcat_native_daemon_dir
+                   + "/"
+                   + tomcat_native_daemon_filename }}"
         state: present
       when:
         - tomcat_use_native_daemon
         - tomcat_version is version("7", ">=")
-  when: tomcat_state in ["present", "started"]
   tags:
     - role::tomcat
     - role::tomcat::configure
