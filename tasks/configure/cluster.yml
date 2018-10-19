@@ -4,37 +4,23 @@
 - block:
     - name: create cluster section in server config
       xml:
-        path: "{{ instance.base }}/{{ tomcat_server_config }}"
+        path: "{{ tomcat_base }}/{{ tomcat_server_config }}"
         xpath: "{{ cluster_xpath }}"
         attribute: "channelSendOptions"
-        value: >-
-          {{ instance.cluster_channel_send_options
-             | default(tomcat_instance_cluster_channel_send_options) }}
+        value: "{{ tomcat_cluster_channel_send_options | string }}"
         state: present
         pretty_print: true
-      loop: >-
-        {{ tomcat_instances_state_present + tomcat_instances_state_started }}
-      loop_control:
-        loop_var: instance
-        label: "{{ instance.name }}"
 
     - name: setup cluster section properties in server config
       xml:
-        path: "{{ instance.base }}/{{ tomcat_server_config }}"
+        path: "{{ tomcat_base }}/{{ tomcat_server_config }}"
         xpath: "{{ cluster_xpath }}"
-        set_children: "{{ cluster_config }}"
+        set_children: >-
+          {{ lookup('template', 'cluster.yml.j2') | from_yaml }}
         input_type: yaml
         pretty_print: true
       register: tomcat_configure_cluster_result
-      loop: >-
-        {{ tomcat_instances_state_present + tomcat_instances_state_started }}
-      loop_control:
-        loop_var: instance
-        label: "{{ instance.name }}"
-      vars:
-        cluster_config: "{{ lookup('template', 'cluster.yml.j2') | from_yaml }}"
-
-  when: instance.cluster | default(tomcat_instance_cluster)
+  when: tomcat_cluster
   vars:
     service_xpath: "/Server/Service[@name='Catalina']"
     engine_xpath: "{{ service_xpath }}/Engine[@name='Catalina']"

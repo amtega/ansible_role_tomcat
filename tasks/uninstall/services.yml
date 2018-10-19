@@ -2,53 +2,35 @@
 # Uninstall services
 
 - block:
-    - name: disable and stop tomcat instances
+    - name: disable and stop tomcat services
       service:
-        name: "{{ instance.name }}"
+        name: "{{ tomcat_name }}"
         state: stopped
         enabled: false
-      when:
-        - ansible_local.tomcat is defined
-        - ansible_local.tomcat[instance.name] is defined
-      loop: "{{ tomcat_instances_state_absent }}"
-      loop_control:
-        loop_var: instance
-        label: "{{ instance.name }}"
+      when: "'tomcat_' + tomcat_name in ansible_local"
       ignore_errors: true
 
     - block:
-        - name: uninstall tomcat instances systemd services
+        - name: uninstall tomcat systemd services
           file:
             path: >-
               {{ tomcat_systemd_services_path
                  + "/"
-                 + instance.name
+                 + tomcat_name
                  + ".service" }}
             state: absent
           register: tomcat_remove_systemd_services_result
-          loop: "{{ tomcat_instances_state_absent }}"
-          loop_control:
-            loop_var: instance
-            label: "{{ instance.name }}"
 
         - name: reload systemd
           command: systemctl daemon-reload
-          when: >-
-            tomcat_remove_systemd_services_result.results
-            | select("changed")
-            | list
-            | length > 0
+          when: tomcat_remove_systemd_services_result is changed
       when: ansible_facts.service_mgr == "systemd"
 
-    - name: uninstall tomcat instances system v init services
+    - name: uninstall tomcat system v init services
       file:
-        path: "{{ tomcat_systemv_init_path }}/{{ instance.name }}"
+        path: "{{ tomcat_systemv_init_path }}/{{ tomcat_name }}"
         state: absent
       when: ansible_facts.service_mgr != "systemd"
-      loop: "{{ tomcat_instances_state_absent }}"
-      loop_control:
-        loop_var: instance
-        label: "{{ instance.name }}"
   tags:
     - role::tomcat
     - role::tomcat::uninstall

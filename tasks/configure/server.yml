@@ -1,15 +1,15 @@
 ---
-# Server instances configuration tasks
+# Server configuration tasks
 
-- name: setup tomcat instances server config
+- name: setup tomcat server config
   xml:
-    path: "{{ instance.base }}/{{ tomcat_server_config }}"
+    path: "{{ tomcat_base }}/{{ tomcat_server_config }}"
     xpath: >-
       {{ (value != "<NONE/>")
-         | ternary(item.1.xpath, item.1.xpath + "/@" + item.1.attribute) }}
+         | ternary(item.xpath, item.xpath + "/@" + item.attribute) }}
     attribute: >-
       {{ (value != "<NONE/>")
-         | ternary(item.1.attribute, omit) }}
+         | ternary(item.attribute, omit) }}
     value: >-
       {{ (value != "<NONE/>")
          | ternary(valuestr, omit) }}
@@ -18,27 +18,21 @@
          | ternary(omit, "absent") }}
     pretty_print: true
   register: tomcat_configure_server_result
-  loop: >-
-    {{ (tomcat_instances_state_present
-        + tomcat_instances_state_started)
-       | product(config)
-       | list }}
+  loop: "{{ config }}"
   loop_control:
     label: >-
-      {{ item.0.name }}
-      {{ item.1.xpath }}
-      {{ item.1.attribute }}
+      {{ item.xpath }}
+      {{ item.attribute }}
   vars:
-    instance: "{{ item.0 }}"
     service_xpath: "/Server/Service[@name='Catalina']"
     connector_xpath: "{{ service_xpath }}/Connector"
     engine_xpath: "{{ service_xpath }}/Engine[@name='Catalina']"
     host_xpath: "{{ engine_xpath }}/Host[@name='localhost']"
     value: >-
-      {{ instance[item.1.value]
-         | default(lookup('vars',
-                          'tomcat_instance_'
-                          + item.1.value, default="<NONE/>")) }}
+      {{ lookup('vars',
+                'tomcat_'
+                + item.value,
+                default="<NONE/>") }}
     valuestr: >-
       {{ (value is sameas(true) or value is sameas(false))
          | ternary(value | string | lower, value | string) }}

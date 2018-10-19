@@ -2,31 +2,22 @@
 # Systemd service tasks
 
 - block:
-    - name: setup tomcat instances systemd services
+    - name: setup tomcat systemd services
       template:
         src: "systemd.service.j2"
         dest: >-
           {{ tomcat_systemd_services_path
              + "/"
-             + instance.name
+             + tomcat_name
              + ".service" }}
         owner: root
         group: root
         mode: 0644
       register: tomcat_setup_systemd_services_result
-      loop: >-
-        {{ tomcat_instances_state_present + tomcat_instances_state_started }}
-      loop_control:
-        loop_var: instance
-        label: "{{ instance.name }}"
 
-    - name: reload systemd
+    - name: reload systemd daemon
       command: systemctl daemon-reload
-      when: >-
-        tomcat_setup_systemd_services_result.results
-        | select("changed")
-        | list
-        | length > 0
+      when: tomcat_setup_systemd_services_result is changed
   when: ansible_facts.service_mgr == "systemd"
   tags:
     - role::tomcat

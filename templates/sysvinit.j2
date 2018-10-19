@@ -2,48 +2,48 @@
 
 #!/bin/bash
 #
-# {{ instance.name }}  Start up the instance of Tomcat Server
+# {{ tomcat_name }}  Start up Tomcat Server
 #
 # chkconfig: 2345 55 25
 # description: Tomcat is a JEE application container. \
-#              This service starts up the instance {{ instance.name }}.
+#              This service starts up {{ tomcat_name }}.
 
 ### BEGIN INIT INFO
-# Provides: {{ instance.name }}
+# Provides: {{ tomcat_name }}
 # Required-Start: $local_fs $network
 # Required-Stop: $local_fs $syslog
 # Should-Start: $syslog
 # Should-Stop: $network $syslog
 # Default-Start: 2 3 4 5
 # Default-Stop: 0 1 6
-# Short-Description: Start up the Tomcat instance {{ instance.name }}
+# Short-Description: Start up {{ tomcat_name }}
 # Description:       Tomcat is a JEE application container.
-#                    This service starts up the instance {{ instance.name }}.
+#                    This service starts up {{ tomcat_name }}.
 ### END INIT INFO
 
 # source function library
 . /etc/rc.d/init.d/functions
 
-prog="{{ instance.name }}"
-user="{{ instance.user | default(tomcat_instance_user) }}"
+prog="{{ tomcat_name }}"
+user="{{ tomcat_user }}"
 
-{% if instance.use_native_daemon | default(tomcat_instance_use_native_daemon)
-      and instance.version is version("7", ">=") %}
-export JAVA_HOME={{ instance.java_home | default(tomcat_instance_java_home) }}
-export CATALINA_HOME={{ instance.home }}
-export CATALINA_BASE={{ instance.base }}
+{% if tomcat_use_native_daemon
+      and tomcat_version is version("7", ">=") %}
+export JAVA_HOME={{ tomcat_java_home }}
+export CATALINA_HOME={{ tomcat_home }}
+export CATALINA_BASE={{ tomcat_base }}
 {% endif %}
 
-PID_FILE="{{ instance.base }}/{{ instance.pid_file | default(tomcat_instance_pid_file) }}"
+PID_FILE="{{ tomcat_base }}/{{ tomcat_pid_file }}"
 
 start()
 {
         echo -n $"Starting $prog: "
-{% if instance.use_native_daemon | default(tomcat_instance_use_native_daemon)
-      and instance.version is version("7", ">=") %}
-        su $user {{ instance.base }}/bin/daemon.sh start && success > /dev/null || failure
+{% if tomcat_use_native_daemon
+      and tomcat_version is version("7", ">=") %}
+        su $user {{ tomcat_base }}/bin/daemon.sh start && success > /dev/null || failure
 {% else %}
-        su $user {{ instance.base }}/bin/startup.sh && success > /dev/null || failure
+        su $user {{ tomcat_base }}/bin/startup.sh && success > /dev/null || failure
 {% endif %}
         RETVAL=$?
         echo
@@ -53,11 +53,11 @@ start()
 stop()
 {
         echo -n $"Stopping $prog: "
-{% if instance.use_native_daemon | default(tomcat_instance_use_native_daemon)
-      and instance.version is version("7", ">=") %}
-        su $user {{ instance.base }}/bin/daemon.sh stop > /dev/null
+{% if tomcat_use_native_daemon
+      and tomcat_version is version("7", ">=") %}
+        su $user {{ tomcat_base }}/bin/daemon.sh stop > /dev/null
 {% else %}
-        su $user {{ instance.base }}/bin/shutdown.sh > /dev/null
+        su $user {{ tomcat_base }}/bin/shutdown.sh > /dev/null
 {% endif %}
         RETVAL=$?
         rm -Rf $PID_FILE

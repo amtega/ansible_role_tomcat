@@ -3,7 +3,7 @@
 
 - block:
     - import_tasks: "{{ role_path }}/tasks/uninstall/services.yml"
-    - import_tasks: "{{ role_path }}/tasks/uninstall/instances.yml"
+    - import_tasks: "{{ role_path }}/tasks/uninstall/files.yml"
   tags:
     - role::tomcat
     - role::tomcat::uninstall

@@ -1,22 +1,18 @@
 {
-{% for instance in tomcat_instances_state_present + tomcat_instances_state_started %}
-  "{{ instance.name }}": {
-    "version": {{ instance.version | to_json }},
-    "base": {{ instance.base | to_json }},
-    "home": {{ instance.home | to_json }},
-    "state": {{ instance.state | default(tomcat_instance_state) | to_json }},
-    "use_native_daemon": {{ instance.use_native_daemon | default(tomcat_instance_use_native_daemon) | to_json }},
-    "user": {{ instance.user | default(tomcat_instance_user) | to_json }},
-    "group": {{ instance.group | default(tomcat_instance_group) | to_json }},
-    "java_home": {{ instance.java_home | default(tomcat_instance_java_home) | to_json }},
-    "java_variables": {{ instance.java_variables | default(tomcat_instance_java_variables) | to_json }},
-    "java_raw_opts": {{ instance.java_raw_opts | default(tomcat_instance_java_raw_opts) | to_json }},
-    "server_port": {{ instance.server_port | default(tomcat_instance_server_port) | to_json }},
-    "server_http_port": {{ instance.server_http_port | default(tomcat_instance_server_http_port) | to_json }},
-    "server_https_port": {{ instance.server_https_port | default(tomcat_instance_server_https_port) | to_json }},
-    "server_ajp_port": {{ instance.server_ajp_port | default(tomcat_instance_server_ajp_port) | to_json }},
-    "server_autodeploy": {{ instance.server_autodeploy | default(tomcat_instance_server_autodeploy) | to_json }}
-  }
-{% if not loop.last %}  ,{% endif %}
-{% endfor %}
+  "version": {{ tomcat_version | to_json }},
+  "base": {{ tomcat_base | to_json }},
+  "home": {{ tomcat_home | to_json }},
+  "state": {{ tomcat_state | to_json }},
+  "use_native_daemon": {{ tomcat_use_native_daemon | to_json }},
+  "use_native_apr_library": {{ tomcat_use_native_apr_library | to_json }},  
+  "user": {{ tomcat_user | to_json }},
+  "group": {{ tomcat_group | to_json }},
+  "java_home": {{ tomcat_java_home | to_json }},
+  "java_variables": {{ tomcat_java_variables | to_json }},
+  "java_raw_opts": {{ tomcat_java_raw_opts | to_json }},
+  "server_port": {{ tomcat_server_port | to_json }},
+  "server_http_port": {{ tomcat_server_http_port | to_json }},
+  "server_https_port": {{ tomcat_server_https_port | to_json }},
+  "server_ajp_port": {{ tomcat_server_ajp_port | to_json }},
+  "server_autodeploy": {{tomcat_server_autodeploy | to_json }}
 }

@@ -12,21 +12,10 @@
       vars:
         distribution: "{{ ansible_facts.distribution | lower }}"
 
-    - name: assert default instance state is supported
+    - name: assert state is supported
       assert:
         that:
-          - tomcat_instance_state in ['started', 'present', 'absent']
-
-    - name: assert instances state is supported
-      assert:
-        that:
-          - >-
-            instance.state | default(tomcat_instance_state)
-            in ['started', 'present', 'absent']
-      loop: "{{ tomcat_instances }}"
-      loop_control:
-        loop_var: instance
-        label: "{{ instance.name }}"
+          - tomcat_state in ['started', 'present', 'absent']
   tags:
     - role::tomcat
     - role::tomcat::check

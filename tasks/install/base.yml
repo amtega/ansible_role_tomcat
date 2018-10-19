@@ -1,0 +1,29 @@
+---
+# Base directory install tasks
+
+- block:
+    - name: setup tomcat base directory tree
+      file:
+        path: "{{ tomcat_base }}/{{ item }}"
+        state: directory
+        owner: "{{ tomcat_user }}"
+        group: "{{ tomcat_group }}"
+        mode: "{{ tomcat_files_permissions }}"
+      register: tomcat_create_base_tree_result
+      loop: "{{ tomcat_subdirs }}"
+
+    - name: populate tomcat base directory tree
+      synchronize:
+        src: "{{ tomcat_home }}/{{ item }}/"
+        dest: "{{ tomcat_base }}/{{ item }}"
+        archive: no
+        rsync_opts:
+          - "--recursive"
+          - "--links"
+          - "--update"
+      loop: "{{ tomcat_subdirs_to_populate }}"
+      delegate_to: "{{ inventory_hostname }}"
+  tags:
+    - role::tomcat
+    - role::tomcat::install
+    - role::tomcat::install::base

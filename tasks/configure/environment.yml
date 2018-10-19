@@ -2,43 +2,34 @@
 # Environment variables configuration tasks
 
 - block:
-    - name: setup tomcat instances environment variables
+    - name: setup tomcat environment variables
       template:
         src: setenv.sh.j2
-        dest: "{{ instance.base }}/bin/setenv.sh"
-        owner: "{{ instance.user | default(tomcat_instance_user) }}"
-        group: "{{ instance.group | default(tomcat_instance_group) }}"
+        dest: "{{ tomcat_base }}/bin/setenv.sh"
+        owner: "{{ tomcat_user }}"
+        group: "{{ tomcat_group }}"
         mode: "{{ tomcat_files_permissions }}"
-      loop: >-
-        {{ tomcat_instances_state_present + tomcat_instances_state_started }}
-      loop_control:
-        loop_var: instance
-        label: "{{ instance.name }}"
 
     - name: include environment variables into native daemon startup script
       blockinfile:
-        path: "{{ instance.base }}/bin/daemon.sh"
+        path: "{{ tomcat_base }}/bin/daemon.sh"
         insertbefore: "# resolve links.*"
         block: |
           # Ensure that any user defined environment variables are used
-          CATALINA_HOME="{{ instance.home }}"
-          CATALINA_BASE="{{ instance.base }}"
-          CATALINA_PID="{{ instance.base
+          CATALINA_HOME="{{ tomcat_home }}"
+          CATALINA_BASE="{{ tomcat_base }}"
+          CATALINA_PID="{{ tomcat_base
                            + '/'
-                           + instance.pid_file
-                             | default(tomcat_instance_pid_file) }}"
+                           + tomcat_pid_file }}"
+          CATALINA_OPTS="{{ '-Djava.library.path='
+                             + tomcat_native_apr_library_dir }}"
+          JSVC="{{ tomcat_native_daemon_dir
+                   + "/"
+                   + tomcat_native_daemon_filename }}"
         state: present
       when:
-        - >-
-          instance.use_native_daemon
-          | default(tomcat_instance_use_native_daemon)
-        - >-
-          instance.version is version("7", ">=")
-      loop: >-
-        {{ tomcat_instances_state_present + tomcat_instances_state_started }}
-      loop_control:
-        loop_var: instance
-        label: "{{ instance.name }}"
+        - tomcat_use_native_daemon
+        - tomcat_version is version("7", ">=")
   tags:
     - role::tomcat
     - role::tomcat::configure

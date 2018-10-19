@@ -1,10 +1,10 @@
 # Ansible tomcat role
 
-This is an [Ansible](http://www.ansible.com) role which setups tomcat application server instances.
+This is an [Ansible](http://www.ansible.com) role which setups tomcat application server.
 
 ## Requirements
 
-[Ansible 2.6+](http://docs.ansible.com/ansible/latest/intro_installation.html)
+[Ansible 2.7+](http://docs.ansible.com/ansible/latest/intro_installation.html)
 
 ## Role Variables
 
@@ -25,7 +25,7 @@ This is an example playbook:
 - hosts: all
   roles:
     - role: amtega.tomcat
-      tomcat_instances:
+      tomcat_s:
         - name: tomcat@server1
           version: 8.0.9
           state: started

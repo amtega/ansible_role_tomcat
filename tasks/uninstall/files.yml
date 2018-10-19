@@ -1,0 +1,89 @@
+---
+# Uninstall files tasks
+
+- block:
+    - name: search tomcat files to uninstall
+      find:
+        paths:
+          - "{{ tomcat_base }}"
+          - "{{ tomcat_home }}"
+        file_type: file
+      when: tomcat_state == "absent"
+      register: tomcat_uninstall_search_files_result
+
+    - name: search tomcat directories to uninstall
+      find:
+        paths:
+          - "{{ tomcat_base }}"
+          - "{{ tomcat_home }}"
+        file_type: directory
+        recurse: yes
+      when: tomcat_state == "absent"
+      register: tomcat_uninstall_search_dirs_result
+
+    - name: uninstall tomcat files
+      file:
+        path: "{{ item }}"
+        state: absent
+      when: item is not tomcat_startswith(exclusions)
+      loop: "{{ files }}"
+      vars:
+        files: >-
+          {{ (tomcat_uninstall_search_files_result.files
+              + tomcat_uninstall_search_dirs_result.files)
+             | map(attribute="path")
+             | list }}
+        exclusions: "{{ lookup('template', 'exclusions.yml.j2') | from_yaml }}"
+
+    - name: remove tomcat base directory if possible
+      shell: "rmdir {{ tomcat_base }}"
+      args:
+        warn: false
+      register: tomcat_uninstall_remove_base_result
+      failed_when: false
+      changed_when: tomcat_uninstall_remove_base_result.rc == 0
+
+    - name: remove tomcat home directory if possible
+      shell: "rmdir {{ tomcat_home }}"
+      args:
+        warn: false
+      register: tomcat_uninstall_remove_home_result
+      failed_when: false
+      changed_when: tomcat_uninstall_remove_home_result.rc == 0
+
+    - name: check tomcat home symlink
+      stat:
+        path: "{{ tomcat_home_link }}"
+      register: tomcat_check_home_symlink
+      when: tomcat_home_link is defined
+
+    - name: remove tomcat home symlink
+      file:
+        path: "{{ tomcat_home_link }}"
+        state: absent
+      when:
+        - tomcat_home_link is defined
+        - tomcat_check_home_symlink.lnk_source == tomcat_home_link
+
+    - name: check tomcat base symlink
+      stat:
+        path: "{{ tomcat_base_link }}"
+      register: tomcat_check_base_symlink
+      when: tomcat_base_link is defined
+
+    - name: remove tomcat base symlink
+      file:
+        path: "{{ tomcat_base_link }}"
+        state: absent
+      when:
+        - tomcat_base_link is defined
+        - tomcat_check_base_symlink.lnk_source == tomcat_base_link
+
+    - name: remove tomcat server package if possible
+      file:
+        path: "{{ tomcat_package }}"
+        state: absent
+  tags:
+    - role::tomcat
+    - role::tomcat::uninstall
+    - role::tomcat::uninstall::files

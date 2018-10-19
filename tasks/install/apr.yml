@@ -1,0 +1,124 @@
+---
+# apache portable runtime based native library install tasks
+
+- block:
+    # Usually apr library is a soft link to a specific version. Seems that not
+    # all ansible modules manage in a consistent way broken links when using
+    # `creates` argument. Some modules consider a broken sof link as an existent
+    # file and another ones not. That's the reason we use here the `find`
+    # module to get a consistent behaviour
+
+    - name: search installed apr library
+      find:
+        paths: "{{ tomcat_native_apr_library_dir }}"
+        patterns: "{{ tomcat_apr_libray_patterns }}"
+      register: tomcat_apr_search_installed_result
+
+    - name: remove native apr library
+      file:
+        path: "{{ item }}"
+        state: absent
+      when: >-
+        tomcat_force_install
+        or tomcat_use_native_apr_library
+           != ansible_local_facts.use_native_apr_library
+              | default(tomcat_use_native_apr_library)
+        or tomcat_java_home
+           != ansible_local_facts.java_home
+              | default(tomcat_java_home)
+      register: tomcat_apr_remove_result
+      loop: >-
+        {{ tomcat_apr_search_installed_result.files
+           | map(attribute="path")
+           | list }}
+      loop_control:
+        label: "{{ item | basename }}"
+      vars:
+        ansible_local_facts: >-
+          {{ ansible_local["tomcat_" + tomcat_name] | default({}) }}
+
+    - name: extract native apr library package
+      unarchive:
+        src: "{{ apr_library_package }}"
+        dest: "{{ tomcat_native_apr_library_dir }}"
+        copy: no
+        owner: "{{ tomcat_user }}"
+        group: "{{ tomcat_group }}"
+        mode: "{{ tomcat_files_permissions }}"
+        list_files: true
+        creates: "{{ apr_libray_path }}"
+      register: tomcat_apr_extract_package_result
+
+    - block:
+        - name: search apr library compilation configure script
+          find:
+            paths: "{{ apr_library_extraction_dir }}"
+            patterns: "configure"
+            file_type: file
+            recurse: true
+          register: tomcat_apr_search_configure_result
+
+        - name: configure native apr library compilation
+          shell: >-
+            ./configure
+            --with-apr={{ tomcat_apr_config_bin_path }}
+            --with-java-home={{ tomcat_java_home }}
+            --prefix={{ tomcat_native_apr_library_dir }}
+          args:
+            chdir: "{{ apr_library_src_dir }}"
+            creates: "{{ apr_libray_path }}"
+
+        - name: compile native apr library
+          shell: make
+          args:
+            chdir: "{{ apr_library_src_dir }}"
+            creates: "{{ apr_libray_path }}"
+
+        - name: search compiled apr library
+          find:
+            paths: "{{ apr_library_extraction_dir }}"
+            patterns: "{{ tomcat_apr_libray_patterns }}"
+            recurse: true
+            file_type: any
+          register: tomcat_apr_search_compiled_result
+
+        - name: install native apr library
+          shell: "cp -dp {{ item }} {{ tomcat_native_apr_library_dir }}"
+          args:
+            creates: "{{ tomcat_native_apr_library_dir }}/{{ item }}"
+          loop: >-
+            {{ tomcat_apr_search_compiled_result.files
+               | map(attribute='path')
+               | list }}
+          loop_control:
+            label: "{{ item | basename }}"
+          register: tomcat_apr_install_result
+
+        - name: clean native apr library extracted package
+          file:
+            path: "{{ apr_library_extraction_dir }}"
+            state: absent
+      when: tomcat_apr_extract_package_result.files is defined
+  when:
+    - tomcat_use_native_apr_library
+    - ansible_facts.distribution_major_version is version("6", ">")
+    - tomcat_version is version("7", ">=")
+  vars:
+    apr_libray_path: >-
+      {{ tomcat_native_apr_library_dir }}/{{ tomcat_apr_libray_filename }}
+    apr_library_package: >-
+      {{ tomcat_home }}/bin/{{ tomcat_apr_library_package_filename }}
+    apr_library_extraction_dir: >-
+      {{ tomcat_native_apr_library_dir
+         + "/"
+         + tomcat_apr_extract_package_result.files
+           | select("search", "README")
+           | list
+           | first
+           | dirname }}
+    apr_library_src_dir: >-
+      {{ tomcat_apr_search_configure_result.files[0].path | dirname }}
+  tags:
+    - role::tomcat
+    - role::tomcat::install
+    - role::tomcat::install::apr

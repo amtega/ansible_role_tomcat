@@ -1,59 +1,35 @@
 ---
 # Role tasks
 
+- name: sanity checks
+  include_tasks: check/main.yml
+  tags:
+    - role::tomcat
+    - role::tomcat::check
+
+- name: uninstall tomcat
+  include_tasks: uninstall/main.yml
+  tags:
+    - role::tomcat
+    - role::tomcat::uninstall
+  when: tomcat_state == "absent"
+
 - block:
-    - name: sanity checks
-      import_tasks: check/main.yml
-      tags:
-        - role::tomcat
-        - role::tomcat::check
-
-    - name: uninstall tomcat
-      import_tasks: uninstall/main.yml
-      tags:
-        - role::tomcat
-        - role::tomcat::uninstall
-
     - name: install tomcat
-      import_tasks: install/main.yml
+      include_tasks: install/main.yml
       tags:
         - role::tomcat
         - role::tomcat::install
 
     - name: configure tomcat
-      import_tasks: configure/main.yml
+      include_tasks: configure/main.yml
       tags:
         - role::tomcat
         - role::tomcat::configure
 
     - name: setup tomcat service
-      import_tasks: service/main.yml
+      include_tasks: service/main.yml
       tags:
         - role::tomcat
         - role::tomcat::service
-  vars:
-    tomcat_instances_state_undefined: >-
-      {{ tomcat_instances
-         | selectattr("state", "undefined")
-         | list }}
-    tomcat_instances_state_started: >-
-      {{ tomcat_instances
-         | difference(tomcat_instances_state_undefined)
-         | selectattr("state", "equalto", "started")
-         | list
-         + (tomcat_instance_state == "started")
-           | ternary(tomcat_instances_state_undefined, []) }}
-    tomcat_instances_state_present: >-
-      {{ tomcat_instances
-         | difference(tomcat_instances_state_undefined)
-         | selectattr("state", "equalto", "present")
-         | list
-         + (tomcat_instance_state == "present")
-           | ternary(tomcat_instances_state_undefined, []) }}
-    tomcat_instances_state_absent: >-
-      {{ tomcat_instances
-         | difference(tomcat_instances_state_undefined)
-         | selectattr("state", "equalto", "absent")
-         | list
-         + (tomcat_instance_state == "absent")
-           | ternary(tomcat_instances_state_undefined, []) }}
+  when: tomcat_state in ["present", "started"]
