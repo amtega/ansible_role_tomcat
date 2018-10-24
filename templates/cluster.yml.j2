@@ -44,7 +44,9 @@
     className: org.apache.catalina.ha.deploy.FarmWarDeployer
     tempDir: "{{ tomcat_cluster_deploy_temp_dir }}"
     deployDir: "{{ tomcat_cluster_deploy_dir }}"
+{% if tomcat_cluster_deploy_watch_dir | length > 0 %}
     watchDir: "{{ tomcat_cluster_deploy_watch_dir }}"
+{% endif %}
     watchEnabled: "{{ tomcat_cluster_deploy_watch_enabled }}"
 
 - ClusterListener:

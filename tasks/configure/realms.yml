@@ -14,11 +14,13 @@
         attribute: >-
           {{ (not realm_attribute_to_remove)
              | ternary(realm_attribute, omit) }}
-        value: "{{ realm_value | string }}"
+        value: >-
+          {{ (not realm_attribute_to_remove)
+             | ternary(realm_value | string, omit) }}
         state: >-
           {{ (not realm_attribute_to_remove)
              | ternary("present", "absent") }}
-        pretty_print: true
+        pretty_print: yes
       register: tomcat_configure_realm_result
       when: tomcat_realm is defined
       loop: "{{ tomcat_realm.keys() }}"
@@ -30,7 +32,7 @@
         realm_xpath_base: "{{ engine_xpath }}/Realm"
         realm_attribute: "{{ item }}"
         realm_value: "{{ tomcat_realm[item] }}"
-        realm_attribute_to_remove: "{{ realm_attribute_value is none }}"
+        realm_attribute_to_remove: "{{ tomcat_realm[item] is none }}"
 
     - name: setup tomcat subrealms
       xml:
@@ -40,7 +42,7 @@
         set_children: "{{ lookup('template', 'subrealms.yml.j2') | from_yaml }}"
         input_type: yaml
         state: present
-        pretty_print: true
+        pretty_print: yes
       register: tomcat_configure_subrealms_result
 
     - name: remove tomcat realm
@@ -49,7 +51,7 @@
         xpath: >-
           /Server/Service[@name='Catalina']/Engine[@name='Catalina']/Realm
         state: absent
-        pretty_print: true
+        pretty_print: yes
       register: tomcat_remove_realm_result
       when: tomcat_realm is not defined or tomcat_realm is none
 
@@ -59,11 +61,12 @@
         xpath: >-
           /Server/Service[@name='Catalina']/Engine[@name='Catalina']/Realm/Realm
         state: absent
-        pretty_print: true
+        pretty_print: yes
       register: tomcat_remove_subrealms_result
-      when:
-        - tomcat_realm is defined
-        - tomcat_subrealms is not defined
+      when: >-
+        (tomcat_realm is defined and tomcat_subrealms is not defined)
+        or tomcat_subrealms is none
+        or tomcat_subrealms | length == 0
   tags:
     - role::tomcat
     - role::tomcat::configure

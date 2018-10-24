@@ -9,8 +9,8 @@
     - name: check required system user
       shell: "getent passwd {{ tomcat_user  }}"
       register: tomcat_check_users_result
-      changed_when: false
-      failed_when: false
+      changed_when: no
+      failed_when: no
 
     - name: setup system user
       user:

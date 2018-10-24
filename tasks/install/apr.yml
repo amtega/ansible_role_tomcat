@@ -45,7 +45,7 @@
         owner: "{{ tomcat_user }}"
         group: "{{ tomcat_group }}"
         mode: "{{ tomcat_files_permissions }}"
-        list_files: true
+        list_files: yes
         creates: "{{ apr_libray_path }}"
       register: tomcat_apr_extract_package_result
 
@@ -55,7 +55,7 @@
             paths: "{{ apr_library_extraction_dir }}"
             patterns: "configure"
             file_type: file
-            recurse: true
+            recurse: yes
           register: tomcat_apr_search_configure_result
 
         - name: configure native apr library compilation
@@ -78,21 +78,34 @@
           find:
             paths: "{{ apr_library_extraction_dir }}"
             patterns: "{{ tomcat_apr_libray_patterns }}"
-            recurse: true
+            recurse: yes
             file_type: any
           register: tomcat_apr_search_compiled_result
 
-        - name: install native apr library
-          shell: "cp -dp {{ item }} {{ tomcat_native_apr_library_dir }}"
-          args:
-            creates: "{{ tomcat_native_apr_library_dir }}/{{ item }}"
-          loop: >-
-            {{ tomcat_apr_search_compiled_result.files
-               | map(attribute='path')
-               | list }}
-          loop_control:
-            label: "{{ item | basename }}"
-          register: tomcat_apr_install_result
+        - block:
+            - name: install native apr library
+              shell: "cp -dp {{ item }} {{ tomcat_native_apr_library_dir }}"
+              args:
+                creates: "{{ tomcat_native_apr_library_dir }}/{{ item }}"
+              loop:  "{{ apr_files }}"
+              loop_control:
+                label: "{{ item | basename }}"
+              register: tomcat_apr_install_result
+
+            - name: setup native apr library files properties
+              file:
+                path: "{{ item }}"
+                owner: "{{ tomcat_user }}"
+                group: "{{ tomcat_group }}"
+                mode: "{{ tomcat_files_permissions }}"
+              loop:  "{{ apr_files }}"
+              loop_control:
+                label: "{{ item | basename }}"
+          vars:
+            apr_files: >-
+              {{ tomcat_apr_search_compiled_result.files
+                 | map(attribute='path')
+                 | list }}
 
         - name: clean native apr library extracted package
           file:

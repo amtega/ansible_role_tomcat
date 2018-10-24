@@ -1,6 +1,8 @@
 {{ ansible_managed | comment("xml") }}
 
-<Context privileged="true">
+<Context privileged="true"
+         antiResourceLocking="false"
+         docBase="${catalina.home}/webapps/manager">
   <Valve className="org.apache.catalina.valves.RemoteAddrValve"
          allow="{{ tomcat_manager_addresses_allow | join('|') }}"/>
          deny="{{ tomcat_manager_addresses_deny | join('|') }}"/>

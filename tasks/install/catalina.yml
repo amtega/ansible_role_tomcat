@@ -6,7 +6,7 @@
       synchronize:
         src: "{{ tomcat_home }}/{{ item }}"
         dest: "{{ tomcat_base }}/{{ item }}"
-        archive: true
+        archive: yes
       loop: "{{ tomcat_catalina_scripts }}"
       delegate_to: "{{ inventory_hostname }}"
 

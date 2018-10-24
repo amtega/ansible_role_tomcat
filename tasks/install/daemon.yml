@@ -27,7 +27,7 @@
         owner: "{{ tomcat_user }}"
         group: "{{ tomcat_group }}"
         mode: "{{ tomcat_files_permissions }}"
-        list_files: true
+        list_files: yes
         creates: "{{ daemon_path }}"
       register: tomcat_daemon_extract_package_result
 
@@ -47,15 +47,18 @@
             creates: "{{ daemon_path }}"
 
         - name: install native daemon binary
-          shell: "cp -p jsvc {{ tomcat_native_daemon_dir }}"
-          args:
-            chdir: "{{ daemon_src_dir }}"
-            creates: "{{ daemon_path }}"
+          copy:
+            src: "{{ daemon_src_dir }}/jsvc"
+            dest: "{{ tomcat_native_daemon_dir }}"
+            owner: "{{ tomcat_user }}"
+            group: "{{ tomcat_group }}"
+            mode: "{{ tomcat_files_permissions }}"
+            remote_src: yes
           register: tomcat_daemon_install_result
 
         - name: clean native daemon extracted package
           file:
-            path: "{{ daemon_src_dir }}"
+            path: "{{ daemon_extracted_dir }}"
             state: absent
       when: tomcat_daemon_extract_package_result.files is defined
 
@@ -63,7 +66,7 @@
       synchronize:
         src: "{{ tomcat_home }}/{{ item }}"
         dest: "{{ tomcat_base }}/{{ item }}"
-        archive: true
+        archive: yes
         rsync_opts:
           - "--update"
       loop: "{{ tomcat_daemon_scripts }}"
@@ -82,15 +85,17 @@
       {{ tomcat_native_daemon_dir }}/{{ tomcat_native_daemon_filename }}
     daemon_package:  >-
       {{ tomcat_home + "/bin/" + tomcat_native_daemon_package_filename }}
-    daemon_src_dir: >-
+
+    daemon_extracted_dir: >-
       {{ tomcat_native_daemon_dir
          + "/"
          + tomcat_daemon_extract_package_result.files
            | select("search", "README")
            | list
            | first
-           | dirname
-         + "/unix" }}
+           | dirname }}
+
+    daemon_src_dir: "{{ daemon_extracted_dir }}/unix"
   tags:
     - role::tomcat
     - role::tomcat::install

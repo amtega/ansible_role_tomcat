@@ -9,7 +9,7 @@
         attribute: "channelSendOptions"
         value: "{{ tomcat_cluster_channel_send_options | string }}"
         state: present
-        pretty_print: true
+        pretty_print: yes
 
     - name: setup cluster section properties in server config
       xml:
@@ -18,7 +18,7 @@
         set_children: >-
           {{ lookup('template', 'cluster.yml.j2') | from_yaml }}
         input_type: yaml
-        pretty_print: true
+        pretty_print: yes
       register: tomcat_configure_cluster_result
   when: tomcat_cluster
   vars:
