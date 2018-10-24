@@ -2,6 +2,15 @@
 # Base directory install tasks
 
 - block:
+    - name: setup tomcat base directory
+      file:
+        path: "{{ tomcat_base }}"
+        state: directory
+        owner: "{{ tomcat_user }}"
+        group: "{{ tomcat_group }}"
+        mode: "{{ tomcat_files_permissions }}"
+      register: tomcat_create_base_result
+
     - name: setup tomcat base directory tree
       file:
         path: "{{ tomcat_base }}/{{ item }}"
@@ -16,6 +25,9 @@
       synchronize:
         src: "{{ tomcat_home }}/{{ item }}/"
         dest: "{{ tomcat_base }}/{{ item }}"
+        owner: yes
+        group: yes
+        perms: yes
         archive: no
         rsync_opts:
           - "--recursive"
@@ -23,6 +35,20 @@
           - "--update"
       loop: "{{ tomcat_subdirs_to_populate }}"
       delegate_to: "{{ inventory_hostname }}"
+
+    - name: create cluster directories
+      file:
+        path: "{{ tomcat_base }}/{{ item }}"
+        state: directory
+        owner: "{{ tomcat_user }}"
+        group: "{{ tomcat_group }}"
+        mode: "{{ tomcat_files_permissions }}"
+      loop: "{{ cluster_directories | reject('none') | list }}"
+      vars:
+        cluster_directories:
+        - "{{ tomcat_cluster_deploy_temp_dir | default('null') }}"
+        - "{{ tomcat_cluster_deploy_dir | default('null') }}"
+        - "{{ tomcat_cluster_deploy_watch_dir | default('null') }}"
   tags:
     - role::tomcat
     - role::tomcat::install

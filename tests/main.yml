@@ -53,7 +53,7 @@
     tomcat_subrealms:
       - className: org.apache.catalina.realm.UserDatabaseRealm
         resourceName: UserDatabase
-    tomcat_cluster: true
+    tomcat_cluster: yes
   tasks:
     - name: read subrealm config
       xml:
@@ -109,7 +109,7 @@
     tomcat_server_http_port: 8081
     tomcat_server_https_port: 8444
     tomcat_server_ajp_port: 8010
-    tomcat_cluster: true
+    tomcat_cluster: yes
     tomcat_realm:
       className: org.apache.catalina.realm.LockOutRealm
     tomcat_subrealms:
@@ -147,8 +147,8 @@
     tomcat_version: 7.0.88
     tomcat_home: /opt/apache-tomcat-7.0.88
     tomcat_base: /srv/tomcat/server3
-    tomcat_use_native_daemon: false
-    tomcat_use_native_apr_library: false
+    tomcat_use_native_daemon: no
+    tomcat_use_native_apr_library: no
     tomcat_java_variables:
       var1: VAR1
       var2: VAR2
@@ -198,7 +198,7 @@
     tomcat_server_http_port: 8083
     tomcat_server_https_port: 8446
     tomcat_server_ajp_port: 8012
-    tomcat_server_autodeploy: false
+    tomcat_server_autodeploy: no
     tomcat_link: /opt/tomcat6
     tomcat_artifact:
       type: http

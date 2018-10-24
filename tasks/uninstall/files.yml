@@ -2,12 +2,18 @@
 # Uninstall files tasks
 
 - block:
+    - name: remove tomcat facts file
+      file:
+        path: "{{ tomcat_facts_file_path }}"
+        state: absent
+
     - name: search tomcat files to uninstall
       find:
         paths:
           - "{{ tomcat_base }}"
           - "{{ tomcat_home }}"
         file_type: file
+        recurse: no
       when: tomcat_state == "absent"
       register: tomcat_uninstall_search_files_result
 
@@ -38,17 +44,17 @@
     - name: remove tomcat base directory if possible
       shell: "rmdir {{ tomcat_base }}"
       args:
-        warn: false
+        warn: no
       register: tomcat_uninstall_remove_base_result
-      failed_when: false
+      failed_when: no
       changed_when: tomcat_uninstall_remove_base_result.rc == 0
 
     - name: remove tomcat home directory if possible
       shell: "rmdir {{ tomcat_home }}"
       args:
-        warn: false
+        warn: no
       register: tomcat_uninstall_remove_home_result
-      failed_when: false
+      failed_when: no
       changed_when: tomcat_uninstall_remove_home_result.rc == 0
 
     - name: check tomcat home symlink
@@ -63,7 +69,8 @@
         state: absent
       when:
         - tomcat_home_link is defined
-        - tomcat_check_home_symlink.lnk_source == tomcat_home_link
+        - tomcat_check_home_symlink.stat.lnk_source is defined
+        - tomcat_check_home_symlink.stat.lnk_source == tomcat_home
 
     - name: check tomcat base symlink
       stat:
@@ -77,7 +84,8 @@
         state: absent
       when:
         - tomcat_base_link is defined
-        - tomcat_check_base_symlink.lnk_source == tomcat_base_link
+        - tomcat_check_base_symlink.stat.lnk_source is defined
+        - tomcat_check_base_symlink.stat.lnk_source == tomcat_base
 
     - name: remove tomcat server package if possible
       file:

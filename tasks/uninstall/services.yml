@@ -6,9 +6,9 @@
       service:
         name: "{{ tomcat_name }}"
         state: stopped
-        enabled: false
+        enabled: no
       when: "'tomcat_' + tomcat_name in ansible_local"
-      ignore_errors: true
+      ignore_errors: yes
 
     - block:
         - name: uninstall tomcat systemd services

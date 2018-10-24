@@ -151,7 +151,6 @@ tomcat_files_permissions: "u=rwx,go=rx"
 tomcat_server_config: conf/server.xml
 tomcat_users_config: conf/tomcat-users.xml
 tomcat_manager_config: conf/Catalina/localhost/manager.xml
-tomcat_limits_config: /etc/security/limits.d
 
 # Tomcat subdirs
 
@@ -204,6 +203,10 @@ tomcat_apr_library_package_filename: tomcat-native.tar.gz
 tomcat_apr_libray_patterns: "libtcnative-1.so*"
 tomcat_apr_libray_filename: libtcnative-1.so.0
 tomcat_apr_config_bin_path: /usr/bin/apr-1-config
+
+# Facts path
+
+tomcat_facts_file_path: "/etc/ansible/facts.d/tomcat_{{ tomcat_name }}.fact"
 
 # Proxy environment settings
 

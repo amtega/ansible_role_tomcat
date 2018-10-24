@@ -8,7 +8,7 @@
         xpath: "/Server/GlobalNamingResources/Resource[@name='UserDatabase']"
         attribute: readonly
         value: "true"
-        pretty_print: true
+        pretty_print: yes
       register: tomcat_configure_cms_database_result
 
     - name: setup contained managed security roles and users

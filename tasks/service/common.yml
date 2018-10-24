@@ -6,7 +6,7 @@
       service:
         name: "{{ tomcat_name }}"
         state: stopped
-        enabled: false
+        enabled: no
       when: tomcat_state == "present"
 
     - name: enable and start tomcat
@@ -33,7 +33,7 @@
              | ternary("restarted", tomcat_state) }}
         enabled: >-
           {{ (required_state in ['started', 'restarted'])
-             | ternary(true, false) }}
+             | ternary("yes", "no") }}
   when: tomcat_configure_server_result is defined
   tags:
     - role::tomcat

@@ -12,11 +12,11 @@
          | ternary(item.attribute, omit) }}
     value: >-
       {{ (value != "<NONE/>")
-         | ternary(valuestr, omit) }}
+         | ternary(value_string, omit) }}
     state: >-
       {{ (value != "<NONE/>")
          | ternary(omit, "absent") }}
-    pretty_print: true
+    pretty_print: yes
   register: tomcat_configure_server_result
   loop: "{{ config }}"
   loop_control:
@@ -33,7 +33,7 @@
                 'tomcat_'
                 + item.value,
                 default="<NONE/>") }}
-    valuestr: >-
+    value_string: >-
       {{ (value is sameas(true) or value is sameas(false))
          | ternary(value | string | lower, value | string) }}
     config:
