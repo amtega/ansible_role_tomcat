@@ -2,14 +2,14 @@
 # Install tasks
 
 - block:
-    - import_tasks: "{{ role_path }}/tasks/install/packages.yml"
-    - import_tasks: "{{ role_path }}/tasks/install/group.yml"
-    - import_tasks: "{{ role_path }}/tasks/install/user.yml"
-    - import_tasks: "{{ role_path }}/tasks/install/home.yml"
-    - import_tasks: "{{ role_path }}/tasks/install/base.yml"
-    - import_tasks: "{{ role_path }}/tasks/install/daemon.yml"
-    - import_tasks: "{{ role_path }}/tasks/install/apr.yml"
-    - import_tasks: "{{ role_path }}/tasks/install/catalina.yml"
+    - include_tasks: "{{ role_path }}/tasks/install/packages.yml"
+    - include_tasks: "{{ role_path }}/tasks/install/group.yml"
+    - include_tasks: "{{ role_path }}/tasks/install/user.yml"
+    - include_tasks: "{{ role_path }}/tasks/install/home.yml"
+    - include_tasks: "{{ role_path }}/tasks/install/base.yml"
+    - include_tasks: "{{ role_path }}/tasks/install/daemon.yml"
+    - include_tasks: "{{ role_path }}/tasks/install/apr.yml"
+    - include_tasks: "{{ role_path }}/tasks/install/catalina.yml"
   tags:
     - role::tomcat
     - role::tomcat::install

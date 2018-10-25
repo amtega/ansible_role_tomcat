@@ -80,6 +80,12 @@ tomcat_server_ajp_port: 8009
 
 tomcat_server_ajp_max_threads: 400
 
+# Enable DNS lookups. Keep in mind that this must be true if you want to use
+# access control based on host names (see vars `tomcat_manager_hostnames_*`
+# below)
+
+tomcat_server_enable_lookups: true
+
 # Catalina engine identifier which must be used in load balancing for session
 # affinity
 

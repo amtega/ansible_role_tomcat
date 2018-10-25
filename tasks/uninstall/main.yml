@@ -2,8 +2,8 @@
 # Configuration tasks
 
 - block:
-    - import_tasks: "{{ role_path }}/tasks/uninstall/services.yml"
-    - import_tasks: "{{ role_path }}/tasks/uninstall/files.yml"
+    - include_tasks: "{{ role_path }}/tasks/uninstall/services.yml"
+    - include_tasks: "{{ role_path }}/tasks/uninstall/files.yml"
   tags:
     - role::tomcat
     - role::tomcat::uninstall

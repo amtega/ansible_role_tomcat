@@ -4,9 +4,9 @@
          antiResourceLocking="false"
          docBase="${catalina.home}/webapps/manager">
   <Valve className="org.apache.catalina.valves.RemoteAddrValve"
-         allow="{{ tomcat_manager_addresses_allow | join('|') }}"/>
+         allow="{{ tomcat_manager_addresses_allow | join('|') }}"
          deny="{{ tomcat_manager_addresses_deny | join('|') }}"/>
   <Valve className="org.apache.catalina.valves.RemoteHostValve"
-         allow="{{ tomcat_manager_hostnames_allow | join('|') }}"/>
+         allow="{{ tomcat_manager_hostnames_allow | join('|') }}"
          deny="{{ tomcat_manager_hostnames_deny | join('|') }}"/>
 </Context>

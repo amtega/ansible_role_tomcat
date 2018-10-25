@@ -2,9 +2,9 @@
 # Install tasks
 
 - block:
-    - import_tasks: "{{ role_path }}/tasks/service/systemd.yml"
-    - import_tasks: "{{ role_path }}/tasks/service/systemv.yml"
-    - import_tasks: "{{ role_path }}/tasks/service/common.yml"
+    - include_tasks: "{{ role_path }}/tasks/service/systemd.yml"
+    - include_tasks: "{{ role_path }}/tasks/service/systemv.yml"
+    - include_tasks: "{{ role_path }}/tasks/service/common.yml"
   tags:
     - role::tomcat
     - role::tomcat::service

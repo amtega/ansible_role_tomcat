@@ -2,13 +2,13 @@
 # Configuration tasks
 
 - block:
-    - import_tasks: "{{ role_path }}/tasks/configure/environment.yml"
-    - import_tasks: "{{ role_path }}/tasks/configure/server.yml"
-    - import_tasks: "{{ role_path }}/tasks/configure/realms.yml"
-    - import_tasks: "{{ role_path }}/tasks/configure/cms.yml"
-    - import_tasks: "{{ role_path }}/tasks/configure/manager.yml"
-    - import_tasks: "{{ role_path }}/tasks/configure/cluster.yml"
-    - import_tasks: "{{ role_path }}/tasks/configure/facts.yml"
+    - include_tasks: "{{ role_path }}/tasks/configure/environment.yml"
+    - include_tasks: "{{ role_path }}/tasks/configure/server.yml"
+    - include_tasks: "{{ role_path }}/tasks/configure/realms.yml"
+    - include_tasks: "{{ role_path }}/tasks/configure/cms.yml"
+    - include_tasks: "{{ role_path }}/tasks/configure/manager.yml"
+    - include_tasks: "{{ role_path }}/tasks/configure/cluster.yml"
+    - include_tasks: "{{ role_path }}/tasks/configure/facts.yml"
   tags:
     - role::tomcat
     - role::tomcat::configure
