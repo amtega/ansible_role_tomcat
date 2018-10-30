@@ -3,8 +3,14 @@
 
 - block:
     - include_tasks: "{{ role_path }}/tasks/service/systemd.yml"
+      tags:
+        - role::tomcat::service::systemd
     - include_tasks: "{{ role_path }}/tasks/service/systemv.yml"
+      tags:
+        - role::tomcat::service::systemv
     - include_tasks: "{{ role_path }}/tasks/service/common.yml"
+      tags:
+        - role::tomcat::service::common
   tags:
     - role::tomcat
     - role::tomcat::service

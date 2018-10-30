@@ -3,13 +3,29 @@
 
 - block:
     - include_tasks: "{{ role_path }}/tasks/install/packages.yml"
+      tags:
+        - role::tomcat::install::packages
     - include_tasks: "{{ role_path }}/tasks/install/group.yml"
+      tags:
+        - role::tomcat::install::group
     - include_tasks: "{{ role_path }}/tasks/install/user.yml"
+      tags:
+        - role::tomcat::install::user
     - include_tasks: "{{ role_path }}/tasks/install/home.yml"
+      tags:
+        - role::tomcat::install::home
     - include_tasks: "{{ role_path }}/tasks/install/base.yml"
+      tags:
+        - role::tomcat::install::base
     - include_tasks: "{{ role_path }}/tasks/install/daemon.yml"
+      tags:
+        - role::tomcat::install::daemon
     - include_tasks: "{{ role_path }}/tasks/install/apr.yml"
+      tags:
+        - role::tomcat::install::apr
     - include_tasks: "{{ role_path }}/tasks/install/catalina.yml"
+      tags:
+        - role::tomcat::install::catalina
   tags:
     - role::tomcat
     - role::tomcat::install
