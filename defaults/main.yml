@@ -186,15 +186,12 @@ tomcat_cms_users:
 # Manager web interface access settings
 ################################################################################
 
-# These variables contains the list of regular expressions that define the
-# remote addresses and hostnames to allow or deny access
+# These variables contains the access control configuration for manager
 
-tomcat_manager_addresses_allow:
-  - d+\.d+\.\d+\.\d+
-tomcat_manager_addresses_deny: []
-tomcat_manager_hostnames_allow:
+tomcat_manager_access_control_valve: RemoteHostValve
+tomcat_manager_access_control_allow:
   - .*
-tomcat_manager_hostnames_deny: []
+tomcat_manager_access_control_deny: []
 
 ################################################################################
 # Tomcat download setttings

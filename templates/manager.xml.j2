@@ -3,10 +3,7 @@
 <Context privileged="true"
          antiResourceLocking="false"
          docBase="${catalina.home}/webapps/manager">
-  <Valve className="org.apache.catalina.valves.RemoteAddrValve"
-         allow="{{ tomcat_manager_addresses_allow | join('|') }}"
-         deny="{{ tomcat_manager_addresses_deny | join('|') }}"/>
-  <Valve className="org.apache.catalina.valves.RemoteHostValve"
-         allow="{{ tomcat_manager_hostnames_allow | join('|') }}"
-         deny="{{ tomcat_manager_hostnames_deny | join('|') }}"/>
+  <Valve className="org.apache.catalina.valves.{{ tomcat_manager_access_control_valve }}"
+         allow="{{ tomcat_manager_access_control_allow | join('|') }}"
+         deny="{{ tomcat_manager_access_control_deny | join('|') }}"/>
 </Context>
