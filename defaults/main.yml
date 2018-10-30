@@ -99,17 +99,9 @@ tomcat_server_enable_lookups: true
 
 tomcat_user: tomcat
 
-# UID for the system user (optional)
-
-#tomcat_user_uid: 2000
-
 # System group
 
 tomcat_group: tomcat
-
-# GID for the system group (optional)
-
-#tomcat_group_gid: 2000
 
 ################################################################################
 # Java settings

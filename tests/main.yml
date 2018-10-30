@@ -26,12 +26,10 @@
     tomcat_home: /opt/apache-tomcat-8.0.9
     tomcat_base: /srv/tomcat/server1
     tomcat_link: /opt/tomcat8
-    tomcat_user_uid: 3000
     tomcat_user_soft_nofile: 1024
     tomcat_user_hard_nofile: 1024
     tomcat_user_soft_nproc: 500
     tomcat_user_hard_nproc: 500
-    tomcat_group_uid: 3000
     tomcat_server_port: 8005
     tomcat_server_http_port: 8080
     tomcat_server_https_port: 8443
@@ -103,8 +101,6 @@
     tomcat_home: /opt/apache-tomcat-8.0.9
     tomcat_base: /srv/tomcat/server2
     tomcat_link: /opt/tomcat8
-    tomcat_user_uid: 3000
-    tomcat_group_uid: 3000
     tomcat_server_port: 8006
     tomcat_server_http_port: 8081
     tomcat_server_https_port: 8444
@@ -211,8 +207,6 @@
     tomcat_realm:
       className: org.apache.catalina.realm.UserDatabaseRealm
       resourceName: UserDatabase
-    tomcat_user_uid: 2000
-    tomcat_group_uid: 2000
   tasks:
     # We don't check tomcat_server_port because native daemon doesn't use it
 

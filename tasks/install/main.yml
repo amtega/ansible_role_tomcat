@@ -5,12 +5,6 @@
     - include_tasks: "{{ role_path }}/tasks/install/packages.yml"
       tags:
         - role::tomcat::install::packages
-    - include_tasks: "{{ role_path }}/tasks/install/group.yml"
-      tags:
-        - role::tomcat::install::group
-    - include_tasks: "{{ role_path }}/tasks/install/user.yml"
-      tags:
-        - role::tomcat::install::user
     - include_tasks: "{{ role_path }}/tasks/install/home.yml"
       tags:
         - role::tomcat::install::home
