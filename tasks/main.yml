@@ -12,6 +12,8 @@
   tags:
     - role::tomcat
     - role::tomcat::uninstall
+    - role::tomcat::uninstall::services
+    - role::tomcat::uninstall::files
   when: tomcat_state == "absent"
 
 - block:
@@ -20,16 +22,34 @@
       tags:
         - role::tomcat
         - role::tomcat::install
+        - role::tomcat::install::packages
+        - role::tomcat::install::group
+        - role::tomcat::install::user
+        - role::tomcat::install::home
+        - role::tomcat::install::base
+        - role::tomcat::install::daemon
+        - role::tomcat::install::apr
+        - role::tomcat::install::catalina
 
     - name: configure tomcat
       include_tasks: configure/main.yml
       tags:
         - role::tomcat
         - role::tomcat::configure
+        - role::tomcat::configure::environment
+        - role::tomcat::configure::server
+        - role::tomcat::configure::realms
+        - role::tomcat::configure::cms
+        - role::tomcat::configure::manager
+        - role::tomcat::configure::cluster
+        - role::tomcat::configure::facts
 
     - name: setup tomcat service
       include_tasks: service/main.yml
       tags:
         - role::tomcat
         - role::tomcat::service
+        - role::tomcat::service::systemd
+        - role::tomcat::service::systemv
+        - role::tomcat::service::common
   when: tomcat_state in ["present", "started"]

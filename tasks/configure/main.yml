@@ -3,12 +3,26 @@
 
 - block:
     - include_tasks: "{{ role_path }}/tasks/configure/environment.yml"
+      tags:
+        - role::tomcat::configure::environment
     - include_tasks: "{{ role_path }}/tasks/configure/server.yml"
+      tags:
+        - role::tomcat::configure::server
     - include_tasks: "{{ role_path }}/tasks/configure/realms.yml"
+      tags:
+        - role::tomcat::configure::realms
     - include_tasks: "{{ role_path }}/tasks/configure/cms.yml"
+      tags:
+        - role::tomcat::configure::cms
     - include_tasks: "{{ role_path }}/tasks/configure/manager.yml"
+      tags:
+        - role::tomcat::configure::manager
     - include_tasks: "{{ role_path }}/tasks/configure/cluster.yml"
+      tags:
+        - role::tomcat::configure::cluster
     - include_tasks: "{{ role_path }}/tasks/configure/facts.yml"
+      tags:
+        - role::tomcat::configure::facts
   tags:
     - role::tomcat
     - role::tomcat::configure
