@@ -21,8 +21,9 @@
           {{ (not realm_attribute_to_remove)
              | ternary("present", "absent") }}
         pretty_print: yes
-      register: tomcat_configure_realm_result
       when: tomcat_realm is defined
+      notify:
+        - restart tomcat
       loop: "{{ tomcat_realm.keys() }}"
       loop_control:
         label: "{{ realm_attribute }} {{ realm_value }}"
@@ -43,7 +44,8 @@
         input_type: yaml
         state: present
         pretty_print: yes
-      register: tomcat_configure_subrealms_result
+      notify:
+        - restart tomcat
 
     - name: remove tomcat realm
       xml:
@@ -52,8 +54,9 @@
           /Server/Service[@name='Catalina']/Engine[@name='Catalina']/Realm
         state: absent
         pretty_print: yes
-      register: tomcat_remove_realm_result
       when: tomcat_realm is not defined or tomcat_realm is none
+      notify:
+        - restart tomcat
 
     - name: remove tomcat subrealms
       xml:
@@ -62,11 +65,12 @@
           /Server/Service[@name='Catalina']/Engine[@name='Catalina']/Realm/Realm
         state: absent
         pretty_print: yes
-      register: tomcat_remove_subrealms_result
       when: >-
         (tomcat_realm is defined and tomcat_subrealms is not defined)
         or tomcat_subrealms is none
         or tomcat_subrealms | length == 0
+      notify:
+        - restart tomcat
   tags:
     - role::tomcat
     - role::tomcat::configure

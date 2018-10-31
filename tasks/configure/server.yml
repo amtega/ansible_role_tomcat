@@ -17,7 +17,8 @@
       {{ (value != "<NONE/>")
          | ternary(omit, "absent") }}
     pretty_print: yes
-  register: tomcat_configure_server_result
+  notify:
+    - restart tomcat
   loop: "{{ config }}"
   loop_control:
     label: >-

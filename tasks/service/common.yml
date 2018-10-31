@@ -12,28 +12,9 @@
     - name: enable and start tomcat
       service:
         name: "{{ tomcat_name }}"
-        state: "{{ required_state }}"
-        enabled: "{{ enabled }}"
+        state: started
+        enabled: yes
       when: tomcat_state == "started"
-      vars:
-        required_state: >-
-          {{ ((tomcat_configure_server_result | default({}) is changed
-               or tomcat_configure_realm_result | default({}) is changed
-               or tomcat_remove_realm_result | default({}) is changed
-               or tomcat_configure_subrealms_result | default({}) is changed
-               or tomcat_remove_subrealms_result | default({}) is changed
-               or tomcat_configure_cms_database_result | default({}) is changed
-               or tomcat_configure_cms_roles_users_result | default({}) is changed
-               or tomcat_configure_manager_result | default({}) is changed
-               or tomcat_daemon_remove_result | default({}) is changed
-               or tomcat_daemon_install_result | default({}) is changed
-               or tomcat_apr_remove_result | default({}) is changed
-               or tomcat_apr_install_result | default({}) is changed)
-              and tomcat_state == "started")
-             | ternary("restarted", tomcat_state) }}
-        enabled: >-
-          {{ (required_state in ['started', 'restarted'])
-             | ternary("yes", "no") }}
   tags:
     - role::tomcat
     - role::tomcat::service
