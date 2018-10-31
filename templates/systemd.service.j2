@@ -4,7 +4,11 @@ Description={{ tomcat_name }}
 After=network.target
 
 [Service]
+{% if tomcat_use_native_daemon %}
+Type=simple
+{% else %}
 Type=forking
+{% endif %}
 PIDFile={{ tomcat_base }}/{{ tomcat_pid_file }}
 User={{ tomcat_user }}
 Group={{tomcat_group }}
@@ -14,14 +18,15 @@ Restart=on-failure
 Environment=JAVA_HOME={{ tomcat_java_home }}
 Environment=CATALINA_HOME={{ tomcat_home }}
 Environment=CATALINA_BASE={{ tomcat_base }}
+Environment=TOMCAT_USER={{ tomcat_user }}
 ExecStart={{ tomcat_base }}/bin/daemon.sh start
 ExecStop={{ tomcat_base }}/bin/daemon.sh stop
 {% else %}
 ExecStart={{ tomcat_base }}/bin/startup.sh
 ExecStop={{ tomcat_base }}/bin/shutdown.sh
 {% endif %}
-TimeoutStartSec=30
-TimeoutStopSec=30
+RestartSec=2
+TimeoutSec=30
 SuccessExitStatus=143
 
 [Install]
