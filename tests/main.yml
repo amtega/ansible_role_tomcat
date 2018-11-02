@@ -73,7 +73,7 @@
     - name: check that tomcat is listening
       wait_for:
         port: "{{ item}}"
-        timeout: 10
+        timeout: 20
       loop:
         - "{{ tomcat_server_http_port }}"
         - "{{ tomcat_server_ajp_port }}"
@@ -118,7 +118,7 @@
     - name: check that tomcat is listening
       wait_for:
         port: "{{ item}}"
-        timeout: 10
+        timeout: 20
       loop:
         - "{{ tomcat_server_http_port }}"
         - "{{ tomcat_server_ajp_port }}"
@@ -166,7 +166,7 @@
     - name: check that tomcat is listening
       wait_for:
         port: "{{ item}}"
-        timeout: 10
+        timeout: 20
       loop:
         - "{{ tomcat_server_port }}"
         - "{{ tomcat_server_http_port }}"
@@ -217,7 +217,7 @@
     - name: check that tomcat is listening
       wait_for:
         port: "{{ item}}"
-        timeout: 10
+        timeout: 20
       loop:
         - "{{ tomcat_server_http_port }}"
         - "{{ tomcat_server_ajp_port }}"
@@ -271,11 +271,11 @@
       assert:
         that: check_server1_home_result.files | length == 0
 
-# - name: cleanup docker sandbox
-#   hosts: localhost
-#   roles:
-#     - role: amtega.docker_sandbox
-#       docker_sandbox_state: absent
-#   tags:
-#     - sandbox
-#     - cleanup
+- name: cleanup docker sandbox
+  hosts: localhost
+  roles:
+    - role: amtega.docker_sandbox
+      docker_sandbox_state: absent
+  tags:
+    - sandbox
+    - cleanup
