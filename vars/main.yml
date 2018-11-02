@@ -187,6 +187,7 @@ tomcat_daemon_scripts:
 # Systemd variables
 
 tomcat_systemd_services_path: /usr/lib/systemd/system
+tomcat_systemd_success_exit_status: 143
 
 # System V init variables
 
@@ -196,6 +197,16 @@ tomcat_systemv_init_path: /etc/init.d
 
 tomcat_native_daemon_package_filename: commons-daemon-native.tar.gz
 tomcat_native_daemon_filename: jsvc
+tomcat_native_daemon_start_wait_time: 10
+tomcat_native_daemon_classpath:
+  - "{{ tomcat_home }}/bin/bootstrap.jar"
+  - "{{ tomcat_home}}/bin/commons-daemon.jar"
+  - "{{ tomcat_home }}/bin/tomcat-juli.jar"
+tomcat_native_daemon_logging_config_path: >-
+  {{ tomcat_base }}/conf/logging.properties
+tomcat_native_daemon_catalina_main: org.apache.catalina.startup.Bootstrap
+tomcat_native_daemon_catalina_out: "{{ tomcat_base }}/logs/catalina-daemon.out"
+tomcat_native_daemon_catalina_tmp: "{{ tomcat_base }}/temp"
 
 # APR native library variables
 

@@ -4,30 +4,45 @@ Description={{ tomcat_name }}
 After=network.target
 
 [Service]
-{% if tomcat_use_native_daemon %}
-Type=simple
-{% else %}
 Type=forking
-{% endif %}
+{% if not tomcat_use_native_daemon %}
 PIDFile={{ tomcat_base }}/{{ tomcat_pid_file }}
+{% endif %}
 User={{ tomcat_user }}
 Group={{tomcat_group }}
 Restart=on-failure
 {% if tomcat_use_native_daemon
       and tomcat_version is version("7", ">=") %}
-Environment=JAVA_HOME={{ tomcat_java_home }}
-Environment=CATALINA_HOME={{ tomcat_home }}
-Environment=CATALINA_BASE={{ tomcat_base }}
-Environment=TOMCAT_USER={{ tomcat_user }}
-ExecStart={{ tomcat_base }}/bin/daemon.sh start
-ExecStop={{ tomcat_base }}/bin/daemon.sh stop
+EnvironmentFile={{ tomcat_base }}/bin/setenv.sh
+ExecStart={{ tomcat_home }}/bin/{{ tomcat_native_daemon_filename }} \
+  -java-home {{ tomcat_java_home }} \
+  -user {{ tomcat_user }} \
+  -pidfile {{ tomcat_base }}/{{ tomcat_pid_file }} \
+  -wait {{ tomcat_native_daemon_start_wait_time }} \
+  -outfile {{ tomcat_native_daemon_catalina_out }} \
+  -errfile "&1" \
+  -classpath {{ tomcat_native_daemon_classpath | join(':') }} \
+  -Djava.util.logging.config.file={{ tomcat_native_daemon_logging_config_path }} \
+   $JAVA_OPTS $CATALINA_OPTS \
+  -Dcatalina.base={{ tomcat_base }} \
+  -Dcatalina.home={{ tomcat_home }} \
+  -Djava.io.tmpdir={{ tomcat_native_daemon_catalina_tmp }} \
+  {{ tomcat_native_daemon_catalina_main }}
+ExecStop={{ tomcat_home }}/bin/{{ tomcat_native_daemon_filename }} \
+  -stop \
+  -pidfile {{ tomcat_base }}/{{ tomcat_pid_file }} \
+  -classpath {{ tomcat_native_daemon_classpath | join(':') }} \
+  -Dcatalina.base={{ tomcat_base }} \
+  -Dcatalina.home={{ tomcat_home }} \
+  -Djava.io.tmpdir={{ tomcat_native_daemon_catalina_tmp }} \
+  {{ tomcat_native_daemon_catalina_main }}
 {% else %}
 ExecStart={{ tomcat_base }}/bin/startup.sh
 ExecStop={{ tomcat_base }}/bin/shutdown.sh
 {% endif %}
-RestartSec=2
-TimeoutSec=30
-SuccessExitStatus=143
+RestartSec={{ tomcat_restart_seconds }}
+TimeoutSec={{ tomcat_start_stop_timeout_seconds }}
+SuccessExitStatus={{ tomcat_systemd_success_exit_status }}
 
 [Install]
 WantedBy=multi-user.target

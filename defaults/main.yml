@@ -52,6 +52,15 @@ tomcat_native_apr_library_dir: "{{ tomcat_home }}/lib"
 
 tomcat_pid_file: logs/tomcat.pid
 
+# Number of seconds to pause in restart between stop and start
+
+tomcat_restart_seconds: 2
+
+# Number of seconds to wait for startup or shutdown. This setting is only
+# applied when systemd is used
+
+tomcat_start_stop_timeout_seconds: 30
+
 # Enable or not tomcat autodeploy
 
 tomcat_server_autodeploy: yes

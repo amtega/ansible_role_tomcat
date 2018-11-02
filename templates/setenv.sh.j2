@@ -11,11 +11,11 @@
 
 JAVA_HOME={{ tomcat_java_home }}
 JAVA_OPTS="{{ java_options.strings | join(' ') }}"
-
-{% if not tomcat_use_native_daemon
-      or tomcat_version is version("7", "<") %}
 CATALINA_HOME={{ tomcat_home }}
 CATALINA_BASE={{ tomcat_base }}
 CATALINA_PID={{ tomcat_base }}/{{ tomcat_pid_file }}
 CATALINA_OPTS="-Djava.library.path={{ tomcat_native_apr_library_dir }}"
+{% if tomcat_use_native_daemon %}
+CATALINA_MAIN="{{ tomcat_native_daemon_catalina_main }}"
+JSVC="{{ tomcat_native_daemon_dir }}/{{ tomcat_native_daemon_filename }}"
 {% endif %}

@@ -56,9 +56,9 @@ stop()
         echo -n $"Stopping $prog: "
 {% if tomcat_use_native_daemon
       and tomcat_version is version("7", ">=") %}
-        su $user {{ tomcat_base }}/bin/daemon.sh stop > /dev/null
+        su $user -s /bin/bash {{ tomcat_base }}/bin/daemon.sh stop > /dev/null
 {% else %}
-        su $user {{ tomcat_base }}/bin/shutdown.sh > /dev/null
+        su $user -s /bin/bash {{ tomcat_base }}/bin/shutdown.sh > /dev/null
 {% endif %}
         RETVAL=$?
         rm -Rf $PID_FILE
@@ -68,6 +68,7 @@ stop()
 
 restart() {
         stop
+        pause {{ tomcat_restart_seconds }}
         start
 }
 
