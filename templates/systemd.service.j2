@@ -5,9 +5,7 @@ After=network.target
 
 [Service]
 Type=forking
-{% if not tomcat_use_native_daemon %}
 PIDFile={{ tomcat_base }}/{{ tomcat_pid_file }}
-{% endif %}
 User={{ tomcat_user }}
 Group={{tomcat_group }}
 Restart=on-failure
