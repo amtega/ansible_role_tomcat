@@ -27,7 +27,7 @@
       when: tomcat_state == "absent"
       register: tomcat_uninstall_search_dirs_result
 
-    - name: uninstall tomcat files
+    - name: uninstall tomcat files and directories
       file:
         path: "{{ item }}"
         state: absent
