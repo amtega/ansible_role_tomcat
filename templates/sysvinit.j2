@@ -68,7 +68,7 @@ stop()
 
 restart() {
         stop
-        pause {{ tomcat_restart_seconds }}
+        sleep {{ tomcat_restart_seconds }}
         start
 }
 

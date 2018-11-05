@@ -25,10 +25,10 @@ This is an example playbook:
 - hosts: all
   roles:
     - role: amtega.tomcat
-      tomcat_s:
-        - name: tomcat@server1
-          version: 8.0.9
-          state: started
+      tomcat_name: server1
+      tomcat_version: 8.0.9
+      tomcat_home: /opt/apache-tomcat-8.0.9
+      tomcat_base: /srv/tomcat/server1
 ```
 
 ## Testing
