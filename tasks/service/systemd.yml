@@ -14,9 +14,12 @@
         group: root
         mode: 0644
       register: tomcat_setup_systemd_services_result
+      notify:
+        - restart tomcat
 
     - name: reload systemd daemon
-      command: systemctl daemon-reload
+      systemd:
+        daemon_reload: yes
       when: tomcat_setup_systemd_services_result is changed
   when: ansible_facts.service_mgr == "systemd"
   tags:

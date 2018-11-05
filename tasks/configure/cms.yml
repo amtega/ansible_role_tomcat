@@ -9,7 +9,8 @@
         attribute: readonly
         value: "true"
         pretty_print: yes
-      register: tomcat_configure_cms_database_result
+      notify:
+        - restart tomcat
 
     - name: setup contained managed security roles and users
       template:
@@ -18,7 +19,8 @@
         owner: "{{ tomcat_user | default(tomcat_user) }}"
         group: "{{ tomcat_group | default(tomcat_group) }}"
         mode: 0755
-      register: tomcat_configure_cms_roles_users_result
+      notify:
+        - restart tomcat
   tags:
     - role::tomcat
     - role::tomcat::configure

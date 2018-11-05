@@ -8,7 +8,8 @@
     owner: "{{ tomcat_user }}"
     group: "{{ tomcat_group }}"
     mode: 0755
-  register: tomcat_configure_manager_result
+  notify:
+      - restart tomcat
   tags:
     - role::tomcat
     - role::tomcat::configure

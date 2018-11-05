@@ -32,6 +32,7 @@ user="{{ tomcat_user }}"
 export JAVA_HOME={{ tomcat_java_home }}
 export CATALINA_HOME={{ tomcat_home }}
 export CATALINA_BASE={{ tomcat_base }}
+export TOMCAT_USER={{ tomcat_user }}
 {% endif %}
 
 PID_FILE="{{ tomcat_base }}/{{ tomcat_pid_file }}"
@@ -41,9 +42,9 @@ start()
         echo -n $"Starting $prog: "
 {% if tomcat_use_native_daemon
       and tomcat_version is version("7", ">=") %}
-        su $user {{ tomcat_base }}/bin/daemon.sh start && success > /dev/null || failure
+        su $user -s /bin/bash {{ tomcat_base }}/bin/daemon.sh start && success > /dev/null || failure
 {% else %}
-        su $user {{ tomcat_base }}/bin/startup.sh && success > /dev/null || failure
+        su $user -s /bin/bash {{ tomcat_base }}/bin/startup.sh && success > /dev/null || failure
 {% endif %}
         RETVAL=$?
         echo
@@ -55,9 +56,9 @@ stop()
         echo -n $"Stopping $prog: "
 {% if tomcat_use_native_daemon
       and tomcat_version is version("7", ">=") %}
-        su $user {{ tomcat_base }}/bin/daemon.sh stop > /dev/null
+        su $user -s /bin/bash {{ tomcat_base }}/bin/daemon.sh stop > /dev/null
 {% else %}
-        su $user {{ tomcat_base }}/bin/shutdown.sh > /dev/null
+        su $user -s /bin/bash {{ tomcat_base }}/bin/shutdown.sh > /dev/null
 {% endif %}
         RETVAL=$?
         rm -Rf $PID_FILE
@@ -67,6 +68,7 @@ stop()
 
 restart() {
         stop
+        sleep {{ tomcat_restart_seconds }}
         start
 }
 

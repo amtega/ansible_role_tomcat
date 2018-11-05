@@ -1,35 +1,13 @@
 ---
 # Environment variables configuration tasks
 
-- block:
-    - name: setup tomcat environment variables
-      template:
-        src: setenv.sh.j2
-        dest: "{{ tomcat_base }}/bin/setenv.sh"
-        owner: "{{ tomcat_user }}"
-        group: "{{ tomcat_group }}"
-        mode: "{{ tomcat_files_permissions }}"
-
-    - name: include environment variables into native daemon startup script
-      blockinfile:
-        path: "{{ tomcat_base }}/bin/daemon.sh"
-        insertbefore: "# resolve links.*"
-        block: |
-          # Ensure that any user defined environment variables are used
-          CATALINA_HOME="{{ tomcat_home }}"
-          CATALINA_BASE="{{ tomcat_base }}"
-          CATALINA_PID="{{ tomcat_base
-                           + '/'
-                           + tomcat_pid_file }}"
-          CATALINA_OPTS="{{ '-Djava.library.path='
-                             + tomcat_native_apr_library_dir }}"
-          JSVC="{{ tomcat_native_daemon_dir
-                   + "/"
-                   + tomcat_native_daemon_filename }}"
-        state: present
-      when:
-        - tomcat_use_native_daemon
-        - tomcat_version is version("7", ">=")
+- name: setup tomcat environment variables
+  template:
+    src: setenv.sh.j2
+    dest: "{{ tomcat_base }}/bin/setenv.sh"
+    owner: "{{ tomcat_user }}"
+    group: "{{ tomcat_group }}"
+    mode: "{{ tomcat_files_permissions }}"
   tags:
     - role::tomcat
     - role::tomcat::configure

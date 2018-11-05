@@ -4,25 +4,66 @@ Description={{ tomcat_name }}
 After=network.target
 
 [Service]
-Type=forking
-PIDFile={{ tomcat_base }}/{{ tomcat_pid_file }}
+Type=simple
+EnvironmentFile={{ tomcat_base }}/bin/setenv.sh
 User={{ tomcat_user }}
-Group={{tomcat_group }}
+Group={{ tomcat_group }}
 Restart=on-failure
 {% if tomcat_use_native_daemon
       and tomcat_version is version("7", ">=") %}
-Environment=JAVA_HOME={{ tomcat_java_home }}
-Environment=CATALINA_HOME={{ tomcat_home }}
-Environment=CATALINA_BASE={{ tomcat_base }}
-ExecStart={{ tomcat_base }}/bin/daemon.sh start
-ExecStop={{ tomcat_base }}/bin/daemon.sh stop
+ExecStart={{ tomcat_home }}/bin/{{ tomcat_native_daemon_filename }} \
+  $JAVA_OPTS \
+  $CATALINA_OPTS \
+  -nodetach \
+  -java-home {{ tomcat_java_home }} \
+  -user {{ tomcat_user }} \
+  -pidfile {{ tomcat_base }}/{{ tomcat_pid_file }} \
+  -wait {{ tomcat_native_daemon_start_wait_time }} \
+  -outfile {{ tomcat_native_daemon_out }} \
+  -errfile "&1" \
+  -classpath {{ tomcat_classpath | join(':') }} \
+  -Djava.util.logging.config.file={{ tomcat_logging_config_path }} \
+  -Djava.util.logging.manager={{ tomcat_logging_manager_class }}  \
+  -Dcatalina.base={{ tomcat_base }} \
+  -Dcatalina.home={{ tomcat_home }} \
+  -Djava.io.tmpdir={{ tomcat_tmp_dir }} \
+  {{ tomcat_main_class }}
+ExecStop={{ tomcat_home }}/bin/{{ tomcat_native_daemon_filename }} \
+  $JAVA_OPTS \
+  -stop \
+  -pidfile {{ tomcat_base }}/{{ tomcat_pid_file }} \
+  -classpath {{ tomcat_classpath | join(':') }} \
+  -Dcatalina.base={{ tomcat_base }} \
+  -Dcatalina.home={{ tomcat_home }} \
+  -Djava.io.tmpdir={{ tomcat_tmp_dir }} \
+  {{ tomcat_main_class }}
 {% else %}
-ExecStart={{ tomcat_base }}/bin/startup.sh
-ExecStop={{ tomcat_base }}/bin/shutdown.sh
+ExecStart={{ tomcat_java_home }}/bin/java \
+  $JAVA_OPTS \
+  $CATALINA_OPTS \
+  -classpath {{ tomcat_classpath | join(':') }} \
+  -Dcatalina.base={{ tomcat_base }} \
+  -Dcatalina.home={{ tomcat_home }} \
+  -Djava.io.tmpdir={{ tomcat_tmp_dir }} \
+  -Djava.util.logging.config.file={{ tomcat_logging_config_path }} \
+  -Djava.util.logging.manager={{ tomcat_logging_manager_class }}  \
+  {{ tomcat_main_class }} \
+  start
+ExecStop={{ tomcat_java_home }}/bin/java \
+  $JAVA_OPTS \
+  -classpath {{ tomcat_classpath | join(':') }} \
+  -Dcatalina.base={{ tomcat_base }} \
+  -Dcatalina.home={{ tomcat_home }} \
+  -Djava.io.tmpdir={{ tomcat_tmp_dir }} \
+  -Djava.util.logging.config.file={{ tomcat_logging_config_path }} \
+  -Djava.util.logging.manager={{ tomcat_logging_manager_class }}  \
+  stop
+StandarOutput={{ tomcat_out }}
+StandarError={{ tomcat_out }}
 {% endif %}
-TimeoutStartSec=30
-TimeoutStopSec=30
-SuccessExitStatus=143
+RestartSec={{ tomcat_restart_seconds }}
+TimeoutSec={{ tomcat_start_stop_timeout_seconds }}
+SuccessExitStatus={{ tomcat_systemd_success_exit_status }}
 
 [Install]
 WantedBy=multi-user.target

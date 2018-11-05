@@ -9,6 +9,8 @@
     group: root
     mode: 0755
   when: ansible_facts.service_mgr != "systemd"
+  notify:
+    - restart tomcat
   tags:
     - role::tomcat
     - role::tomcat::service

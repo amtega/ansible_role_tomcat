@@ -52,6 +52,15 @@ tomcat_native_apr_library_dir: "{{ tomcat_home }}/lib"
 
 tomcat_pid_file: logs/tomcat.pid
 
+# Number of seconds to pause in restart between stop and start
+
+tomcat_restart_seconds: 2
+
+# Number of seconds to wait for startup or shutdown. This setting is only
+# applied when systemd is used
+
+tomcat_start_stop_timeout_seconds: 30
+
 # Enable or not tomcat autodeploy
 
 tomcat_server_autodeploy: yes
@@ -97,19 +106,11 @@ tomcat_server_enable_lookups: true
 
 # System user
 
-tomcat_user: tomcat
-
-# UID for the system user (optional)
-
-#tomcat_user_uid: 2000
+tomcat_user: daemon
 
 # System group
 
-tomcat_group: tomcat
-
-# GID for the system group (optional)
-
-#tomcat_group_gid: 2000
+tomcat_group: daemon
 
 ################################################################################
 # Java settings
@@ -241,8 +242,7 @@ tomcat_cluster_nio_autobind: 100
 tomcat_cluster_nio_selector_timeout: 5000
 tomcat_cluster_nio_max_threads: 6
 tomcat_cluster_deploy_temp_dir: cluster/temp
-tomcat_cluster_deploy_dir_manager: cluster/dist
-tomcat_cluster_deploy_dir_node: webapps
+tomcat_cluster_deploy_dir: cluster/dist
 tomcat_cluster_deploy_watch_dir: webapps
 tomcat_cluster_deploy_watch_enabled: yes
 

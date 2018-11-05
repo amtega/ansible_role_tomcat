@@ -12,7 +12,30 @@
       find:
         paths: "{{ tomcat_native_apr_library_dir }}"
         patterns: "{{ tomcat_apr_libray_patterns }}"
+        file_type: any
       register: tomcat_apr_search_installed_result
+
+    - name: get info about installed apr library links
+      stat:
+        path: "{{ item.path }}"
+      loop: >-
+        {{ tomcat_apr_search_installed_result.files
+           | selectattr("islnk", "equalto", true)
+           | list }}
+      loop_control:
+        label: "{{ item.path }}"
+      register: tomcat_apr_get_installed_links_result
+
+    - name: check installed apr library links
+      stat:
+        path: "{{ item.lnk_source }}"
+      loop: >-
+        {{ tomcat_apr_get_installed_links_result.results
+           | map(attribute="stat")
+           | list }}
+      loop_control:
+        label: "{{ item.path }}"
+      register: tomcat_apr_check_installed_links_result
 
     - name: remove native apr library
       file:
@@ -26,7 +49,13 @@
         or tomcat_java_home
            != ansible_local_facts.java_home
               | default(tomcat_java_home)
-      register: tomcat_apr_remove_result
+        or tomcat_apr_check_installed_links_result.results
+           | map(attribute="stat")
+           | selectattr("exists", "equalto", false)
+           | list
+           | length > 0
+      notify:
+        - restart tomcat
       loop: >-
         {{ tomcat_apr_search_installed_result.files
            | map(attribute="path")
@@ -90,7 +119,8 @@
               loop:  "{{ apr_files }}"
               loop_control:
                 label: "{{ item | basename }}"
-              register: tomcat_apr_install_result
+              notify:
+                - restart tomcat
 
             - name: setup native apr library files properties
               file:

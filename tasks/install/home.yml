@@ -2,6 +2,15 @@
 # Home directory install tasks
 
 - block:
+    - name: setup tomcat home directory
+      file:
+        path: "{{ tomcat_home }}"
+        state: directory
+        owner: "{{ tomcat_user }}"
+        group: "{{ tomcat_group }}"
+        mode: "{{ tomcat_files_permissions }}"
+        recurse: yes
+
     - block:
         - name: check tomcat home directory
           stat:
@@ -21,14 +30,6 @@
             artifact_http_proxy: "{{ tomcat_http_proxy }}"
             artifact_https_proxy: "{{ tomcat_https_proxy }}"
             artifact_no_proxy: "{{ tomcat_no_proxy }}"
-
-        - name: create tomcat home directory
-          file:
-            path: "{{ tomcat_home }}"
-            state: directory
-            owner: "{{ tomcat_user }}"
-            group: "{{ tomcat_group }}"
-            mode: "{{ tomcat_files_permissions }}"
 
         - name: extract tomcat server package
           unarchive:
