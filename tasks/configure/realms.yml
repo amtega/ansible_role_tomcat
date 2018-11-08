@@ -21,7 +21,9 @@
           {{ (not realm_attribute_to_remove)
              | ternary("present", "absent") }}
         pretty_print: yes
-      when: tomcat_realm is defined
+      when:
+        - tomcat_realm is defined
+        - tomcat_realm is not none
       notify:
         - restart tomcat
       loop: "{{ tomcat_realm.keys() }}"
@@ -66,7 +68,9 @@
         state: absent
         pretty_print: yes
       when: >-
-        (tomcat_realm is defined and tomcat_subrealms is not defined)
+        (tomcat_realm is defined
+         and tomcat_realm is not none
+         and (tomcat_subrealms is not defined or tomcat_subrealms is none))
         or tomcat_subrealms is none
         or tomcat_subrealms | length == 0
       notify:

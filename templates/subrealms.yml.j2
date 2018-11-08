@@ -1,4 +1,4 @@
-{% if tomcat_realm is defined %}
+{% if tomcat_realm is defined and tomcat_realm is not none %}
 {% set ns = namespace(found=false) %}
 {% for subrealm in tomcat_subrealms | default([]) %}
 {% set ns.found = true %}
