@@ -98,7 +98,7 @@ tomcat_server_enable_lookups: true
 # Catalina engine identifier which must be used in load balancing for session
 # affinity
 
-#tomcat_server_engine_jvm_route:
+tomcat_server_engine_jvm_route:
 
 ################################################################################
 # User and group settings
@@ -134,11 +134,11 @@ tomcat_java_raw_opts: []
 
 # Where to put a soft link to the tomcat home directory (optional)
 
-# tomcat_home_link:
+tomcat_home_link:
 
 # Where to put a soft link to the tomcat base directory (optional).
 
-# base_base_link:
+tomcat_base_link:
 
 ################################################################################
 # Realm settings

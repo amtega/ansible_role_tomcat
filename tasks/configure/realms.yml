@@ -21,9 +21,7 @@
           {{ (not realm_attribute_to_remove)
              | ternary("present", "absent") }}
         pretty_print: yes
-      when:
-        - tomcat_realm is defined
-        - tomcat_realm is not none
+      when: tomcat_realm is not none
       notify:
         - restart tomcat
       loop: "{{ tomcat_realm.keys() }}"
@@ -56,7 +54,7 @@
           /Server/Service[@name='Catalina']/Engine[@name='Catalina']/Realm
         state: absent
         pretty_print: yes
-      when: tomcat_realm is not defined or tomcat_realm is none
+      when: tomcat_realm is none
       notify:
         - restart tomcat
 
@@ -68,9 +66,7 @@
         state: absent
         pretty_print: yes
       when: >-
-        (tomcat_realm is defined
-         and tomcat_realm is not none
-         and (tomcat_subrealms is not defined or tomcat_subrealms is none))
+        (tomcat_realm is not none and tomcat_subrealms is none)
         or tomcat_subrealms is none
         or tomcat_subrealms | length == 0
       notify:

@@ -61,16 +61,13 @@
       stat:
         path: "{{ tomcat_home_link }}"
       register: tomcat_check_home_symlink
-      when:
-        - tomcat_home_link is defined
-        - tomcat_home_link is not none
+      when: tomcat_home_link is not none
 
     - name: remove tomcat home symlink
       file:
         path: "{{ tomcat_home_link }}"
         state: absent
       when:
-        - tomcat_home_link is defined
         - tomcat_home_link not none
         - tomcat_check_home_symlink.stat.lnk_source is defined
         - tomcat_check_home_symlink.stat.lnk_source == tomcat_home
@@ -79,16 +76,13 @@
       stat:
         path: "{{ tomcat_base_link }}"
       register: tomcat_check_base_symlink
-      when:
-        - tomcat_base_link is defined
-        - tomcat_base_link is not none
+      when: tomcat_base_link is not none
 
     - name: remove tomcat base symlink
       file:
         path: "{{ tomcat_base_link }}"
         state: absent
       when:
-        - tomcat_base_link is defined
         - tomcat_base_link is not none
         - tomcat_check_base_symlink.stat.lnk_source is defined
         - tomcat_check_base_symlink.stat.lnk_source == tomcat_base
