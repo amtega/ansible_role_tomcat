@@ -43,6 +43,7 @@
         owner: "{{ tomcat_user }}"
         group: "{{ tomcat_group }}"
         mode: "{{ tomcat_files_permissions }}"
+      when: tomcat_cluster
       loop: "{{ cluster_directories | reject('none') | list }}"
       vars:
         cluster_directories:
