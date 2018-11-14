@@ -12,7 +12,9 @@ A list of all the default variables for this role is available in `defaults/main
 
 ## Dependencies
 
+- [amtega.check_platform](https://galaxy.ansible.com/amtega/check_platform)
 - [amtega.epel](https://galaxy.ansible.com/amtega/epel) role for CentOS/RHEL versions lower than 7
+- [amtega.packages](https://galaxy.ansible.com/amtega/packages)
 - [amtega.artifact](https://galaxy.ansible.com/amtega/artifact) amtega.artifact
 
 ## Example Playbook

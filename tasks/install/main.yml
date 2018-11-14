@@ -2,9 +2,6 @@
 # Install tasks
 
 - block:
-    - include_tasks: "{{ role_path }}/tasks/install/packages.yml"
-      tags:
-        - role::tomcat::install::packages
     - include_tasks: "{{ role_path }}/tasks/install/home.yml"
       tags:
         - role::tomcat::install::home
