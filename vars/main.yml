@@ -13,27 +13,28 @@ tomcat_packages_os:
       java-devel: present
       libcap-devel: present
       make: present
-      python-lxml: present
       tar: present
       unzip: present
       rsync: present
     6:
-      libxml2-devel: present
-      libxml2-python: present
-      libxslt-devel: present
-      libxslt-python: present
-      openssl-devel: present
-      python-devel: present
-      python-pip: present
+      - libxml2-devel: present
+      - libxml2-python: present
+      - libxslt-devel: present
+      - libxslt-python: present
+      - openssl-devel: present
+      - python-devel: present
+      - python-pip: present
+      - name: python-lxml
+        state: present
+        pip_extra_arguments: "--upgrade"
     7:
       openssl-devel: present
       python-lxml: present
   fedora:
     all:
-      all:
-        compat-openssl10-devel: present
-        python-lxml: present
-        redhat-rpm-config: present
+      compat-openssl10-devel: present
+      redhat-rpm-config: present
+      python-lxml: present
 
 # Required python pip packages
 
