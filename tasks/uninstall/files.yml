@@ -68,7 +68,7 @@
         path: "{{ tomcat_home_link }}"
         state: absent
       when:
-        - tomcat_home_link not none
+        - tomcat_home_link is not none
         - tomcat_check_home_symlink.stat.lnk_source is defined
         - tomcat_check_home_symlink.stat.lnk_source == tomcat_home
 
