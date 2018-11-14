@@ -17,7 +17,6 @@ tomcat_packages_os:
       tar: present
       unzip: present
       rsync: present
-  all:
     6:
       libxml2-devel: present
       libxml2-python: present
@@ -26,7 +25,6 @@ tomcat_packages_os:
       openssl-devel: present
       python-devel: present
       python-pip: present
-  all:
     7:
       openssl-devel: present
       python-lxml: present
