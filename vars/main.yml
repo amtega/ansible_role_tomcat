@@ -17,16 +17,13 @@ tomcat_packages_os:
       unzip: present
       rsync: present
     6:
-      - libxml2-devel: present
-      - libxml2-python: present
-      - libxslt-devel: present
-      - libxslt-python: present
-      - openssl-devel: present
-      - python-devel: present
-      - python-pip: present
-      - name: python-lxml
-        state: present
-        pip_extra_arguments: "--upgrade"
+      libxml2-devel: present
+      libxml2-python: present
+      libxslt-devel: present
+      libxslt-python: present
+      openssl-devel: present
+      python-devel: present
+      python-pip: present
     7:
       openssl-devel: present
       python-lxml: present
@@ -41,7 +38,9 @@ tomcat_packages_os:
 tomcat_packages_python:
   all:
     6:
-      lxml: present
+      - name: lxml
+        state: present
+        pip_extra_arguments: "--upgrade"
 
 # Version variables
 
