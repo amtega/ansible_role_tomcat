@@ -1,115 +1,46 @@
 ---
 # Role variables
 
-# Supported distributions
-
-tomcat_supported_distributions:
-  - centos
-  - fedora
-  - rhel
-
-# Supported distributions versions
-
-tomcat_supported_versions:
-  centos: 6
-  fedora: 27
-  rhel: 6
-
 # Required operating system packages
 
-tomcat_packages:
-  centos_6:
-    - apr-devel
-    - apr-util-devel
-    - gcc
-    - java
-    - java-devel
-    - libcap-devel
-    - libxml2-devel
-    - libxml2-python
-    - libxslt-devel
-    - libxslt-python
-    - make
-    - openssl-devel
-    - python-devel
-    - python-pip
-    - rsync
-    - tar
-  centos_7:
-    - apr-devel
-    - apr-util-devel
-    - gcc
-    - java
-    - java-devel
-    - libcap-devel
-    - make
-    - openssl-devel
-    - python-lxml
-    - rsync
-    - tar
-    - unzip
-  fedora_27:
-    - apr-devel
-    - apr-util-devel
-    - compat-openssl10-devel
-    - gcc
-    - java
-    - java-devel
-    - libcap-devel
-    - make
-    - python-lxml
-    - redhat-rpm-config
-    - rsync
-    - tar
-    - unzip
-  fedora_28:
-    - apr-devel
-    - apr-util-devel
-    - compat-openssl10-devel
-    - gcc
-    - java
-    - java-devel
-    - libcap-devel
-    - make
-    - python-lxml
-    - redhat-rpm-config
-    - rsync
-    - tar
-    - unzip
-  rhel_6:
-    - apr-devel
-    - apr-util-devel
-    - gcc
-    - java
-    - java-devel
-    - libcap-devel
-    - make
-    - openssl-devel
-    - python-lxml
-    - rsync
-    - tar
-    - unzip
-  rhel_7:
-    - apr-devel
-    - apr-util-devel
-    - gcc
-    - java
-    - java-devel
-    - libcap-devel
-    - make
-    - openssl-devel
-    - python-lxml
-    - rsync
-    - tar
-    - unzip
+tomcat_packages_os:
+  all:
+    all:
+      apr-devel: present
+      apr-util-devel: present
+      gcc: present
+      java: present
+      java-devel: present
+      libcap-devel: present
+      make: present
+      tar: present
+      unzip: present
+      rsync: present
+    6:
+      libxml2-devel: present
+      libxml2-python: present
+      libxslt-devel: present
+      libxslt-python: present
+      openssl-devel: present
+      python-devel: present
+      python-pip: present
+    7:
+      openssl-devel: present
+      python-lxml: present
+  fedora:
+    all:
+      compat-openssl10-devel: present
+      redhat-rpm-config: present
+      python-lxml: present
 
 # Required python pip packages
 
 tomcat_packages_python:
-  centos_6:
-    - lxml
-  rhel_6:
-    - lxml
+  all:
+    6:
+      - name: lxml
+        state: present
+        pip_extra_arguments: "--upgrade"
 
 # Version variables
 
@@ -222,16 +153,3 @@ tomcat_apr_config_bin_path: /usr/bin/apr-1-config
 # Facts path
 
 tomcat_facts_file_path: "/etc/ansible/facts.d/tomcat_{{ tomcat_name }}.fact"
-
-# Proxy environment settings
-
-tomcat_http_proxy_config:
-    http_proxy: "{{ tomcat_http_proxy | default('') }}"
-    https_proxy: "{{ tomcat_https_proxy | default('') }}"
-    http_no_proxy: "{{ tomcat_no_proxy | default('') }}"
-
-tomcat_http_proxy_environment: >-
-  {{ (tomcat_http_proxy is defined
-      or tomcat_https_proxy is defined
-      or tomcat_no_proxy is defined)
-     | ternary(tomcat_http_proxy_config, {}) }}

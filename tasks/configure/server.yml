@@ -5,16 +5,16 @@
   xml:
     path: "{{ tomcat_base }}/{{ tomcat_server_config }}"
     xpath: >-
-      {{ (value != "<NONE/>")
+      {{ (value is not none)
          | ternary(item.xpath, item.xpath + "/@" + item.attribute) }}
     attribute: >-
-      {{ (value != "<NONE/>")
+      {{ (value is not none)
          | ternary(item.attribute, omit) }}
     value: >-
-      {{ (value != "<NONE/>")
+      {{ (value is not none)
          | ternary(value_string, omit) }}
     state: >-
-      {{ (value != "<NONE/>")
+      {{ (value is not none)
          | ternary(omit, "absent") }}
     pretty_print: yes
   notify:
@@ -29,7 +29,7 @@
     connector_xpath: "{{ service_xpath }}/Connector"
     engine_xpath: "{{ service_xpath }}/Engine[@name='Catalina']"
     host_xpath: "{{ engine_xpath }}/Host[@name='localhost']"
-    value: "{{ lookup('vars', item.value, default='<NONE/>') }}"
+    value: "{{ lookup('vars', item.value) }}"
     value_string: >-
       {{ (value is sameas(true) or value is sameas(false))
          | ternary(value | string | lower, value | string) }}

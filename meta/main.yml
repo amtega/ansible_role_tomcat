@@ -9,21 +9,31 @@ galaxy_info:
   license: GPLv3 or EUPL
   min_ansible_version: 2.7
   platforms:
-  - name: Fedora
-    versions:
-      - 27
-      - 28
-  - name: EL
-    versions:
-      - 6
-      - 7
+    - name: EL
+      versions:
+        - 6
+        - 7
+    - name: Fedora
+      versions:
+        - 27
+        - 28
   galaxy_tags:
     - tomcat
     - jee
     - java
 
 dependencies:
+  - role: amtega.check_platform
+    check_platform_distributions:
+      centos: 6
+      fedora: 27
+      rhel: 6
+
   - role: amtega.epel
     when:
       - ansible_facts.distribution | lower in ['centos', 'rhel']
       - ansible_facts.distribution_version is version("7", "<")
+
+  - role: amtega.packages
+    packages_os: "{{ tomcat_packages_os }}"
+    packages_python: "{{ tomcat_packages_python }}"

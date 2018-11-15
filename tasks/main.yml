@@ -22,7 +22,6 @@
       tags:
         - role::tomcat
         - role::tomcat::install
-        - role::tomcat::install::packages
         - role::tomcat::install::group
         - role::tomcat::install::user
         - role::tomcat::install::home

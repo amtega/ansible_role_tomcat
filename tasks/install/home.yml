@@ -57,21 +57,26 @@
         dest: "{{ tomcat_home_link }}"
         state: link
         mode: "{{ tomcat_files_permissions }}"
-      when: tomcat_home_link is defined
-
-    - name: create tomcat base symlink
-      file:
-        src: "{{ tomcat_base }}"
-        dest: "{{ tomcat_base_link }}"
-        state: link
-        mode: "{{ tomcat_files_permissions }}"
-      when: tomcat_base_link is defined
+      when: tomcat_home_link is not none
 
     - name: delete tomcat artifact
       file:
         path: "{{ tomcat_package }}"
         state: absent
       when: tomcat_remove_artifact
+
+    - name: setup tomcat home owner/group
+      file:
+        path: "{̣{ tomcat_home }}"
+        owner: "{{ tomcat_user }}"
+        group: "{{ tomcat_group }}"
+        state: directory
+      when: >-
+        tomcat_user != ansible_local_facts.user | default(none)
+        or tomcat_group != ansible_local_facts.group | default(none)
+      vars:
+        ansible_local_facts: >-
+          {{ ansible_local["tomcat_" + tomcat_name] | default({}) }}
   tags:
     - role::tomcat
     - role::tomcat::install
