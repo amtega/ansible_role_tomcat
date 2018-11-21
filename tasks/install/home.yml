@@ -27,9 +27,6 @@
                 {{ not tomcat_home_check_result.stat.exists
                    or tomcat_force_install }}
             artifact: "{{ tomcat_artifact | combine(override) }}"
-            artifact_http_proxy: "{{ tomcat_http_proxy }}"
-            artifact_https_proxy: "{{ tomcat_https_proxy }}"
-            artifact_no_proxy: "{{ tomcat_no_proxy }}"
 
         - name: extract tomcat server package
           unarchive:

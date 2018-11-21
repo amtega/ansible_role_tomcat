@@ -261,11 +261,3 @@ tomcat_uninstall_home_preserve: []
 
 tomcat_uninstall_base_preserve:
     - webapps
-
-################################################################################
-# Proxy settings
-################################################################################
-
-tomcat_http_proxy: "{{ ansible_facts.env.http_proxy | default('') }}"
-tomcat_https_proxy: "{{ ansible_facts.env.https_proxy | default('') }}"
-tomcat_no_proxy: "{{ ansible_facts.env.no_proxy | default('') }}"
