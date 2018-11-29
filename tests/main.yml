@@ -86,6 +86,19 @@
       failed_when: >-
          not check_http_result.content
              is search("successfully")
+
+    - name: rotate logs
+      shell: logrotate -vf /etc/logrotate.conf
+      changed_when: false
+      failed_when: false
+      register: logrotate_result
+
+    - name: assert logs were rotated
+      assert:
+        that:
+          - logrotate_result.stderr is search("rotating .*catalina.*out")
+          - logrotate_result.stderr is search("rotating .*localhost.*log")
+          - logrotate_result.stderr is search("rotating .*access_log.*txt")          
   tags:
     - idempotence
 

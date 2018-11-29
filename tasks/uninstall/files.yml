@@ -7,6 +7,11 @@
         path: "{{ tomcat_facts_file_path }}"
         state: absent
 
+    - name: remove tomcat logrotate file
+      file:
+        path: "{{ tomcat_logrotate_config_path }}"
+        state: absent
+
     - name: search tomcat files to uninstall
       find:
         paths:

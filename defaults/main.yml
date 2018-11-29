@@ -247,6 +247,36 @@ tomcat_cluster_deploy_watch_dir: webapps
 tomcat_cluster_deploy_watch_enabled: yes
 
 ################################################################################
+# Logrotate settings
+################################################################################
+
+tomcat_logrotate_config_path: /etc/logrotate.d/{{ tomcat_name }}
+
+tomcat_logrotate_config_catalina: |
+  notifempty
+  daily
+  dateext
+  compress
+  maxage 10
+  missingok
+  sharedscripts
+  copytruncate
+
+tomcat_logrotate_config_logs_paths:
+  - "{{ tomcat_base }}/logs/*.log"
+  - "{{ tomcat_base }}/logs/*.txt"
+
+tomcat_logrotate_config_logs: |
+    notifempty
+    daily
+    dateext
+    compress
+    maxage 10
+    missingok
+    sharedscripts
+    copytruncate
+
+################################################################################
 # Install and uninstall settings
 ################################################################################
 

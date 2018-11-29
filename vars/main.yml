@@ -12,6 +12,7 @@ tomcat_packages_os:
       java: present
       java-devel: present
       libcap-devel: present
+      logrotate: present
       make: present
       tar: present
       unzip: present
@@ -149,6 +150,12 @@ tomcat_apr_library_package_filename: tomcat-native.tar.gz
 tomcat_apr_libray_patterns: "libtcnative-1.so*"
 tomcat_apr_libray_filename: libtcnative-1.so.0
 tomcat_apr_config_bin_path: /usr/bin/apr-1-config
+
+# Logrotate variables
+
+tomcat_catalina_log: >-
+  {{ (tomcat_use_native_daemon)
+     | ternary(tomcat_native_daemon_out, tomcat_out) }}
 
 # Facts path
 
