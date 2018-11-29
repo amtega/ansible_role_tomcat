@@ -7,7 +7,7 @@
         name: "{{ tomcat_name }}"
         state: stopped
         enabled: no
-      when: "'tomcat_' + tomcat_name in ansible_local"
+      when: tomcat_name in ansible_local
       ignore_errors: yes
 
     - block:

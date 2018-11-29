@@ -41,6 +41,7 @@
         - role::tomcat::configure::cms
         - role::tomcat::configure::manager
         - role::tomcat::configure::cluster
+        - role::tomcat::configure::logrotate
         - role::tomcat::configure::facts
 
     - name: setup tomcat service
