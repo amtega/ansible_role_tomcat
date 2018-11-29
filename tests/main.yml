@@ -97,7 +97,6 @@
       assert:
         that:
           - logrotate_result.stderr is search("rotating .*catalina.*out")
-          - logrotate_result.stderr is search("rotating .*localhost.*log")
           - logrotate_result.stderr is search("rotating .*access_log.*txt")          
   tags:
     - idempotence
