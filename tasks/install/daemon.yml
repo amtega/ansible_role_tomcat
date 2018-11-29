@@ -18,7 +18,7 @@
           - restart tomcat
       vars:
         ansible_local_facts: >-
-          {{ ansible_local["tomcat_" + tomcat_name] | default({}) }}
+          {{ ansible_local[tomcat_name] | default({}) }}
 
     - name: extract native daemon package
       unarchive:

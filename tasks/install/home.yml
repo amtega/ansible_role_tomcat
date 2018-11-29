@@ -46,7 +46,7 @@
         or tomcat_force_install
       vars:
         ansible_local_facts: >-
-          {{ ansible_local["tomcat_" + tomcat_name] | default({}) }}
+          {{ ansible_local[tomcat_name] | default({}) }}
 
     - name: create tomcat home symlink
       file:
@@ -73,7 +73,7 @@
         or tomcat_group != ansible_local_facts.group | default(none)
       vars:
         ansible_local_facts: >-
-          {{ ansible_local["tomcat_" + tomcat_name] | default({}) }}
+          {{ ansible_local[tomcat_name] | default({}) }}
   tags:
     - role::tomcat
     - role::tomcat::install

@@ -159,4 +159,4 @@ tomcat_catalina_log: >-
 
 # Facts path
 
-tomcat_facts_file_path: "/etc/ansible/facts.d/tomcat_{{ tomcat_name }}.fact"
+tomcat_facts_file_path: "/etc/ansible/facts.d/{{ tomcat_name }}.fact"
