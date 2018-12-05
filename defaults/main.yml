@@ -277,6 +277,19 @@ tomcat_logrotate_config_logs: |
     copytruncate
 
 ################################################################################
+# Check_MK settings
+################################################################################
+
+# The check_mk script provided by this role calculates the heap and perm/meta
+# memory size usage by the tomcat proccess and alerts according to the levels
+# indicated below
+
+tomcat_check_mk: no
+tomcat_check_mk_seconds: 120
+tomcat_check_mk_warning_level: 80
+tomcat_check_mk_critical_level: 95
+
+################################################################################
 # Install and uninstall settings
 ################################################################################
 
