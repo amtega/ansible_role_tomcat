@@ -48,6 +48,7 @@
       - className: org.apache.catalina.realm.UserDatabaseRealm
         resourceName: UserDatabase
     tomcat_cluster: yes
+    tomcat_check_mk: yes
   tasks:
     - meta: flush_handlers
 
@@ -98,6 +99,13 @@
         that:
           - logrotate_result.stderr is search("rotating .*catalina.*out")
           - logrotate_result.stderr is search("rotating .*localhost.*log")
+
+    - name: check check_mk script
+      shell: >-
+        {{ tomcat_check_mk_local_dir }}/{{ tomcat_check_mk_seconds }}/server1
+      changed_when: no
+      failed_when: not check_mk_result.stdout is search("Process .* alive")
+      register: check_mk_result
   tags:
     - idempotence
 

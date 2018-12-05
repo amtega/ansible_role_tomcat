@@ -1,0 +1,29 @@
+---
+# Check_MK installation
+
+- block:
+    - name: create directory for check_mk local checks
+      file:
+        path: "{{ tomcat_check_mk_local_dir }}/{{ tomcat_check_mk_seconds }}"
+        state: directory
+        owner: root
+        group: root
+        mode: 0644
+
+    - name: setup check_mk script
+      template:
+        src: check_mk.j2
+        dest: >-
+          {{ tomcat_check_mk_local_dir
+             + "/"
+             + tomcat_check_mk_seconds | string
+             + "/"
+             + tomcat_name }}
+        owner: root
+        group: root
+        mode: 0755
+  when: tomcat_check_mk
+  tags:
+    - role::tomcat
+    - role::tomcat::install
+    - role::tomcat::install::check_mk

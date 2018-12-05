@@ -157,6 +157,10 @@ tomcat_catalina_log: >-
   {{ (tomcat_use_native_daemon)
      | ternary(tomcat_native_daemon_out, tomcat_out) }}
 
+# Check_MK variables
+
+tomcat_check_mk_local_dir: /usr/lib/check_mk_agent/local
+
 # Facts path
 
 tomcat_facts_file_path: "/etc/ansible/facts.d/{{ tomcat_name }}.fact"
