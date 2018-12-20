@@ -60,7 +60,9 @@
       file:
         path: "{{ tomcat_package }}"
         state: absent
-      when: tomcat_remove_artifact
+      when:
+        - tomcat_remove_artifact
+        - artifact_result is defined
 
     - name: setup tomcat home owner/group
       file:
