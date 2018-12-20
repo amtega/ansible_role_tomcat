@@ -69,8 +69,9 @@ tomcat_download_file: >-
      ~ ".tar.gz" }}
 
 tomcat_package: >-
-  {{ artifact_result["tomcat_" + tomcat_version_underlined].download_path
-     | default('') }}
+  {{ (artifact_result["tomcat_" + tomcat_version_underlined]
+      | default({})).download_path
+      | default('') }}
 
 # Permissions to use in tomcat directories and files
 
