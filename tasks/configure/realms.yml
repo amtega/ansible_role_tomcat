@@ -24,7 +24,7 @@
       when: tomcat_realm is not none
       notify:
         - restart tomcat
-      loop: "{{ tomcat_realm.keys() }}"
+      loop: "{{ tomcat_realm.keys() | list }}"
       loop_control:
         label: "{{ realm_attribute }} {{ realm_value }}"
       vars:
