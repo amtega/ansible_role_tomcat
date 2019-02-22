@@ -3,7 +3,7 @@
 {% for subrealm in tomcat_subrealms | default([]) %}
 {% set ns.found = true %}
 - Realm:
-{% for attribute in subrealm.keys() %}
+{% for attribute in subrealm.keys() | list %}
     {{ attribute }}: "{{ subrealm[attribute] }}"
 {% endfor %}
 {% endfor %}
