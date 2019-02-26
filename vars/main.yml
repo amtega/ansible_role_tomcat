@@ -39,7 +39,7 @@ tomcat_packages_os:
 tomcat_packages_python:
   all:
     6:
-      - name: lxml
+      - name: "lxml==4.2.6"
         state: present
         pip_extra_arguments: "--upgrade"
 
