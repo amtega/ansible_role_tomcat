@@ -1,7 +1,7 @@
 ---
 # Role handlers
 
-- name: Tomcat restart service
+- name: Restart tomcat service
   service:
     name: "{{ tomcat_name }}"
     state: restarted
