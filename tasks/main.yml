@@ -1,13 +1,13 @@
 ---
 # Role tasks
 
-- name: sanity checks
+- name: Sanity checks
   include_tasks: check/main.yml
   tags:
     - role::tomcat
     - role::tomcat::check
 
-- name: uninstall tomcat
+- name: Uninstall tomcat
   include_tasks: uninstall/main.yml
   tags:
     - role::tomcat
@@ -17,7 +17,7 @@
   when: tomcat_state == "absent"
 
 - block:
-    - name: install tomcat
+    - name: Install tomcat
       include_tasks: install/main.yml
       tags:
         - role::tomcat
@@ -31,7 +31,7 @@
         - role::tomcat::install::catalina
         - role::tomcat::install::check_mk
 
-    - name: configure tomcat
+    - name: Configure tomcat
       include_tasks: configure/main.yml
       tags:
         - role::tomcat
@@ -45,7 +45,7 @@
         - role::tomcat::configure::logrotate
         - role::tomcat::configure::facts
 
-    - name: setup tomcat service
+    - name: Setup tomcat service
       include_tasks: service/main.yml
       tags:
         - role::tomcat

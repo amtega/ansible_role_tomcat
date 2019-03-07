@@ -2,7 +2,7 @@
 # Check_MK installation
 
 - block:
-    - name: create directory for check_mk local checks
+    - name: Create directory for check_mk local checks
       file:
         path: "{{ tomcat_check_mk_local_dir }}/{{ tomcat_check_mk_seconds }}"
         state: directory
@@ -10,7 +10,7 @@
         group: root
         mode: 0644
 
-    - name: setup check_mk script
+    - name: Setup check_mk script
       template:
         src: check_mk.j2
         dest: >-

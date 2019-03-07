@@ -1,7 +1,7 @@
 ---
 # Role check tasks
 
-- name: assert state is supported
+- name: Assert state is supported
   assert:
     that:
       - tomcat_state in ['started', 'present', 'absent']

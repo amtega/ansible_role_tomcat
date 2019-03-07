@@ -2,7 +2,7 @@
 # Contained managed security configuration tasks
 
 - block:
-    - name: configure tomcat user database
+    - name: Configure tomcat user database
       xml:
         path: "{{ tomcat_base }}/{{ tomcat_server_config }}"
         xpath: "/Server/GlobalNamingResources/Resource[@name='UserDatabase']"
@@ -12,7 +12,7 @@
       notify:
         - restart tomcat
 
-    - name: setup contained managed security roles and users
+    - name: Setup contained managed security roles and users
       template:
         src: "tomcat-users.xml.j2"
         dest: "{{ tomcat_base }}/{{ tomcat_users_config }}"

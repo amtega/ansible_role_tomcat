@@ -2,7 +2,7 @@
 # Uninstall services
 
 - block:
-    - name: disable and stop tomcat services
+    - name: Disable and stop tomcat services
       service:
         name: "{{ tomcat_name }}"
         state: stopped
@@ -11,7 +11,7 @@
       ignore_errors: yes
 
     - block:
-        - name: uninstall tomcat systemd services
+        - name: Uninstall tomcat systemd services
           file:
             path: >-
               {{ tomcat_systemd_services_path
@@ -21,12 +21,12 @@
             state: absent
           register: tomcat_remove_systemd_services_result
 
-        - name: reload systemd
+        - name: Reload systemd
           command: systemctl daemon-reload
           when: tomcat_remove_systemd_services_result is changed
       when: ansible_facts.service_mgr == "systemd"
 
-    - name: uninstall tomcat system v init services
+    - name: Uninstall tomcat system v init services
       file:
         path: "{{ tomcat_systemv_init_path }}/{{ tomcat_name }}"
         state: absent

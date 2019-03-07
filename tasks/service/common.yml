@@ -2,14 +2,14 @@
 # Role service tasks
 
 - block:
-    - name: disable and stop tomcat
+    - name: Disable and stop tomcat
       service:
         name: "{{ tomcat_name }}"
         state: stopped
         enabled: no
       when: tomcat_state == "present"
 
-    - name: enable and start tomcat
+    - name: Enable and start tomcat
       service:
         name: "{{ tomcat_name }}"
         state: started

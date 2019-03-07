@@ -1,9 +1,12 @@
 ---
 # Role handlers
 
-- name: tomcat restart service
+- name: Tomcat restart service
   service:
     name: "{{ tomcat_name }}"
     state: restarted
     enabled: yes
   listen: restart tomcat
+  tags:
+    - role::tomcat
+    - role::tomcat::restart

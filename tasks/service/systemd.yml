@@ -2,7 +2,7 @@
 # Systemd service tasks
 
 - block:
-    - name: setup tomcat systemd services
+    - name: Setup tomcat systemd services
       template:
         src: "systemd.service.j2"
         dest: >-
@@ -17,7 +17,7 @@
       notify:
         - restart tomcat
 
-    - name: reload systemd daemon
+    - name: Reload systemd daemon
       systemd:
         daemon_reload: yes
       when: tomcat_setup_systemd_services_result is changed
