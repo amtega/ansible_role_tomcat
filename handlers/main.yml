@@ -7,3 +7,6 @@
     state: restarted
     enabled: yes
   listen: restart tomcat
+  tags:
+    - role::tomcat
+    - role::tomcat::restart
