@@ -2,7 +2,7 @@
 # Base directory install tasks
 
 - block:
-    - name: setup tomcat base directory
+    - name: Setup tomcat base directory
       file:
         path: "{{ tomcat_base }}"
         state: directory
@@ -11,7 +11,7 @@
         mode: "{{ tomcat_files_permissions }}"
       register: tomcat_create_base_result
 
-    - name: setup tomcat base directory tree
+    - name: Setup tomcat base directory tree
       file:
         path: "{{ tomcat_base }}/{{ item }}"
         state: directory
@@ -21,7 +21,7 @@
       register: tomcat_create_base_tree_result
       loop: "{{ tomcat_subdirs }}"
 
-    - name: populate tomcat base directory tree
+    - name: Populate tomcat base directory tree
       synchronize:
         src: "{{ tomcat_home }}/{{ item }}/"
         dest: "{{ tomcat_base }}/{{ item }}"
@@ -36,7 +36,7 @@
       loop: "{{ tomcat_subdirs_to_populate }}"
       delegate_to: "{{ inventory_hostname }}"
 
-    - name: create tomcat base symlink
+    - name: Create tomcat base symlink
       file:
         src: "{{ tomcat_base }}"
         dest: "{{ tomcat_base_link }}"
@@ -44,7 +44,7 @@
         mode: "{{ tomcat_files_permissions }}"
       when: tomcat_base_link is not none
 
-    - name: create cluster directories
+    - name: Create cluster directories
       file:
         path: "{{ tomcat_base }}/{{ item }}"
         state: directory
@@ -59,7 +59,7 @@
         - "{{ tomcat_cluster_deploy_dir | default('null') }}"
         - "{{ tomcat_cluster_deploy_watch_dir | default('null') }}"
 
-    - name: setup tomcat base owner/group
+    - name: Setup tomcat base owner/group
       file:
         path: "{̣{ tomcat_base }}"
         owner: "{{ tomcat_user }}"

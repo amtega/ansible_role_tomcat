@@ -1,7 +1,7 @@
 ---
 # SystemV service tasks
 
-- name: setup tomcat system v init services
+- name: Setup tomcat system v init services
   template:
     src: "sysvinit.j2"
     dest: "{{ tomcat_systemv_init_path }}/{{ tomcat_name }}"

@@ -2,7 +2,7 @@
 # Home directory install tasks
 
 - block:
-    - name: setup tomcat home directory
+    - name: Setup tomcat home directory
       file:
         path: "{{ tomcat_home }}"
         state: directory
@@ -12,12 +12,12 @@
         recurse: yes
 
     - block:
-        - name: check tomcat home directory
+        - name: Check tomcat home directory
           stat:
             path: "{{ tomcat_home }}/bin/catalina.sh"
           register: tomcat_home_check_result
 
-        - name: download tomcat artifact
+        - name: Download tomcat artifact
           include_role:
             name: amtega.artifact
           vars:
@@ -28,7 +28,7 @@
                    or tomcat_force_install }}
             artifact: "{{ tomcat_artifact | combine(override) }}"
 
-        - name: extract tomcat server package
+        - name: Extract tomcat server package
           unarchive:
             src: "{{ tomcat_package }}"
             dest: "{{ tomcat_home }}"
@@ -48,7 +48,7 @@
         ansible_local_facts: >-
           {{ ansible_local[tomcat_name] | default({}) }}
 
-    - name: create tomcat home symlink
+    - name: Create tomcat home symlink
       file:
         src: "{{ tomcat_home }}"
         dest: "{{ tomcat_home_link }}"
@@ -56,7 +56,7 @@
         mode: "{{ tomcat_files_permissions }}"
       when: tomcat_home_link is not none
 
-    - name: delete tomcat artifact
+    - name: Delete tomcat artifact
       file:
         path: "{{ tomcat_package }}"
         state: absent
@@ -64,7 +64,7 @@
         - tomcat_remove_artifact
         - artifact_result is defined
 
-    - name: setup tomcat home owner/group
+    - name: Setup tomcat home owner/group
       file:
         path: "{̣{ tomcat_home }}"
         owner: "{{ tomcat_user }}"

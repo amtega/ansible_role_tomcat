@@ -1,7 +1,7 @@
 ---
 # Logrotate configuration tasks
 
-- name: create logrotate configuration file
+- name: Create logrotate configuration file
   template:
     src: logrotate.j2
     dest: "{{ tomcat_logrotate_config_path }}"

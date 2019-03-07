@@ -2,7 +2,7 @@
 # Cluster configuration tasks
 
 - block:
-    - name: create cluster section in server config
+    - name: Create cluster section in server config
       xml:
         path: "{{ tomcat_base }}/{{ tomcat_server_config }}"
         xpath: "{{ cluster_xpath }}"
@@ -11,7 +11,7 @@
         state: present
         pretty_print: yes
 
-    - name: setup cluster section properties in server config
+    - name: Setup cluster section properties in server config
       xml:
         path: "{{ tomcat_base }}/{{ tomcat_server_config }}"
         xpath: "{{ cluster_xpath }}"

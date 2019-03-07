@@ -8,14 +8,14 @@
     # file and another ones not. That's the reason we use here the `find`
     # module to get a consistent behaviour
 
-    - name: search installed apr library
+    - name: Search installed apr library
       find:
         paths: "{{ tomcat_native_apr_library_dir }}"
         patterns: "{{ tomcat_apr_libray_patterns }}"
         file_type: any
       register: tomcat_apr_search_installed_result
 
-    - name: get info about installed apr library links
+    - name: Get info about installed apr library links
       stat:
         path: "{{ item.path }}"
       loop: >-
@@ -26,7 +26,7 @@
         label: "{{ item.path }}"
       register: tomcat_apr_get_installed_links_result
 
-    - name: check installed apr library links
+    - name: Check installed apr library links
       stat:
         path: "{{ item.lnk_source }}"
       loop: >-
@@ -37,7 +37,7 @@
         label: "{{ item.path }}"
       register: tomcat_apr_check_installed_links_result
 
-    - name: remove native apr library
+    - name: Remove native apr library
       file:
         path: "{{ item }}"
         state: absent
@@ -66,7 +66,7 @@
         ansible_local_facts: >-
           {{ ansible_local[tomcat_name] | default({}) }}
 
-    - name: extract native apr library package
+    - name: Extract native apr library package
       unarchive:
         src: "{{ apr_library_package }}"
         dest: "{{ tomcat_native_apr_library_dir }}"
@@ -79,7 +79,7 @@
       register: tomcat_apr_extract_package_result
 
     - block:
-        - name: search apr library compilation configure script
+        - name: Search apr library compilation configure script
           find:
             paths: "{{ apr_library_extraction_dir }}"
             patterns: "configure"
@@ -87,7 +87,7 @@
             recurse: yes
           register: tomcat_apr_search_configure_result
 
-        - name: configure native apr library compilation
+        - name: Configure native apr library compilation
           shell: >-
             ./configure
             --with-apr={{ tomcat_apr_config_bin_path }}
@@ -97,13 +97,13 @@
             chdir: "{{ apr_library_src_dir }}"
             creates: "{{ apr_libray_path }}"
 
-        - name: compile native apr library
+        - name: Compile native apr library
           shell: make
           args:
             chdir: "{{ apr_library_src_dir }}"
             creates: "{{ apr_libray_path }}"
 
-        - name: search compiled apr library
+        - name: Search compiled apr library
           find:
             paths: "{{ apr_library_extraction_dir }}"
             patterns: "{{ tomcat_apr_libray_patterns }}"
@@ -112,7 +112,7 @@
           register: tomcat_apr_search_compiled_result
 
         - block:
-            - name: install native apr library
+            - name: Install native apr library
               shell: "cp -dp {{ item }} {{ tomcat_native_apr_library_dir }}"
               args:
                 creates: "{{ tomcat_native_apr_library_dir }}/{{ item }}"
@@ -122,7 +122,7 @@
               notify:
                 - restart tomcat
 
-            - name: setup native apr library files properties
+            - name: Setup native apr library files properties
               file:
                 path: "{{ item }}"
                 owner: "{{ tomcat_user }}"
@@ -137,7 +137,7 @@
                  | map(attribute='path')
                  | list }}
 
-        - name: clean native apr library extracted package
+        - name: Clean native apr library extracted package
           file:
             path: "{{ apr_library_extraction_dir }}"
             state: absent

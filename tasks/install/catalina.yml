@@ -2,7 +2,7 @@
 # Catalina scripts install tasks
 
 - block:
-    - name: install catalina startup scripts
+    - name: Install catalina startup scripts
       synchronize:
         src: "{{ tomcat_home }}/{{ item }}"
         dest: "{{ tomcat_base }}/{{ item }}"
@@ -10,7 +10,7 @@
       loop: "{{ tomcat_catalina_scripts }}"
       delegate_to: "{{ inventory_hostname }}"
 
-    - name: remove native daemon startup scripts
+    - name: Remove native daemon startup scripts
       file:
         path: "{{ tomcat_base }}/{{ item }}"
         state: absent

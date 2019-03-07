@@ -2,7 +2,7 @@
 # Commons daemon install tasks
 
 - block:
-    - name: remove native daemon binary
+    - name: Remove native daemon binary
       file:
         path: "{{ daemon_path }}"
         state: absent
@@ -20,7 +20,7 @@
         ansible_local_facts: >-
           {{ ansible_local[tomcat_name] | default({}) }}
 
-    - name: extract native daemon package
+    - name: Extract native daemon package
       unarchive:
         src: "{{ daemon_package }}"
         dest: "{{ tomcat_native_daemon_dir }}"
@@ -33,7 +33,7 @@
       register: tomcat_daemon_extract_package_result
 
     - block:
-        - name: configure native daemon compilation
+        - name: Configure native daemon compilation
           shell: >-
             ./configure
             --with-java={{ tomcat_java_home }}
@@ -41,13 +41,13 @@
             chdir: "{{ daemon_src_dir }}"
             creates: "{{ daemon_path }}"
 
-        - name: compile native daemon
+        - name: Compile native daemon
           shell: make
           args:
             chdir: "{{ daemon_src_dir }}"
             creates: "{{ daemon_path }}"
 
-        - name: install native daemon binary
+        - name: Install native daemon binary
           copy:
             src: "{{ daemon_src_dir }}/jsvc"
             dest: "{{ tomcat_native_daemon_dir }}"
@@ -58,13 +58,13 @@
           notify:
             - restart tomcat
 
-        - name: clean native daemon extracted package
+        - name: Clean native daemon extracted package
           file:
             path: "{{ daemon_extracted_dir }}"
             state: absent
       when: tomcat_daemon_extract_package_result.files is defined
 
-    - name: install native daemon startup script
+    - name: Install native daemon startup script
       synchronize:
         src: "{{ tomcat_home }}/{{ item }}"
         dest: "{{ tomcat_base }}/{{ item }}"
@@ -74,7 +74,7 @@
       loop: "{{ tomcat_daemon_scripts }}"
       delegate_to: "{{ inventory_hostname }}"
 
-    - name: remove catalina scripts
+    - name: Remove catalina scripts
       file:
         path: "{{ tomcat_base }}/{{ item }}"
         state: absent

@@ -1,7 +1,7 @@
 ---
 # Manager configuration tasks
 
-- name: setup tomcat manager
+- name: Setup tomcat manager
   template:
     src: "manager.xml.j2"
     dest: "{{ tomcat_base }}/{{ tomcat_manager_config }}"

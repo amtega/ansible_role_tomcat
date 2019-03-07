@@ -2,7 +2,7 @@
 # Realms configuration tasks
 
 - block:
-    - name: setup tomcat realm
+    - name: Setup tomcat realm
       xml:
         path: "{{ tomcat_base }}/{{ tomcat_server_config }}"
         xpath: >-
@@ -35,7 +35,7 @@
         realm_value: "{{ tomcat_realm[item] }}"
         realm_attribute_to_remove: "{{ tomcat_realm[item] is none }}"
 
-    - name: setup tomcat subrealms
+    - name: Setup tomcat subrealms
       xml:
         path: "{{ tomcat_base }}/{{ tomcat_server_config }}"
         xpath: >-
@@ -47,7 +47,7 @@
       notify:
         - restart tomcat
 
-    - name: remove tomcat realm
+    - name: Remove tomcat realm
       xml:
         path: "{{ tomcat_base }}/{{ tomcat_server_config }}"
         xpath: >-
@@ -58,7 +58,7 @@
       notify:
         - restart tomcat
 
-    - name: remove tomcat subrealms
+    - name: Remove tomcat subrealms
       xml:
         path: "{{ tomcat_base }}/{{ tomcat_server_config }}"
         xpath: >-
