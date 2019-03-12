@@ -24,16 +24,28 @@ galaxy_info:
 
 dependencies:
   - role: amtega.check_platform
-    check_platform_distributions:
-      centos: 6
-      fedora: 27
-      rhel: 6
+    vars:
+      check_platform_distributions:
+        centos: 6
+        fedora: 27
+        rhel: 6
+    tags:
+      - role::tomcat
 
   - role: amtega.epel
     when:
       - ansible_facts.distribution | lower in ['centos', 'rhel']
       - ansible_facts.distribution_version is version("7", "<")
+    tags:
+      - role::tomcat
 
   - role: amtega.packages
-    packages_os: "{{ tomcat_packages_os }}"
-    packages_python: "{{ tomcat_packages_python }}"
+    vars:
+      packages_os: "{{ tomcat_packages_os }}"
+      packages_python: "{{ tomcat_packages_python }}"
+    tags:
+      - role::tomcat
+
+  - role: amtega.artifact
+    tags:
+      - never

@@ -19,7 +19,7 @@
         - role::tomcat::install::catalina
     - include_tasks: "{{ role_path }}/tasks/install/check_mk.yml"
       tags:
-        - role::tomcat::install::check_mk      
+        - role::tomcat::install::check_mk
   tags:
     - role::tomcat
     - role::tomcat::install
