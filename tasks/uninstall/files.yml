@@ -47,7 +47,7 @@
         exclusions: "{{ lookup('template', 'exclusions.yml.j2') | from_yaml }}"
 
     - name: Remove tomcat base directory if possible
-      shell: "rmdir {{ tomcat_base }}"
+      command: "rmdir {{ tomcat_base }}"
       args:
         warn: no
       register: tomcat_uninstall_remove_base_result
@@ -55,7 +55,7 @@
       changed_when: tomcat_uninstall_remove_base_result.rc == 0
 
     - name: Remove tomcat home directory if possible
-      shell: "rmdir {{ tomcat_home }}"
+      command: "rmdir {{ tomcat_home }}"
       args:
         warn: no
       register: tomcat_uninstall_remove_home_result

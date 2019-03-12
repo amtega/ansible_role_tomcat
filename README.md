@@ -2,20 +2,9 @@
 
 This is an [Ansible](http://www.ansible.com) role which setups tomcat application server.
 
-## Requirements
-
-[Ansible 2.7+](http://docs.ansible.com/ansible/latest/intro_installation.html)
-
 ## Role Variables
 
 A list of all the default variables for this role is available in `defaults/main.yml`.
-
-## Dependencies
-
-- [amtega.check_platform](https://galaxy.ansible.com/amtega/check_platform)
-- [amtega.epel](https://galaxy.ansible.com/amtega/epel) role for CentOS/RHEL versions lower than 7
-- [amtega.packages](https://galaxy.ansible.com/amtega/packages)
-- [amtega.artifact](https://galaxy.ansible.com/amtega/artifact) amtega.artifact
 
 ## Example Playbook
 
@@ -27,10 +16,11 @@ This is an example playbook:
 - hosts: all
   roles:
     - role: amtega.tomcat
-      tomcat_name: server1
-      tomcat_version: 8.0.9
-      tomcat_home: /opt/apache-tomcat-8.0.9
-      tomcat_base: /srv/tomcat/server1
+      vars:
+        tomcat_name: server1
+        tomcat_version: 8.0.9
+        tomcat_home: /opt/apache-tomcat-8.0.9
+        tomcat_base: /srv/tomcat/server1
 ```
 
 ## Testing
@@ -46,7 +36,7 @@ $ ansible-playbook main.yml
 
 ## License
 
-Copyright (C) 2018 AMTEGA - Xunta de Galicia
+Copyright (C) 2019 AMTEGA - Xunta de Galicia
 
 This role is free software: you can redistribute it and/or modify it under the terms of:
 
