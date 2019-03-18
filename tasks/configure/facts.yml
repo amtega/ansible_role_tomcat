@@ -5,11 +5,11 @@
     - name: Create custom facts directory
       file:
         path: /etc/ansible/facts.d
-        state: "directory"
+        state: directory
 
     - name: Configure tomcat facts
       template:
-        src: "tomcat.fact.j2"
+        src: tomcat.fact.j2
         dest: "{{ tomcat_facts_file_path }}"
         owner: root
         group: root
