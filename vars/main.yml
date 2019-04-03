@@ -24,6 +24,7 @@ tomcat_packages_os:
       libxslt-python: present
       openssl-devel: present
       python-devel: present
+      python-lxml: absent
       python-pip: present
     7:
       openssl-devel: present

@@ -163,7 +163,7 @@ tomcat_subrealms:
 # Contained managed security settings (roles and users)
 ################################################################################
 
-# Keep in mind that this config will  replace all your CMS settings and left only
+# Keep in mind that this config will replace all your CMS settings and left only
 # the values specified here
 
 tomcat_cms_roles:
