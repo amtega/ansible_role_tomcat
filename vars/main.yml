@@ -32,7 +32,8 @@ tomcat_packages_os:
     all:
       compat-openssl10-devel: present
       redhat-rpm-config: present
-      python-lxml: present
+      python2-lxml: present
+      python3-lxml: present
 
 # Required python pip packages
 
