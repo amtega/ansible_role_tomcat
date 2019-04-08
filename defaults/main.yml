@@ -288,6 +288,7 @@ tomcat_check_mk: no
 tomcat_check_mk_seconds: 120
 tomcat_check_mk_warning_level: 80
 tomcat_check_mk_critical_level: 95
+tomcat_check_mk_label: "jstat_{{ tomcat_name }}"
 
 ################################################################################
 # Install and uninstall settings

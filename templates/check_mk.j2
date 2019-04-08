@@ -13,7 +13,7 @@ ps -ef | grep java | grep "catalina.base={{ tomcat_base }}" | grep -v grep > $ps
 
 while read line; do
   pid=`echo $line | awk '{ print $2 }'`
-  label="{{ tomcat_name }}"
+  label="{{ tomcat_check_mk_label }}"
 
   if [ ! -d /proc/$pid ] ; then
     echo "2 $label - process pid[$pid] not found"
