@@ -42,7 +42,7 @@
         path: "{{ item }}"
         state: absent
       when: >-
-        tomcat_force_install
+        tomcat_force_install | bool
         or tomcat_use_native_apr_library
            != ansible_local_facts.use_native_apr_library
               | default(tomcat_use_native_apr_library)
@@ -143,7 +143,7 @@
             state: absent
       when: tomcat_apr_extract_package_result.files is defined
   when:
-    - tomcat_use_native_apr_library
+    - tomcat_use_native_apr_library | bool
     - ansible_facts.distribution_major_version is version("6", ">")
     - tomcat_version is version("7", ">=")
   vars:

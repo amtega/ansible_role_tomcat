@@ -22,7 +22,7 @@
         owner: root
         group: root
         mode: 0755
-  when: tomcat_check_mk
+  when: tomcat_check_mk | bool
   tags:
     - role::tomcat
     - role::tomcat::install

@@ -3,19 +3,24 @@
 
 - block:
     - name: Install catalina startup scripts
-      synchronize:
-        src: "{{ tomcat_home }}/{{ item }}"
-        dest: "{{ tomcat_base }}/{{ item }}"
-        archive: yes
+      command: >-
+        /bin/rsync --delay-updates -F --compress --archive --update
+        '--out-format=<<CHANGED>>%i %n%L'
+        {{ tomcat_home }}/{{ item }}
+        {{ tomcat_base }}/{{ item }}
+      register: tomcat_install_catalina_scripts_result
+      changed_when: >-
+        tomcat_install_catalina_scripts_result.stdout_lines | length > 0
       loop: "{{ tomcat_catalina_scripts }}"
-      delegate_to: "{{ inventory_hostname }}"
 
     - name: Remove native daemon startup scripts
       file:
         path: "{{ tomcat_base }}/{{ item }}"
         state: absent
       loop: "{{ tomcat_daemon_scripts }}"
-  when: not tomcat_use_native_daemon or tomcat_version is version("7", "<")
+  when: >-
+    not tomcat_use_native_daemon | bool
+    or tomcat_version is version("7", "<")
   tags:
     - role::tomcat
     - role::tomcat::install

@@ -43,7 +43,7 @@
       when: >-
         tomcat_version
         is not version(ansible_local_facts.version | default(0), "==")
-        or tomcat_force_install
+        or tomcat_force_install | bool
       vars:
         ansible_local_facts: >-
           {{ ansible_local[tomcat_name] | default({}) }}
@@ -61,7 +61,7 @@
         path: "{{ tomcat_package }}"
         state: absent
       when:
-        - tomcat_remove_artifact
+        - tomcat_remove_artifact | bool
         - artifact_result is defined
 
     - name: Setup tomcat home owner/group

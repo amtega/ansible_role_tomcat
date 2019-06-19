@@ -5,14 +5,16 @@
   hosts: localhost
   roles:
     - role: amtega.docker_presets
-      docker_presets_images_json_query: >-
-        [? starts_with(name, `centos-6`)
-           || starts_with(name, `centos-7`)
-           || starts_with(name, `fedora-27`)
-           || starts_with(name, `fedora-28`) ]
+      vars:
+        docker_presets_images_json_query: >-
+          [? starts_with(name, `centos-6`)
+             || starts_with(name, `centos-7`)
+             || starts_with(name, `fedora-29`)
+             || starts_with(name, `fedora-30`) ]
 
     - role: amtega.docker_sandbox
-      docker_sandbox_state: started
+      vars:
+        docker_sandbox_state: started
   tags:
     - sandbox
 
@@ -90,8 +92,8 @@
 
     - name: Rotate logs
       shell: logrotate -vf /etc/logrotate.conf
-      changed_when: false
-      failed_when: false
+      changed_when: no
+      failed_when: no
       register: logrotate_result
 
     - name: Assert logs were rotated
@@ -251,7 +253,8 @@
   hosts: localhost
   roles:
     - role: amtega.docker_sandbox
-      docker_sandbox_state: absent
+      vars:
+        docker_sandbox_state: absent
   tags:
     - sandbox
     - cleanup

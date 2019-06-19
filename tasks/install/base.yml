@@ -22,19 +22,14 @@
       loop: "{{ tomcat_subdirs }}"
 
     - name: Populate tomcat base directory tree
-      synchronize:
-        src: "{{ tomcat_home }}/{{ item }}/"
-        dest: "{{ tomcat_base }}/{{ item }}"
-        owner: yes
-        group: yes
-        perms: yes
-        archive: no
-        rsync_opts:
-          - "--recursive"
-          - "--links"
-          - "--update"
+      command: >-
+        /bin/rsync --delay-updates -F --compress --perms --owner --group \
+        --recursive --links --update '--out-format=<<CHANGED>>%i %n%L' \
+        {{ tomcat_home }}/{{ item }}/
+        {{ tomcat_base }}/{{ item }}
+      register: tomcat_populate_base_dir_result
+      changed_when: tomcat_populate_base_dir_result.stdout_lines | length > 0
       loop: "{{ tomcat_subdirs_to_populate }}"
-      delegate_to: "{{ inventory_hostname }}"
 
     - name: Create tomcat base symlink
       file:
@@ -51,7 +46,7 @@
         owner: "{{ tomcat_user }}"
         group: "{{ tomcat_group }}"
         mode: "{{ tomcat_files_permissions }}"
-      when: tomcat_cluster
+      when: tomcat_cluster | bool
       loop: "{{ cluster_directories | reject('none') | list }}"
       vars:
         cluster_directories:
