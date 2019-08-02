@@ -4,7 +4,7 @@
 - block:
     - name: Install catalina startup scripts
       command: >-
-        /bin/rsync --delay-updates -F --compress --archive --update
+        rsync --delay-updates -F --compress --archive --update
         '--out-format=<<CHANGED>>%i %n%L'
         {{ tomcat_home }}/{{ item }}
         {{ tomcat_base }}/{{ item }}
