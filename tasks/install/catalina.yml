@@ -8,6 +8,8 @@
         '--out-format=<<CHANGED>>%i %n%L'
         {{ tomcat_home }}/{{ item }}
         {{ tomcat_base }}/{{ item }}
+      args:
+        warn: no
       register: tomcat_install_catalina_scripts_result
       changed_when: >-
         tomcat_install_catalina_scripts_result.stdout_lines | length > 0

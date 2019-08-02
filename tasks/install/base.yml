@@ -27,6 +27,8 @@
         --recursive --links --update '--out-format=<<CHANGED>>%i %n%L' \
         {{ tomcat_home }}/{{ item }}/
         {{ tomcat_base }}/{{ item }}
+      args:
+        warn: no
       register: tomcat_populate_base_dir_result
       changed_when: tomcat_populate_base_dir_result.stdout_lines | length > 0
       loop: "{{ tomcat_subdirs_to_populate }}"
