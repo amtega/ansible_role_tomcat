@@ -23,7 +23,7 @@
 
     - name: Populate tomcat base directory tree
       command: >-
-        /bin/rsync --delay-updates -F --compress --perms --owner --group \
+        rsync --delay-updates -F --compress --perms --owner --group \
         --recursive --links --update '--out-format=<<CHANGED>>%i %n%L' \
         {{ tomcat_home }}/{{ item }}/
         {{ tomcat_base }}/{{ item }}

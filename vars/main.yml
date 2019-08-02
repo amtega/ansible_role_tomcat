@@ -17,6 +17,7 @@ tomcat_packages_os:
       tar: present
       unzip: present
       rsync: present
+      sshpass: present
     6:
       libxml2-devel: present
       libxml2-python: present

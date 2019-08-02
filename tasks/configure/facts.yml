@@ -14,9 +14,11 @@
         owner: root
         group: root
         mode: 0640
+      register: tomcat_configure_facts_result
 
     - name: Reload facts
       setup:
+      when: tomcat_configure_facts_result is changed
   tags:
     - role::tomcat
     - role::tomcat::configure
