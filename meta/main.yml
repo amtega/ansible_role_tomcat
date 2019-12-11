@@ -7,7 +7,7 @@ galaxy_info:
   description: Setup tomcat application server
   company: AMTEGA - Xunta de Galicia
   license: GPLv3 or EUPL
-  min_ansible_version: 2.7
+  min_ansible_version: 2.8
   platforms:
     - name: EL
       versions:
@@ -24,27 +24,16 @@ galaxy_info:
 
 dependencies:
   - role: amtega.check_platform
-    vars:
-      check_platform_distributions:
-        centos: 6
-        fedora: 29
-        rhel: 6
     tags:
-      - role::tomcat
+      - never
 
   - role: amtega.epel
-    when:
-      - ansible_facts.distribution | lower in ['centos', 'rhel']
-      - ansible_facts.distribution_version is version("7", "<")
     tags:
-      - role::tomcat
+      - never
 
   - role: amtega.packages
-    vars:
-      packages_os: "{{ tomcat_packages_os }}"
-      packages_python: "{{ tomcat_packages_python }}"
     tags:
-      - role::tomcat
+      - never
 
   - role: amtega.artifact
     tags:

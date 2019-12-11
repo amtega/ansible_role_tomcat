@@ -1,6 +1,21 @@
 ---
 # Role tasks
 
+- include_role: amtega.check_platform
+  vars:
+    check_platform_distributions:
+      centos: 6
+      fedora: 29
+      rhel: 6
+
+- include_role: amtega.epel
+  when: ansible_facts.distribution_version is version("7", "<")
+
+- include_role: amtega.packages
+  vars:
+    packages_os: "{{ tomcat_packages_os }}"
+    packages_python: "{{ tomcat_packages_python }}"
+
 - name: Sanity checks
   include_tasks: check/main.yml
   tags:
