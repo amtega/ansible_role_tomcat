@@ -9,7 +9,7 @@ cs={{ tomcat_check_mk_critical_level }}
 
 # Get proceses
 ps_info=$(mktemp)
-ps -ef | grep java | grep "catalina.base={{ tomcat_base }}" | grep -v grep > $ps_info
+ps -aef --forest | grep ^{{ tomcat_user }} | grep " \\\\_ " | grep "catalina.base={{ tomcat_base }}" | grep -v grep > $ps_info
 
 while read line; do
   pid=`echo $line | awk '{ print $2 }'`
