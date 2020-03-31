@@ -1,7 +1,7 @@
 ---
 # Tasks for testing role
 
-- name: Run idempotence test
+- name: Setup testing sandbox
   hosts: localhost
   roles:
     - role: amtega.docker_presets
@@ -249,7 +249,7 @@
       assert:
         that: check_server1_home_result.files | length == 0
 
-- name: Cleanup docker sandbox
+- name: Cleanup testing sandbox
   hosts: localhost
   roles:
     - role: amtega.docker_sandbox
