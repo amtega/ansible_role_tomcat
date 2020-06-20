@@ -1,0 +1,62 @@
+---
+
+- name: Verify
+  hosts: molecule_hosts
+  gather_facts: no
+  vars:
+    ansible_python_interpreter: /var/lib/ansible/venv/bin/python
+  tasks:
+    - name: Read subrealm config
+      xml:
+        path: "{{ tomcat_base }}/conf/server.xml"
+        xpath: >-
+          {{ "/Server/Service[@name='Catalina']/Engine[@name='Catalina']"
+             + "/Realm/Realm" }}
+        content: attribute
+      register: subrealm_result
+
+    - name: Assert subrealm config matches inventory
+      assert:
+        that:
+          - file.className == inventory.className | string
+      vars:
+        file: "{{ subrealm_result.matches[0].Realm }}"
+        inventory: "{{ tomcat_subrealms[0] }}"
+
+    # We don't check tomcat_server_port because native daemon doesn't use it
+
+    - name: Check that tomcat is listening
+      wait_for:
+        port: "{{ item }}"
+        timeout: 10
+      loop:
+        - "{{ tomcat_server_http_port }}"
+        - "{{ tomcat_server_ajp_port }}"
+
+    - name: Check that tomcat http port returns welcome page
+      uri:
+        url: "http://localhost:{{ tomcat_server_http_port }}"
+        return_content: yes
+      register: check_http_result
+      failed_when: >-
+         not check_http_result.content
+             is search("successfully")
+
+    - name: Rotate logs
+      shell: logrotate -vf /etc/logrotate.conf
+      changed_when: no
+      failed_when: no
+      register: logrotate_result
+
+    - name: Assert logs were rotated
+      assert:
+        that:
+          - logrotate_result.stderr is search("rotating .*catalina.*out")
+          - logrotate_result.stderr is search("rotating .*localhost.*log")
+
+    - name: Check check_mk script
+      shell: >-
+        /usr/lib/check_mk_agent/local/{{ tomcat_check_mk_seconds }}/server1
+      changed_when: no
+      failed_when: not check_mk_result.stdout is search("Process .* alive")
+      register: check_mk_result

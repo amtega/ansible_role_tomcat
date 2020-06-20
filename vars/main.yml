@@ -9,6 +9,7 @@ tomcat_packages_os:
       apr-devel: present
       apr-util-devel: present
       gcc: present
+      initscripts: present
       java: present
       java-devel: present
       libcap-devel: present
@@ -24,16 +25,19 @@ tomcat_packages_os:
       libxslt-devel: present
       libxslt-python: present
       openssl-devel: present
+      procps: present
       python-devel: present
       python-lxml: absent
       python-pip: present
     7:
       openssl-devel: present
+      procps-ng: present
       python-lxml: present
   fedora:
     all:
       compat-openssl10-devel: present
       redhat-rpm-config: present
+      procps-ng: present
       python2-lxml: present
       python3-lxml: present
 

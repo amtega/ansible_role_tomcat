@@ -16,16 +16,7 @@
             path: "{{ tomcat_home }}/bin/catalina.sh"
           register: tomcat_home_check_result
 
-        - name: Download tomcat artifact
-          include_role:
-            name: amtega.artifact
-          vars:
-            override:
-              id: "tomcat_{{ tomcat_version_underlined }}"
-              download: >-
-                {{ not tomcat_home_check_result.stat.exists
-                   or tomcat_force_install }}
-            artifact: "{{ tomcat_artifact | combine(override) }}"
+        - include_tasks: artifact.yml
 
         - name: Extract tomcat server package
           unarchive:
@@ -65,7 +56,7 @@
 
     - name: Setup tomcat home owner/group
       file:
-        path: "{̣{ tomcat_home }}"
+        path: "{{ tomcat_home }}"
         owner: "{{ tomcat_user }}"
         group: "{{ tomcat_group }}"
         state: directory

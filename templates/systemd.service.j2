@@ -58,8 +58,8 @@ ExecStop={{ tomcat_java_home }}/bin/java \
   -Djava.util.logging.config.file={{ tomcat_logging_config_path }} \
   -Djava.util.logging.manager={{ tomcat_logging_manager_class }}  \
   stop
-StandarOutput=file:{{ tomcat_out }}
-StandarError=file:{{ tomcat_out }}
+StandardOutput=file:{{ tomcat_out }}
+StandardError=file:{{ tomcat_out }}
 {% endif %}
 RestartSec={{ tomcat_restart_seconds }}
 TimeoutSec={{ tomcat_start_stop_timeout_seconds }}
