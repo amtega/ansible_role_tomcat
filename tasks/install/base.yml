@@ -58,7 +58,7 @@
 
     - name: Setup tomcat base owner/group
       file:
-        path: "{̣{ tomcat_base }}"
+        path: "{{ tomcat_base }}"
         owner: "{{ tomcat_user }}"
         group: "{{ tomcat_group }}"
         state: directory

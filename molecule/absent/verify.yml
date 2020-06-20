@@ -1,0 +1,33 @@
+---
+
+- name: Verify
+  hosts: molecule_hosts
+  gather_facts: no
+  tasks:
+    - name: Check server1 instance base dir
+      find:
+        paths: /srv/tomcat/server1
+        file_type: directory
+      register: check_server1_base_result
+
+    - name: Check server1 instance home dir
+      find:
+        path: /opt/apache-tomcat-8.0.9
+        file_type: directory
+      register: check_server1_home_result
+
+
+
+    - debug: var=check_server1_base_result.files
+
+    - name: Check server1 instance base dir contains only preserved dir
+      assert:
+        that:
+          - check_server1_base_result.files | length == 1
+          - >-
+            check_server1_base_result.files[0].path
+            == "/srv/tomcat/server1/webapps"
+
+    - name: Check server1 instance home dir contains only preserved dir
+      assert:
+        that: check_server1_home_result.files | length == 0

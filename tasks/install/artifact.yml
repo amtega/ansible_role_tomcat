@@ -1,0 +1,13 @@
+---
+# Download artifact tasks
+
+- name: Download tomcat artifact
+  include_role:
+    name: amtega.artifact
+  vars:
+    override:
+      id: "tomcat_{{ tomcat_version_underlined }}"
+      download: >-
+        {{ not tomcat_home_check_result.stat.exists
+           or tomcat_force_install }}
+    artifact: "{{ tomcat_artifact | combine(override) }}"

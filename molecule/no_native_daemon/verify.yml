@@ -1,0 +1,23 @@
+---
+
+- name: Verify
+  hosts: molecule_hosts
+  gather_facts: no
+  tasks:
+    - name: Check that tomcat is listening
+      wait_for:
+        port: "{{ item }}"
+        timeout: 10
+      loop:
+        - "{{ tomcat_server_http_port }}"
+        - "{{ tomcat_server_ajp_port }}"
+        - "{{ tomcat_server_port }}"
+
+    - name: Check that tomcat http port returns welcome page
+      uri:
+        url: "http://localhost:{{ tomcat_server_http_port }}"
+        return_content: yes
+      register: check_http_result
+      failed_when: >-
+         not check_http_result.content
+             is search("successfully")

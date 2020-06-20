@@ -1,0 +1,37 @@
+---
+
+- name: Prepare
+  hosts: molecule_hosts
+  gather_facts: no
+  roles:
+    - role: amtega.tomcat
+      vars:
+        tomcat_name: server1
+        tomcat_version: 8.0.9
+        tomcat_home: /opt/apache-tomcat-8.0.9
+        tomcat_base: /srv/tomcat/server1
+        tomcat_link: /opt/tomcat8
+        tomcat_server_port: 8005
+        tomcat_server_http_port: 8080
+        tomcat_server_https_port: 8443
+        tomcat_server_ajp_port: 8009
+        tomcat_manager_addresses_allow:
+          - 192.168.5.2
+          - 192.168.5.3
+        tomcat_manager_addresses_deny:
+          - 192.168.5.13
+          - 192.168.5.14
+        tomcat_manager_hostnames_allow:
+          - host1.acme.com
+          - host2.acme.com
+        tomcat_manager_hostnames_deny:
+          - badhost1.acme.com
+          - badhost2.acme.com
+        tomcat_realm:
+          className: org.apache.catalina.realm.LockOutRealm
+        tomcat_subrealms:
+          - className: org.apache.catalina.realm.UserDatabaseRealm
+            resourceName: UserDatabase
+        tomcat_cluster: yes
+        tomcat_check_mk: yes
+        tomcat_state: present
