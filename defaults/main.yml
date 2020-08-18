@@ -219,10 +219,6 @@ tomcat_artifact:
     timeout: 120
     validate_certs: yes
 
-# Remove or not downloaded artifact after install
-
-tomcat_remove_artifact: yes
-
 ################################################################################
 # Clustering settings. See cluster-howto.html in tomcat documentation
 ################################################################################

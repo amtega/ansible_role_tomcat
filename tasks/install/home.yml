@@ -17,6 +17,8 @@
           register: tomcat_home_check_result
 
         - include_tasks: artifact.yml
+          vars:
+            tomcat_artifact_state: "present"
 
         - name: Extract tomcat server package
           unarchive:
@@ -46,13 +48,9 @@
         mode: "{{ tomcat_files_permissions }}"
       when: tomcat_home_link is not none
 
-    - name: Delete tomcat artifact
-      file:
-        path: "{{ tomcat_package }}"
-        state: absent
-      when:
-        - tomcat_remove_artifact | bool
-        - artifact_result is defined
+    - include_tasks: artifact.yml
+      vars:
+        tomcat_artifact_state: "absent"
 
     - name: Setup tomcat home owner/group
       file:
