@@ -9,6 +9,7 @@
         owner: "{{ tomcat_user }}"
         group: "{{ tomcat_group }}"
         mode: "{{ tomcat_files_permissions }}"
+        recurse: yes
       register: tomcat_create_base_result
 
     - name: Setup tomcat base directory tree
