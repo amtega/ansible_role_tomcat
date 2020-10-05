@@ -82,7 +82,7 @@ tomcat_package: >-
 
 # Permissions to use in tomcat directories and files
 
-tomcat_files_permissions: "u=rwx,go=rx"
+tomcat_files_permissions: "u=rwx,g=rx,o="
 
 # Config files paths (relative to tomcat base)
 
