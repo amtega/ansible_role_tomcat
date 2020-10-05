@@ -52,9 +52,9 @@
       loop: "{{ cluster_directories | reject('none') | list }}"
       vars:
         cluster_directories:
-        - "{{ tomcat_cluster_deploy_temp_dir | default('null') }}"
-        - "{{ tomcat_cluster_deploy_dir | default('null') }}"
-        - "{{ tomcat_cluster_deploy_watch_dir | default('null') }}"
+          - "{{ tomcat_cluster_deploy_temp_dir | default('null') }}"
+          - "{{ tomcat_cluster_deploy_dir | default('null') }}"
+          - "{{ tomcat_cluster_deploy_watch_dir | default('null') }}"
 
     - name: Setup tomcat base owner/group
       file:
