@@ -8,7 +8,7 @@
         state: directory
         owner: "{{ tomcat_user }}"
         group: "{{ tomcat_group }}"
-        mode: "{{ tomcat_files_permissions }}"
+        mode: "{{ tomcat_file_permissions }}"
         recurse: yes
       register: tomcat_create_base_result
 
@@ -18,7 +18,7 @@
         state: directory
         owner: "{{ tomcat_user }}"
         group: "{{ tomcat_group }}"
-        mode: "{{ tomcat_files_permissions }}"
+        mode: "{{ tomcat_file_permissions }}"
       register: tomcat_create_base_tree_result
       loop: "{{ tomcat_subdirs }}"
 
@@ -39,7 +39,7 @@
         src: "{{ tomcat_base }}"
         dest: "{{ tomcat_base_link }}"
         state: link
-        mode: "{{ tomcat_files_permissions }}"
+        mode: "{{ tomcat_file_permissions }}"
       when: tomcat_base_link is not none
 
     - name: Create cluster directories
@@ -48,7 +48,7 @@
         state: directory
         owner: "{{ tomcat_user }}"
         group: "{{ tomcat_group }}"
-        mode: "{{ tomcat_files_permissions }}"
+        mode: "{{ tomcat_file_permissions }}"
       when: tomcat_cluster | bool
       loop: "{{ cluster_directories | reject('none') | list }}"
       vars:

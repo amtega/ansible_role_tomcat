@@ -8,8 +8,34 @@
         state: directory
         owner: "{{ tomcat_user }}"
         group: "{{ tomcat_group }}"
-        mode: "{{ tomcat_files_permissions }}"
-        recurse: yes
+        mode: "{{ tomcat_dir_permissions }}"
+
+    - name: Setup tomcat home directory permissions
+      shell: >-
+        /usr/bin/find {{ tomcat_home }}
+        -type d
+        -exec chmod -v {{ tomcat_dir_permissions }} \{} \; ;
+
+        /usr/bin/find {{ tomcat_home }}
+        -type f
+        -not -path {{ tomcat_home }}/bin/*
+        -exec chmod -v {{ tomcat_file_permissions }} \{} \; ;
+
+        for f in {{ tomcat_home }}/bin/*; do
+          if [[ $f == *.sh ]] || [[ $f =~ .*/jsvc$ ]]; then
+            chmod -v {{ tomcat_executable_permissions }} $f ;
+          fi ;
+        done
+      args:
+        warn: no
+      register: tomcat_setup_dir_permissions
+      changed_when: >-
+        tomcat_setup_dir_permissions.stdout_lines
+        | select("search", "changed from .* to .*")
+        | list
+        | length > 0
+      environment:
+        LANGUAGE: en_US
 
     - block:
         - name: Check tomcat home directory
@@ -28,7 +54,7 @@
             copy: no
             owner: "{{ tomcat_user }}"
             group: "{{ tomcat_group }}"
-            mode: "{{ tomcat_files_permissions }}"
+            mode: "{{ tomcat_file_permissions }}"
             extra_opts:
               - "--strip-components=1"
           register: tomcat_extract_daemon_package_result
@@ -46,7 +72,7 @@
         src: "{{ tomcat_home }}"
         dest: "{{ tomcat_home_link }}"
         state: link
-        mode: "{{ tomcat_files_permissions }}"
+        mode: "{{ tomcat_file_permissions }}"
       when: tomcat_home_link is not none
 
     - include_tasks: artifact.yml

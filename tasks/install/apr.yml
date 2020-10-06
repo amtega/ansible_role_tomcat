@@ -73,7 +73,7 @@
         copy: no
         owner: "{{ tomcat_user }}"
         group: "{{ tomcat_group }}"
-        mode: "{{ tomcat_files_permissions }}"
+        mode: "{{ tomcat_file_permissions }}"
         list_files: yes
         creates: "{{ apr_libray_path }}"
       register: tomcat_apr_extract_package_result
@@ -127,7 +127,7 @@
                 path: "{{ item }}"
                 owner: "{{ tomcat_user }}"
                 group: "{{ tomcat_group }}"
-                mode: "{{ tomcat_files_permissions }}"
+                mode: "{{ tomcat_file_permissions }}"
               loop:  "{{ apr_files }}"
               loop_control:
                 label: "{{ item | basename }}"

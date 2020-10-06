@@ -80,9 +80,17 @@ tomcat_package: >-
       | default({})).download_path
       | default('') }}
 
-# Permissions to use in tomcat directories and files
+# Permissions to use in tomcat files
 
-tomcat_files_permissions: "u=rwx,g=rx,o="
+tomcat_file_permissions: "u=rw,g=rw,o="
+
+# Permissions to use in tomcat dirs
+
+tomcat_dir_permissions: "u=rwx,g=rwx,o="
+
+# Permissions to use in tomcat executables
+
+tomcat_executable_permissions: "u=rwx,g=rx,o="
 
 # Config files paths (relative to tomcat base)
 
