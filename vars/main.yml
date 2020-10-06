@@ -92,6 +92,10 @@ tomcat_dir_permissions: "u=rwx,g=rwx,o="
 
 tomcat_executable_permissions: "u=rwx,g=rx,o="
 
+# Permissions to use in tomcat config files
+
+tomcat_conf_permissions: "u=rw,g=,o="
+
 # Config files paths (relative to tomcat base)
 
 tomcat_server_config: conf/server.xml

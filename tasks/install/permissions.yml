@@ -1,0 +1,45 @@
+---
+# Home directory install tasks
+
+- name: Setup tomcat directories permissions
+  shell: >-
+    /usr/bin/find {{ tomcat_directory }}
+    -type d
+    -exec chmod -v {{ tomcat_dir_permissions }} \{} \; ;
+
+    /usr/bin/find {{ tomcat_directory }}
+    -type f
+    -not -path "{{ tomcat_directory }}/bin/*"
+    -not -path "{{ tomcat_directory }}/conf/*"
+    -exec chmod -v {{ tomcat_file_permissions }} \{} \; ;
+
+    /usr/bin/find {{ tomcat_directory }}/conf
+    -type f
+    -exec chmod -v {{ tomcat_conf_permissions }} \{} \; ;
+
+    for f in {{ tomcat_directory }}/bin/*; do
+      if [[ $f == *.sh ]] || [[ $f =~ .*/jsvc$ ]]; then
+        chmod -v {{ tomcat_executable_permissions }} $f ;
+      fi ;
+    done
+  args:
+    warn: no
+  register: tomcat_setup_dir_permissions
+  changed_when: >-
+    tomcat_setup_dir_permissions.stdout_lines
+    | select("search", "changed from .* to .*")
+    | list
+    | length > 0
+  loop:
+    - "{{ tomcat_home }}"
+    - "{{ tomcat_base }}"
+  loop_control:
+    loop_var: tomcat_directory
+  environment:
+    LANGUAGE: en_US
+  tags:
+    - role::tomcat
+    - role::tomcat::install
+    - role::tomcat::install::permissions
+
+- fail:
