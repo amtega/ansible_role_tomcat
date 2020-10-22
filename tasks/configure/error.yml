@@ -1,0 +1,55 @@
+---
+# Error pages configuration tasks
+
+- block:
+    - name: Ensure error pages settings are valid
+      assert:
+        that: >-
+          tomcat_error_page.exception_type is defined
+          or tomcat_error_page.error_code is defined
+        fail_msg: Tomcat error pages settings is not valid
+        quiet: yes
+      loop: "{{ tomcat_error_pages }}"
+      loop_control:
+        loop_var: tomcat_error_page
+        label: "{{ tomcat_error_page.location }}"
+
+    - name: Gather error pages settings
+      tomcat_xml_to_dict:
+        path: "{{ tomcat_web_config_path }}"
+      register: tomcat_error_page_settings_result
+
+    - block:
+        - name: Cleanup error pages settings
+          xml:
+            path: "{{ tomcat_web_config_path }}"
+            xpath: /ns:web-app/ns:error-page
+            namespaces:
+              ns: http://xmlns.jcp.org/xml/ns/javaee
+            state: absent
+            pretty_print: yes
+          when: >-
+            tomcat_error_page_settings_result.dict["web-app"]["error-page"]
+            is defined
+
+        - name: Setup error pages settings
+          xml:
+            path: "{{ tomcat_web_config_path }}"
+            xpath: /ns:web-app
+            namespaces:
+              ns: http://xmlns.jcp.org/xml/ns/javaee
+            add_children: >-
+              {{ lookup('template', 'error_to_xml.yml.j2') | from_yaml }}
+            pretty_print: yes
+      when: >-
+        tomcat_error_pages
+        != lookup('template', 'error_from_xml.yml.j2') | from_yaml
+
+    - fail:
+  vars:
+    tomcat_web_config_path: "{{ tomcat_base }}/{{ tomcat_web_config }}"
+
+  tags:
+    - role::tomcat
+    - role::tomcat::configure
+    - role::tomcat::configure::error

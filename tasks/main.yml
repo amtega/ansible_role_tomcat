@@ -17,19 +17,19 @@
   when: tomcat_state == "absent"
 
 - block:
-    - name: Install tomcat
-      include_tasks: install/main.yml
-      tags:
-        - role::tomcat
-        - role::tomcat::install
-        - role::tomcat::install::group
-        - role::tomcat::install::user
-        - role::tomcat::install::home
-        - role::tomcat::install::base
-        - role::tomcat::install::daemon
-        - role::tomcat::install::apr
-        - role::tomcat::install::catalina
-        - role::tomcat::install::check_mk
+    # - name: Install tomcat
+    #   include_tasks: install/main.yml
+    #   tags:
+    #     - role::tomcat
+    #     - role::tomcat::install
+    #     - role::tomcat::install::group
+    #     - role::tomcat::install::user
+    #     - role::tomcat::install::home
+    #     - role::tomcat::install::base
+    #     - role::tomcat::install::daemon
+    #     - role::tomcat::install::apr
+    #     - role::tomcat::install::catalina
+    #     - role::tomcat::install::check_mk
 
     - name: Configure tomcat
       include_tasks: configure/main.yml
@@ -42,6 +42,7 @@
         - role::tomcat::configure::cms
         - role::tomcat::configure::manager
         - role::tomcat::configure::cluster
+        - role::tomcat::configure::error
         - role::tomcat::configure::logrotate
         - role::tomcat::configure::facts
 

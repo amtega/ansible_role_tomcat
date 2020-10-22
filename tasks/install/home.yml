@@ -45,7 +45,6 @@
         src: "{{ tomcat_home }}"
         dest: "{{ tomcat_home_link }}"
         state: link
-        mode: "{{ tomcat_file_permissions }}"
       when: tomcat_home_link is not none
 
     - include_tasks: artifact.yml

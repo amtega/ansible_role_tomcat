@@ -5,17 +5,26 @@
   shell: >-
     /usr/bin/find {{ tomcat_directory }}
     -type d
+    -not -path "{{ tomcat_directory }}"
+    -not -path "{{ tomcat_directory }}/webapps/*"
+    -not -path "{{ tomcat_directory }}/work/*"
     -exec chmod -v {{ tomcat_dir_permissions }} \{} \; ;
 
     /usr/bin/find {{ tomcat_directory }}
     -type f
     -not -path "{{ tomcat_directory }}/bin/*"
     -not -path "{{ tomcat_directory }}/conf/*"
+    -not -path "{{ tomcat_directory }}/webapps/*"
+    -not -path "{{ tomcat_directory }}/work/*"
     -exec chmod -v {{ tomcat_file_permissions }} \{} \; ;
 
     /usr/bin/find {{ tomcat_directory }}/conf
     -type f
+    -not -path "{{ tomcat_directory }}/conf/web.xml"
     -exec chmod -v {{ tomcat_conf_permissions }} \{} \; ;
+
+    chmod -v {{ tomcat_conf_web_xml_permissions }}
+    {{ tomcat_directory }}/conf/web.xml ;
 
     for f in {{ tomcat_directory }}/bin/*; do
       if [[ $f == *.sh ]] || [[ $f =~ .*/jsvc$ ]]; then

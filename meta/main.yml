@@ -22,22 +22,22 @@ galaxy_info:
     - jee
     - java
 
-dependencies:
-  - role: amtega.check_platform
-    vars:
-      check_platform_distributions:
-        centos: 6
-        fedora: 29
-        redhat: 6
-
-  - role: amtega.epel
-    when: ansible_facts.distribution_version is version("7", "<")
-
-  - role: amtega.packages
-    vars:
-      packages_os: "{{ tomcat_packages_os }}"
-      packages_python: "{{ tomcat_packages_python }}"
-
-  - role: amtega.artifact
-    tags:
-      - never
+# dependencies:
+#   - role: amtega.check_platform
+#     vars:
+#       check_platform_distributions:
+#         centos: 6
+#         fedora: 29
+#         redhat: 6
+#
+#   - role: amtega.epel
+#     when: ansible_facts.distribution_version is version("7", "<")
+#
+  # - role: amtega.packages
+  #   vars:
+  #     packages_os: "{{ tomcat_packages_os }}"
+  #     packages_python: "{{ tomcat_packages_python }}"
+#
+#   - role: amtega.artifact
+#     tags:
+#       - never
