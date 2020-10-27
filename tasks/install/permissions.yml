@@ -14,6 +14,7 @@
     -type f
     -not -path "{{ tomcat_directory }}/bin/*"
     -not -path "{{ tomcat_directory }}/conf/*"
+    -not -path "{{ tomcat_directory }}/logs/*"
     -not -path "{{ tomcat_directory }}/webapps/*"
     -not -path "{{ tomcat_directory }}/work/*"
     -exec chmod -v {{ tomcat_file_permissions }} \{} \; ;
@@ -50,5 +51,3 @@
     - role::tomcat
     - role::tomcat::install
     - role::tomcat::install::permissions
-
-- fail:
