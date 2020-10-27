@@ -184,6 +184,22 @@ tomcat_cms_users:
       - manager-status
 
 ################################################################################
+# Tomcat shutdown command
+################################################################################
+
+tomcat_shutdown_command: SHUTDOWN
+tomcat_shutdown_command_random: no
+
+################################################################################
+# Tomcat Security Lifecycle Listener settings
+################################################################################
+
+tomcat_security_listener: no
+tomcat_security_listener_checked_os_users:
+  - root
+tomcat_security_listener_minimum_umask: "0007"
+
+################################################################################
 # Manager web interface access settings
 ################################################################################
 
@@ -224,6 +240,7 @@ tomcat_cluster_deploy_watch_enabled: yes
 tomcat_logrotate_config_path: /etc/logrotate.d/{{ tomcat_name }}
 
 tomcat_logrotate_config_catalina: |
+  su {{ tomcat_user }} {{ tomcat_group }}
   notifempty
   daily
   dateext
@@ -238,6 +255,7 @@ tomcat_logrotate_config_logs_paths:
   - "{{ tomcat_base }}/logs/*.txt"
 
 tomcat_logrotate_config_logs: |
+    su {{ tomcat_user }} {{ tomcat_group }}
     notifempty
     daily
     dateext
