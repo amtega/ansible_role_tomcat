@@ -27,7 +27,7 @@
         copy: no
         owner: "{{ tomcat_user }}"
         group: "{{ tomcat_group }}"
-        mode: "{{ tomcat_file_permissions }}"
+        mode: "0750"
         list_files: yes
         creates: "{{ daemon_path }}"
       register: tomcat_daemon_extract_package_result
