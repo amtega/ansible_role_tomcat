@@ -10,10 +10,6 @@
       tags:
         - role::tomcat::install::base
 
-    - include_tasks: "{{ role_path }}/tasks/install/permissions.yml"
-      tags:
-        - role::tomcat::install::permissions
-
     - include_tasks: "{{ role_path }}/tasks/install/daemon.yml"
       tags:
         - role::tomcat::install::daemon
@@ -29,6 +25,10 @@
     - include_tasks: "{{ role_path }}/tasks/install/check_mk.yml"
       tags:
         - role::tomcat::install::check_mk
+
+    - include_tasks: "{{ role_path }}/tasks/install/permissions.yml"
+      tags:
+        - role::tomcat::install::permissions
   tags:
     - role::tomcat
     - role::tomcat::install
