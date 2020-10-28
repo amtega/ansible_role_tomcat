@@ -7,106 +7,123 @@
         path: "{{ tomcat_server_config_path }}"
       register: tomcat_gather_server_config_result
 
-    # - name: Setup tomcat server config
-    #   xml:
-    #     path: "{{ tomcat_server_config_path }}"
-    #     xpath: >-
-    #       {{ (value is not none)
-    #          | ternary(item.xpath, item.xpath + "/@" + item.attribute) }}
-    #     attribute: >-
-    #       {{ (value is not none)
-    #          | ternary(item.attribute, omit) }}
-    #     value: >-
-    #       {{ (value is not none)
-    #          | ternary(value_string, omit) }}
-    #     state: >-
-    #       {{ (value is not none)
-    #          | ternary(omit, "absent") }}
-    #     pretty_print: yes
-    #   notify:
-    #     - restart tomcat
-    #   loop: "{{ config }}"
-    #   loop_control:
-    #     label: >-
-    #       {{ item.xpath }}
-    #       {{ item.attribute }}
-    #   vars:
-    #     service_xpath: "/Server/Service[@name='Catalina']"
-    #     connector_xpath: "{{ service_xpath }}/Connector"
-    #     engine_xpath: "{{ service_xpath }}/Engine[@name='Catalina']"
-    #     host_xpath: "{{ engine_xpath }}/Host[@name='localhost']"
-    #     value: "{{ lookup('vars', item.value) }}"
-    #     value_string: >-
-    #       {{ (value is sameas(true) or value is sameas(false))
-    #          | ternary(value | string | lower, value | string) }}
-    #     http_scheme: http
-    #     https_scheme: https
-    #     config:
-    #       - xpath: "/Server"
-    #         attribute: port
-    #         value: tomcat_server_port
-    #       - xpath: "{{ connector_xpath }}[@protocol='HTTP/1.1']"
-    #         attribute: port
-    #         value: tomcat_server_http_port
-    #       - xpath: "{{ connector_xpath }}[@protocol='HTTP/1.1']"
-    #         attribute: scheme
-    #         value: http_scheme
-    #       - xpath: "{{ connector_xpath }}[@protocol='HTTP/1.1']"
-    #         attribute: redirectPort
-    #         value: tomcat_server_https_port
-    #       - xpath: "{{ connector_xpath }}[@protocol='HTTP/1.1']"
-    #         attribute: scheme
-    #         value: https_scheme
-    #       - xpath: "{{ connector_xpath }}[@protocol='HTTP/1.1']"
-    #         attribute: enableLookups
-    #         value: tomcat_server_enable_lookups
-    #       - xpath: "{{ connector_xpath }}[@protocol='AJP/1.3']"
-    #         attribute: port
-    #         value: tomcat_server_ajp_port
-    #       - xpath: "{{ connector_xpath }}[@protocol='AJP/1.3']"
-    #         attribute: maxThreads
-    #         value: tomcat_server_ajp_max_threads
-    #       - xpath: "{{ connector_xpath }}[@protocol='AJP/1.3']"
-    #         attribute: redirectPort
-    #         value: tomcat_server_https_port
-    #       - xpath: "{{ host_xpath }}"
-    #         attribute: autoDeploy
-    #         value: tomcat_server_autodeploy
-    #       - xpath: "{{ engine_xpath }}"
-    #         attribute: jvmRoute
-    #         value: tomcat_server_engine_jvm_route
-    #
-    # - when: not tomcat_shutdown_command_random | bool
-    #   name: Setup tomcat shutdown command value
-    #   xml:
-    #     path: "{{ tomcat_server_config_path }}"
-    #     xpath: /Server
-    #     attribute: shutdown
-    #     value: "{{ tomcat_shutdown_command }}"
-    #     pretty_print: yes
-    #
-    # - when: tomcat_shutdown_command_random | bool
-    #   block:
-    #     - name: Gather tomcat shutdown command value
-    #       xml:
-    #         path: "{{ tomcat_server_config_path }}"
-    #         xpath: /Server[@shutdown]
-    #         content: attribute
-    #       register: tomcat_server_shutdown_attr_result
-    #
-    #     - name: Setup tomcat shutdown command to nondeterministic value
-    #       xml:
-    #         path: "{{ tomcat_server_config_path }}"
-    #         xpath: /Server
-    #         attribute: shutdown
-    #         value: >-
-    #           {{ lookup('password',
-    #                     '/dev/null chars=ascii_uppercase length=10')}}
-    #         pretty_print: yes
-    #       when: >-
-    #         tomcat_server_shutdown_attr_result.matches.0["Server"]["shutdown"]
-    #         | lower
-    #         ==  tomcat_shutdown_command
+    - name: Setup tomcat server config
+      xml:
+        path: "{{ tomcat_server_config_path }}"
+        xpath: >-
+          {{ (value is not none)
+             | ternary(item.xpath, item.xpath + "/@" + item.attribute) }}
+        attribute: >-
+          {{ (value is not none)
+             | ternary(item.attribute, omit) }}
+        value: >-
+          {{ (value is not none)
+             | ternary(value_string, omit) }}
+        state: >-
+          {{ (value is not none)
+             | ternary(omit, "absent") }}
+        pretty_print: yes
+      when: item.when | default(true) | bool
+      notify:
+        - restart tomcat
+      loop: "{{ config }}"
+      loop_control:
+        label: >-
+          {{ item.xpath }}
+          {{ item.attribute }}
+      vars:
+        service_xpath: "/Server/Service[@name='Catalina']"
+        connector_xpath: "{{ service_xpath }}/Connector"
+        engine_xpath: "{{ service_xpath }}/Engine[@name='Catalina']"
+        host_xpath: "{{ engine_xpath }}/Host[@name='localhost']"
+        value: "{{ lookup('vars', item.value) }}"
+        value_string: >-
+          {{ (value is sameas(true) or value is sameas(false))
+             | ternary(value | string | lower, value | string) }}
+        http_scheme: http
+        https_scheme: https
+        config:
+          - xpath: "/Server"
+            attribute: port
+            value: tomcat_server_port
+            when: yes
+          - xpath: "{{ connector_xpath }}[@protocol='HTTP/1.1']"
+            attribute: port
+            value: tomcat_server_http_port
+            when: yes
+          - xpath: "{{ connector_xpath }}[@protocol='HTTP/1.1']"
+            attribute: scheme
+            value: http_scheme
+            when: yes
+          - xpath: "{{ connector_xpath }}[@protocol='HTTP/1.1']"
+            attribute: redirectPort
+            value: tomcat_server_https_port
+            when: yes
+          - xpath: "{{ connector_xpath }}[@SSLEnabled='true']"
+            attribute: scheme
+            value: https_scheme
+            when: >-
+              {{ tomcat_gather_server_config_result.dict
+                 ["Server"]["Service"]["Connector"]
+                 | selectattr("@SSLEnabled", "defined")
+                 | list
+                 | length > 0 }}
+          - xpath: "{{ connector_xpath }}[@protocol='HTTP/1.1']"
+            attribute: enableLookups
+            value: tomcat_server_enable_lookups
+            when: yes
+          - xpath: "{{ connector_xpath }}[@protocol='AJP/1.3']"
+            attribute: port
+            value: tomcat_server_ajp_port
+            when: yes
+          - xpath: "{{ connector_xpath }}[@protocol='AJP/1.3']"
+            attribute: maxThreads
+            value: tomcat_server_ajp_max_threads
+            when: yes
+          - xpath: "{{ connector_xpath }}[@protocol='AJP/1.3']"
+            attribute: redirectPort
+            value: tomcat_server_https_port
+            when: yes
+          - xpath: "{{ host_xpath }}"
+            attribute: autoDeploy
+            value: tomcat_server_autodeploy
+            when: yes
+          - xpath: "{{ engine_xpath }}"
+            attribute: jvmRoute
+            value: tomcat_server_engine_jvm_route
+            when: yes
+
+    - when: not tomcat_shutdown_command_random | bool
+      name: Setup tomcat shutdown command value
+      xml:
+        path: "{{ tomcat_server_config_path }}"
+        xpath: /Server
+        attribute: shutdown
+        value: "{{ tomcat_shutdown_command }}"
+        pretty_print: yes
+
+    - when: tomcat_shutdown_command_random | bool
+      block:
+        - name: Gather tomcat shutdown command value
+          xml:
+            path: "{{ tomcat_server_config_path }}"
+            xpath: /Server[@shutdown]
+            content: attribute
+          register: tomcat_server_shutdown_attr_result
+
+        - name: Setup tomcat shutdown command to nondeterministic value
+          xml:
+            path: "{{ tomcat_server_config_path }}"
+            xpath: /Server
+            attribute: shutdown
+            value: >-
+              {{ lookup('password',
+                        '/dev/null chars=ascii_uppercase length=10')}}
+            pretty_print: yes
+          when: >-
+            tomcat_server_shutdown_attr_result.matches.0["Server"]["shutdown"]
+            | lower
+            ==  tomcat_shutdown_command
 
     - block:
         - when:
