@@ -18,7 +18,7 @@
         dest: "{{ tomcat_base }}/{{ tomcat_users_config }}"
         owner: "{{ tomcat_user | default(tomcat_user) }}"
         group: "{{ tomcat_group | default(tomcat_group) }}"
-        mode: 0755
+        mode: "{{ tomcat_conf_permissions }}"
       notify:
         - restart tomcat
   tags:

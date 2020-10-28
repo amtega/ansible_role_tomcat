@@ -43,7 +43,7 @@
              is search("successfully")
 
     - name: Rotate logs
-      shell: logrotate -vf /etc/logrotate.conf
+      command: logrotate -vf /etc/logrotate.conf
       changed_when: no
       failed_when: no
       register: logrotate_result
@@ -55,7 +55,7 @@
           - logrotate_result.stderr is search("rotating .*localhost.*log")
 
     - name: Check check_mk script
-      shell: >-
+      command: >-
         /usr/lib/check_mk_agent/local/{{ tomcat_check_mk_seconds }}/server1
       changed_when: no
       failed_when: not check_mk_result.stdout is search("Process .* alive")

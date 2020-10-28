@@ -1,0 +1,8 @@
+{% for p in tomcat_error_pages %}
+- error-page:
+    _:
+      - exception-type: "{{ p.exception_type }}"
+      - location: "{{ p.location }}"
+{% else %}
+[]
+{% endfor %}

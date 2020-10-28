@@ -45,6 +45,9 @@ tomcat_packages_os:
 
 tomcat_packages_python:
   all:
+    all:
+      - name: xmltodict
+        state: present
     6:
       - name: "lxml==4.2.6"
         state: present
@@ -80,14 +83,31 @@ tomcat_package: >-
       | default({})).download_path
       | default('') }}
 
-# Permissions to use in tomcat directories and files
+# Permissions to use in tomcat files
 
-tomcat_files_permissions: "u=rwx,go=rx"
+tomcat_file_permissions: "u=rw,g=rw,o="
+
+# Permissions to use in tomcat dirs
+
+tomcat_dir_permissions: "u=rwx,g=rwx,o="
+
+# Permissions to use in tomcat executables
+
+tomcat_executable_permissions: "u=rwx,g=rx,o="
+
+# Permissions to use in tomcat config files
+
+tomcat_conf_permissions: "u=rw,g=,o="
+
+# Permissions to use in tomcat web.xml config file
+
+tomcat_conf_web_xml_permissions: "u=r,g=,o="
 
 # Config files paths (relative to tomcat base)
 
 tomcat_server_config: conf/server.xml
 tomcat_users_config: conf/tomcat-users.xml
+tomcat_web_config: conf/web.xml
 tomcat_manager_config: conf/Catalina/localhost/manager.xml
 
 # Tomcat subdirs
@@ -106,7 +126,6 @@ tomcat_subdirs:
 
 tomcat_subdirs_to_populate:
   - conf
-  - webapps/manager
   - webapps/manager
   - webapps/examples
   - webapps/docs

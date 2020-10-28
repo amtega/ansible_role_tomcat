@@ -184,6 +184,22 @@ tomcat_cms_users:
       - manager-status
 
 ################################################################################
+# Tomcat shutdown command
+################################################################################
+
+tomcat_shutdown_command: SHUTDOWN
+tomcat_shutdown_command_random: no
+
+################################################################################
+# Tomcat Security Lifecycle Listener settings
+################################################################################
+
+tomcat_security_listener: no
+tomcat_security_listener_checked_os_users:
+  - root
+tomcat_security_listener_minimum_umask: "0007"
+
+################################################################################
 # Manager web interface access settings
 ################################################################################
 
@@ -193,31 +209,6 @@ tomcat_manager_access_control_valve: RemoteHostValve
 tomcat_manager_access_control_allow:
   - .*
 tomcat_manager_access_control_deny: []
-
-################################################################################
-# Tomcat download setttings
-################################################################################
-
-# The role will try to identify the tomcat artifact to download from the the
-# official site.
-#
-# If you want to download the artifact from another repository yo need to
-# configure the `tomcat_artifact` variable to point to a local/public repository
-# that contains the required artifact
-#
-# Take a look to `amtega.artifact` role documentation to known about supported
-# types of artifacts, their specific settings and how to configure a proxy if
-# necessary. The attribute `id` of the artifact will be overriden, so it's not
-# mandatory
-
-tomcat_artifact:
-    type: https
-    host: "{{ tomcat_mirror_host }}"
-    path: "{{ tomcat_download_path }}"
-    file: "{{ tomcat_download_file }}"
-    dest: /tmp
-    timeout: 120
-    validate_certs: yes
 
 ################################################################################
 # Clustering settings. See cluster-howto.html in tomcat documentation
@@ -249,6 +240,7 @@ tomcat_cluster_deploy_watch_enabled: yes
 tomcat_logrotate_config_path: /etc/logrotate.d/{{ tomcat_name }}
 
 tomcat_logrotate_config_catalina: |
+  su {{ tomcat_user }} {{ tomcat_group }}
   notifempty
   daily
   dateext
@@ -263,6 +255,7 @@ tomcat_logrotate_config_logs_paths:
   - "{{ tomcat_base }}/logs/*.txt"
 
 tomcat_logrotate_config_logs: |
+    su {{ tomcat_user }} {{ tomcat_group }}
     notifempty
     daily
     dateext
@@ -287,6 +280,23 @@ tomcat_check_mk_critical_level: 95
 tomcat_check_mk_label: "jstat_{{ tomcat_name }}"
 
 ################################################################################
+# Custom error pages settings
+################################################################################
+
+# List of dicts with custom error pages settings. The structure of the dict is:
+#
+# {
+#   exception_type: <exception>  # Exception that triggers the error page
+#   error_code: <code>           # HTTP error code that triggers the error page
+#   location: <location>         # Path to the file with error page (relative to
+#                                # webapps/ROOT)
+# }
+
+# tomcat_error_pages:
+#   - exception_type: java.lang.Throwable
+#     location: /error.jsp
+
+################################################################################
 # Install and uninstall settings
 ################################################################################
 
@@ -301,3 +311,28 @@ tomcat_uninstall_home_preserve: []
 
 tomcat_uninstall_base_preserve:
     - webapps
+
+################################################################################
+# Tomcat download setttings
+################################################################################
+
+# The role will try to identify the tomcat artifact to download from the the
+# official site.
+#
+# If you want to download the artifact from another repository yo need to
+# configure the `tomcat_artifact` variable to point to a local/public repository
+# that contains the required artifact
+#
+# Take a look to `amtega.artifact` role documentation to known about supported
+# types of artifacts, their specific settings and how to configure a proxy if
+# necessary. The attribute `id` of the artifact will be overriden, so it's not
+# mandatory
+
+tomcat_artifact:
+    type: https
+    host: "{{ tomcat_mirror_host }}"
+    path: "{{ tomcat_download_path }}"
+    file: "{{ tomcat_download_file }}"
+    dest: /tmp
+    timeout: 120
+    validate_certs: yes

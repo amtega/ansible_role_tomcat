@@ -8,7 +8,7 @@
         state: directory
         owner: "{{ tomcat_user }}"
         group: "{{ tomcat_group }}"
-        mode: "{{ tomcat_files_permissions }}"
+        mode: "{{ tomcat_dir_permissions }}"
       register: tomcat_create_base_result
 
     - name: Setup tomcat base directory tree
@@ -17,7 +17,7 @@
         state: directory
         owner: "{{ tomcat_user }}"
         group: "{{ tomcat_group }}"
-        mode: "{{ tomcat_files_permissions }}"
+        mode: "{{ tomcat_dir_permissions }}"
       register: tomcat_create_base_tree_result
       loop: "{{ tomcat_subdirs }}"
 
@@ -38,7 +38,6 @@
         src: "{{ tomcat_base }}"
         dest: "{{ tomcat_base_link }}"
         state: link
-        mode: "{{ tomcat_files_permissions }}"
       when: tomcat_base_link is not none
 
     - name: Create cluster directories
@@ -47,14 +46,14 @@
         state: directory
         owner: "{{ tomcat_user }}"
         group: "{{ tomcat_group }}"
-        mode: "{{ tomcat_files_permissions }}"
+        mode: "{{ tomcat_dir_permissions }}"
       when: tomcat_cluster | bool
-      loop: "{{ cluster_directories | reject('none') | list }}"
+      loop: "{{ cluster_directories | reject('equalto', '') | list }}"
       vars:
         cluster_directories:
-        - "{{ tomcat_cluster_deploy_temp_dir | default('null') }}"
-        - "{{ tomcat_cluster_deploy_dir | default('null') }}"
-        - "{{ tomcat_cluster_deploy_watch_dir | default('null') }}"
+          - "{{ tomcat_cluster_deploy_temp_dir | default('') }}"
+          - "{{ tomcat_cluster_deploy_dir | default('') }}"
+          - "{{ tomcat_cluster_deploy_watch_dir | default('') }}"
 
     - name: Setup tomcat base owner/group
       file:

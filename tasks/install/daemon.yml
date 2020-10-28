@@ -27,7 +27,7 @@
         copy: no
         owner: "{{ tomcat_user }}"
         group: "{{ tomcat_group }}"
-        mode: "{{ tomcat_files_permissions }}"
+        mode: "0750"
         list_files: yes
         creates: "{{ daemon_path }}"
       register: tomcat_daemon_extract_package_result
@@ -53,7 +53,7 @@
             dest: "{{ tomcat_native_daemon_dir }}"
             owner: "{{ tomcat_user }}"
             group: "{{ tomcat_group }}"
-            mode: "{{ tomcat_files_permissions }}"
+            mode: "{{ tomcat_executable_permissions }}"
             remote_src: yes
           notify:
             - restart tomcat

@@ -7,7 +7,7 @@
     dest: "{{ tomcat_base }}/bin/setenv.sh"
     owner: "{{ tomcat_user }}"
     group: "{{ tomcat_group }}"
-    mode: "{{ tomcat_files_permissions }}"
+    mode: "{{ tomcat_executable_permissions }}"
   notify:
     - restart tomcat
   tags:

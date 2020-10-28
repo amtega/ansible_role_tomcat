@@ -1,0 +1,9 @@
+{% for p in [tomcat_error_page_settings_result.dict
+             ["web-app"]["error-page"]
+             | default([])]
+            | flatten %}
+- exception_type: "{{ p['exception-type'] }}"
+  location: "{{ p['location'] }}"
+{% else %}
+[]
+{% endfor %}
