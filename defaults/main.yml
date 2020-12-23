@@ -65,6 +65,11 @@ tomcat_start_stop_timeout_seconds: 30
 
 tomcat_server_autodeploy: yes
 
+# Systemd limits
+
+tomcat_systemd_limit_no_file: 65536
+tomcat_systemd_limit_n_proc: 1024000
+
 ################################################################################
 # Server networking settings
 ################################################################################

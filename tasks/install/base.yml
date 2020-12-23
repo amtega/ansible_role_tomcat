@@ -60,6 +60,7 @@
         path: "{{ tomcat_base }}"
         owner: "{{ tomcat_user }}"
         group: "{{ tomcat_group }}"
+        mode: "{{ tomcat_dir_permissions }}"
         state: directory
       when: >-
         tomcat_user != ansible_local_facts.user | default(none)

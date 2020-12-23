@@ -1,5 +1,7 @@
 ---
 
+- import_playbook: ../resources/prepare.yml
+
 - name: Prepare
   hosts: molecule_hosts
   gather_facts: no

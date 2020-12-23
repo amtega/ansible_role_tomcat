@@ -82,6 +82,7 @@ platforms:
 provisioner:
   name: ansible
   playbooks:
+    prepare: ../resources/prepare.yml
     converge: ../resources/converge.yml
   config_options:
     defaults:

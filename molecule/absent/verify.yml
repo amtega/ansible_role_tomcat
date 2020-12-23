@@ -16,6 +16,9 @@
         file_type: directory
       register: check_server1_home_result
 
+
+    - debug: var=check_server1_base_result.files
+
     - name: Check server1 instance base dir contains only preserved dir
       assert:
         that:
