@@ -64,6 +64,8 @@ StandardError=file:{{ tomcat_out }}
 RestartSec={{ tomcat_restart_seconds }}
 TimeoutSec={{ tomcat_start_stop_timeout_seconds }}
 SuccessExitStatus={{ tomcat_systemd_success_exit_status }}
+LimitNOFILE={{ tomcat_systemd_limit_no_file }}
+LimitNPROC={{ tomcat_systemd_limit_n_proc }}
 
 [Install]
 WantedBy=multi-user.target
