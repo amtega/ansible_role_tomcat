@@ -35,5 +35,4 @@
           - className: org.apache.catalina.realm.UserDatabaseRealm
             resourceName: UserDatabase
         tomcat_cluster: yes
-        tomcat_check_mk: yes
         tomcat_state: present

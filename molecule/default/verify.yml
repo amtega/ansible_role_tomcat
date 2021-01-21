@@ -53,10 +53,3 @@
         that:
           - logrotate_result.stderr is search("rotating .*catalina.*out")
           - logrotate_result.stderr is search("rotating .*localhost.*log")
-
-    - name: Check check_mk script
-      command: >-
-        /usr/lib/check_mk_agent/local/{{ tomcat_check_mk_seconds }}/server1
-      changed_when: no
-      failed_when: not check_mk_result.stdout is search("Process .* alive")
-      register: check_mk_result

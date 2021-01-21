@@ -1,28 +1,15 @@
 ---
 
-- name: Prepare CentOS 6 hosts
-  hosts: molecule_hosts_centos_6
+- name: Prepare java
+  hosts: molecule_hosts_fedora_33
   gather_facts: no
   tasks:
-    - name: Disable repos mirror list
-      replace:
-        path: "/etc/yum.repos.d/{{ repo_file }}"
-        regexp: "(^mirrorlist=.*)"
-        replace: "#\\1"
-      loop: "{{ repo_files }}"
-      loop_control:
-        loop_var: repo_file
+    - name: Remove openjdk 11
+      package:
+        name: java-11-openjdk*
+        state: absent
 
-    - name: Point repos to vault
-      replace:
-        path: "/etc/yum.repos.d/{{ repo_file }}"
-        regexp: "#baseurl=http://mirror.centos.org/"
-        replace: "baseurl=http://vault.centos.org/"
-      loop: "{{ repo_files }}"
-      loop_control:
-        loop_var: repo_file
-  vars:
-    repo_files:
-      - CentOS-Base.repo
-      - CentOS-Debuginfo.repo
-      - CentOS-fasttrack.repo
+    - name: Setup openjdk 1.8.0
+      package:
+        name: java-1.8.0-openjdk-devel
+        state: present
