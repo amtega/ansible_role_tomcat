@@ -48,4 +48,3 @@ This role is distributed in the hope that it will be useful, but WITHOUT ANY WAR
 - Juan Antonio Valiño García.
 - Partially based on [daniel-rhoades.tomcat role](https://galaxy.ansible.com/daniel-rhoades/tomcat).
 - Partially based on [groover.tomcat role](https://galaxy.ansible.com/groover/tomcat).
-- Check_MK script based on previous work from Simon Alonso, Jorge Rodríguez and Eric Blanchard (https://github.com/Ericbla/check_jstat).

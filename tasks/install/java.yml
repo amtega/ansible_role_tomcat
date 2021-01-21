@@ -1,0 +1,15 @@
+---
+# Java install tasks
+
+- include_role:
+    name: amtega.packages
+  vars:
+    packages_os:
+      all:
+        all:
+          java: present
+          java-devel: present
+  tags:
+    - role::tomcat
+    - role::tomcat::install
+    - role::tomcat::install::java

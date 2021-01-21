@@ -3,3 +3,4 @@
 exclude_paths:
   - meta
   - tasks/install/artifact.yml
+  - tasks/install/java.yml

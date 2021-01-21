@@ -2,6 +2,11 @@
 # Install tasks
 
 - block:
+    - include_tasks: "{{ role_path }}/tasks/install/java.yml"
+      when: tomcat_java_setup | bool
+      tags:
+        - role::tomcat::install::java
+
     - include_tasks: "{{ role_path }}/tasks/install/home.yml"
       tags:
         - role::tomcat::install::home
@@ -21,10 +26,6 @@
     - include_tasks: "{{ role_path }}/tasks/install/catalina.yml"
       tags:
         - role::tomcat::install::catalina
-
-    - include_tasks: "{{ role_path }}/tasks/install/check_mk.yml"
-      tags:
-        - role::tomcat::install::check_mk
 
     - include_tasks: "{{ role_path }}/tasks/install/permissions.yml"
       tags:
