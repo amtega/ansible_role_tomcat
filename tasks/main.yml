@@ -29,7 +29,6 @@
         - role::tomcat::install::daemon
         - role::tomcat::install::apr
         - role::tomcat::install::catalina
-        - role::tomcat::install::check_mk
 
     - name: Configure tomcat
       include_tasks: configure/main.yml

@@ -121,6 +121,11 @@ tomcat_group: daemon
 # Java settings
 ################################################################################
 
+# Setup java. If set to yes the role will install java packages included in the
+# distribution. Otherwise you have to setup java prior running the role
+
+tomcat_java_setup: yes
+
 # Java home to use
 
 tomcat_java_home: /usr/lib/jvm/java-openjdk
@@ -269,20 +274,6 @@ tomcat_logrotate_config_logs: |
     missingok
     sharedscripts
     copytruncate
-
-################################################################################
-# Check_MK settings
-################################################################################
-
-# The check_mk script provided by this role calculates the heap and perm/meta
-# memory size usage by the tomcat proccess and alerts according to the levels
-# indicated below
-
-tomcat_check_mk: no
-tomcat_check_mk_seconds: 120
-tomcat_check_mk_warning_level: 80
-tomcat_check_mk_critical_level: 95
-tomcat_check_mk_label: "jstat_{{ tomcat_name }}"
 
 ################################################################################
 # Custom error pages settings
