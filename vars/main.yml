@@ -10,8 +10,6 @@ tomcat_packages_os:
       apr-util-devel: present
       gcc: present
       initscripts: present
-      java: present
-      java-devel: present
       libcap-devel: present
       logrotate: present
       make: present
@@ -19,26 +17,20 @@ tomcat_packages_os:
       unzip: present
       rsync: present
       sshpass: present
-    6:
-      libxml2-devel: present
-      libxml2-python: present
-      libxslt-devel: present
-      libxslt-python: present
-      openssl-devel: present
-      procps: present
-      python-devel: present
-      python-lxml: absent
-      python-pip: present
     7:
       openssl-devel: present
       procps-ng: present
       python-lxml: present
+    8:
+      openssl-devel: present
+      procps-ng: present
+      python3-lxml: present
+      redhat-rpm-config: present
   fedora:
     all:
       compat-openssl10-devel: present
       redhat-rpm-config: present
       procps-ng: present
-      python2-lxml: present
       python3-lxml: present
 
 # Required python pip packages
@@ -48,10 +40,6 @@ tomcat_packages_python:
     all:
       - name: xmltodict
         state: present
-    6:
-      - name: "lxml==4.2.6"
-        state: present
-        pip_extra_arguments: "--upgrade"
 
 # Version variables
 
@@ -181,10 +169,6 @@ tomcat_apr_config_bin_path: /usr/bin/apr-1-config
 tomcat_catalina_log: >-
   {{ (tomcat_use_native_daemon)
      | ternary(tomcat_native_daemon_out, tomcat_out) }}
-
-# Check_MK variables
-
-tomcat_check_mk_local_dir: /usr/lib/check_mk_agent/local
 
 # Facts path
 

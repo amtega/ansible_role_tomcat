@@ -144,7 +144,6 @@
       when: tomcat_apr_extract_package_result.files is defined
   when:
     - tomcat_use_native_apr_library | bool
-    - ansible_facts.distribution_major_version is version("6", ">")
     - tomcat_version is version("7", ">=")
   vars:
     apr_libray_path: >-

@@ -96,7 +96,7 @@
       {{ tomcat_native_daemon_dir
          + "/"
          + tomcat_daemon_extract_package_result.files
-           | select("search", "README")
+           | select("search", "NOTICE.txt")
            | list
            | first
            | dirname }}
