@@ -73,11 +73,11 @@ tomcat_package: >-
 
 # Permissions to use in tomcat files
 
-tomcat_file_permissions: "u=rw,g=rw,o="
+tomcat_file_permissions: "u=rw,g=r,o="
 
 # Permissions to use in tomcat dirs
 
-tomcat_dir_permissions: "u=rwx,g=rwx,o="
+tomcat_dir_permissions: "u=rwx,g=rx,o="
 
 # Permissions to use in tomcat executables
 
