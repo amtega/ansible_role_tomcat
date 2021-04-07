@@ -19,6 +19,19 @@ platforms:
       - molecule_hosts
       - molecule_hosts_centos
       - molecule_hosts_centos_7
+  - name: "centos8-${INSTANCE_UUID:-1}"
+    image: centos:8
+    dockerfile: ../resources/Dockerfile.j2
+    command: /sbin/init
+    tmpfs:
+      - /run
+      - /tmp
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    groups:
+      - molecule_hosts
+      - molecule_hosts_centos
+      - molecule_hosts_centos_8
   - name: "fedora32-${INSTANCE_UUID:-1}"
     image: fedora:32
     dockerfile: ../resources/Dockerfile.j2
@@ -58,13 +71,13 @@ provisioner:
       molecule_hosts:
         vars:
           tomcat_name: server1
-          tomcat_version: 8.0.9
-          tomcat_home: /opt/apache-tomcat-8.0.9
+          tomcat_version: 9.0.44
+          tomcat_home: /opt/apache-tomcat-9.0.44
           tomcat_base: /srv/tomcat/server1
           tomcat_link: /opt/tomcat8
           tomcat_state: absent
       molecule_hosts_fedora_33:
         vars:
-          tomcat_java_setup: no          
+          tomcat_java_setup: no
 verifier:
   name: ansible
