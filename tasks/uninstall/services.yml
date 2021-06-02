@@ -8,7 +8,7 @@
         state: stopped
         enabled: no
       when: tomcat_name in ansible_local
-      ignore_errors: yes
+      ignore_errors: yes # noqa ignore-errors
 
     - block:
         - name: Uninstall tomcat systemd services

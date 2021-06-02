@@ -1,15 +1,15 @@
 ---
 
 - name: Prepare java
-  hosts: molecule_hosts_fedora_33
+  hosts: molecule_hosts_fedora_34
   gather_facts: no
   tasks:
-    - name: Remove openjdk 11
+    - name: Setup openjdk 11
       package:
         name: java-11-openjdk*
-        state: absent
+        state: present
 
-    - name: Setup openjdk 1.8.0
+    - name: Remove openjdk 1.8.0
       package:
         name: java-1.8.0-openjdk-devel
-        state: present
+        state: absent
