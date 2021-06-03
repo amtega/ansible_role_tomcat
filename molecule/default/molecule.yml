@@ -108,8 +108,6 @@ provisioner:
             - className: org.apache.catalina.realm.UserDatabaseRealm
               resourceName: UserDatabase
           tomcat_cluster: yes
-      molecule_hosts_fedora_34:
-        vars:
           tomcat_java_setup: no
 verifier:
   name: ansible

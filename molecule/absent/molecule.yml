@@ -86,8 +86,6 @@ provisioner:
           tomcat_base: /srv/tomcat/server1
           tomcat_link: /opt/tomcat8
           tomcat_state: absent
-      molecule_hosts_fedora_34:
-        vars:
           tomcat_java_setup: no
 verifier:
   name: ansible
