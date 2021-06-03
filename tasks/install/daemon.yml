@@ -15,7 +15,7 @@
            != ansible_local_facts.java_home
               | default(tomcat_java_home)
       notify:
-          - restart tomcat
+        - restart tomcat
       vars:
         ansible_local_facts: >-
           {{ ansible_local[tomcat_name] | default({}) }}
