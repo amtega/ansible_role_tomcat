@@ -135,10 +135,10 @@
             xpath: /Server
             add_children:
               - Listener:
-                 className: "{{ security_listener_class_name }}"
-                 checkedOsUsers: >-
-                   {{ tomcat_security_listener_checked_os_users | join(",") }}
-                 minimumUmask: "{{ tomcat_security_listener_minimum_umask }}"
+                  className: "{{ security_listener_class_name }}"
+                  checkedOsUsers: >-
+                    {{ tomcat_security_listener_checked_os_users | join(",") }}
+                  minimumUmask: "{{ tomcat_security_listener_minimum_umask }}"
             pretty_print: yes
 
         - when:
@@ -162,7 +162,7 @@
              | length
              > 0 }}
   vars:
-     tomcat_server_config_path: "{{ tomcat_base }}/{{ tomcat_server_config }}"
+    tomcat_server_config_path: "{{ tomcat_base }}/{{ tomcat_server_config }}"
   tags:
     - role::tomcat
     - role::tomcat::configure

@@ -2,13 +2,21 @@
 
 dependency:
   name: galaxy
+  enabled: yes
+  options:
+    ignore-certs: yes
+    ignore-errors: yes
+    role-file: >-
+      ${MOLECULE_SCENARIO_DIRECTORY}/../resources/requirements.yml
+    requirements-file: >-
+      ${MOLECULE_SCENARIO_DIRECTORY}/../resources/requirements.yml
 driver:
   name: docker
 lint: "${MOLECULE_SCENARIO_DIRECTORY}/../resources/linters.sh"
 platforms:
   - name: "centos7-${INSTANCE_UUID:-1}"
     image: centos:7
-    dockerfile: ../resources/Dockerfile.j2
+    dockerfile: ../resources/Dockerfile.systemd.j2
     command: /sbin/init
     tmpfs:
       - /run
@@ -21,7 +29,7 @@ platforms:
       - molecule_hosts_centos_7
   - name: "centos8-${INSTANCE_UUID:-1}"
     image: centos:8
-    dockerfile: ../resources/Dockerfile.j2
+    dockerfile: ../resources/Dockerfile.systemd.j2
     command: /sbin/init
     tmpfs:
       - /run
@@ -31,23 +39,10 @@ platforms:
     groups:
       - molecule_hosts
       - molecule_hosts_centos
-      - molecule_hosts_centos_8      
-  - name: "fedora32-${INSTANCE_UUID:-1}"
-    image: fedora:32
-    dockerfile: ../resources/Dockerfile.j2
-    command: /sbin/init
-    tmpfs:
-      - /run
-      - /tmp
-    volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro
-    groups:
-      - molecule_hosts
-      - molecule_hosts_fedora
-      - molecule_hosts_fedora_32
+      - molecule_hosts_centos_8
   - name: "fedora33-${INSTANCE_UUID:-1}"
     image: fedora:33
-    dockerfile: ../resources/Dockerfile.j2
+    dockerfile: ../resources/Dockerfile.systemd.j2
     command: /sbin/init
     tmpfs:
       - /run
@@ -58,14 +53,29 @@ platforms:
       - molecule_hosts
       - molecule_hosts_fedora
       - molecule_hosts_fedora_33
+  - name: "fedora34-${INSTANCE_UUID:-1}"
+    image: fedora:34
+    dockerfile: ../resources/Dockerfile.systemd.j2
+    command: /sbin/init
+    tmpfs:
+      - /run
+      - /tmp
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    groups:
+      - molecule_hosts
+      - molecule_hosts_fedora
+      - molecule_hosts_fedora_34
 provisioner:
   name: ansible
   playbooks:
+    cleanup: ../resources/cleanup.yml
     prepare: ../resources/prepare.yml
     converge: ../resources/converge.yml
+    side_effect: ../resources/side_effect.yml
   config_options:
     defaults:
-      callback_whitelist: profile_tasks
+      callback_enabled: profile_tasks
       action_plugins: $PWD/action_plugins
   inventory:
     hosts:
@@ -98,8 +108,6 @@ provisioner:
           tomcat_subrealms:
             - className: org.apache.catalina.realm.UserDatabaseRealm
               resourceName: UserDatabase
-      molecule_hosts_fedora_33:
-        vars:
           tomcat_java_setup: no
 verifier:
   name: ansible

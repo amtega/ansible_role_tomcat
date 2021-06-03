@@ -9,7 +9,7 @@
     group: "{{ tomcat_group }}"
     mode: "{{ tomcat_conf_permissions }}"
   notify:
-      - restart tomcat
+    - restart tomcat
   tags:
     - role::tomcat
     - role::tomcat::configure
