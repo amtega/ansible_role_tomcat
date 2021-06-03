@@ -28,7 +28,7 @@ tomcat_packages_os:
       redhat-rpm-config: present
   fedora:
     all:
-      compat-openssl10-devel: present
+      openssl-devel: present
       redhat-rpm-config: present
       procps-ng: present
       python3-lxml: present
