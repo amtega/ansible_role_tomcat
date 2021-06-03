@@ -1,7 +1,8 @@
 ---
 # Java install tasks
 
-- include_role:
+- name: Setup java
+  include_role:
     name: amtega.packages
   vars:
     packages_os:
