@@ -4,9 +4,9 @@
 - block:
     # Usually apr library is a soft link to a specific version. Seems that not
     # all ansible modules manage in a consistent way broken links when using
-    # `creates` argument. Some modules consider a broken sof link as an existent
-    # file and another ones not. That's the reason we use here the `find`
-    # module to get a consistent behaviour
+    # `creates` argument. Some modules consider a broken soft link as an
+    # existent file and another ones not. That's the reason we use here the
+    # `find` module to get a consistent behaviour
 
     - name: Search installed apr library
       find:
@@ -112,16 +112,6 @@
           register: tomcat_apr_search_compiled_result
 
         - block:
-            - name: Install native apr library
-              shell: "cp -dp {{ item }} {{ tomcat_native_apr_library_dir }}"
-              args:
-                creates: "{{ tomcat_native_apr_library_dir }}/{{ item }}"
-              loop:  "{{ apr_files }}"
-              loop_control:
-                label: "{{ item | basename }}"
-              notify:
-                - restart tomcat
-
             - name: Setup native apr library files properties
               file:
                 path: "{{ item }}"
@@ -131,6 +121,16 @@
               loop:  "{{ apr_files }}"
               loop_control:
                 label: "{{ item | basename }}"
+
+            - name: Install native apr library
+              shell: "cp -dp {{ item }} {{ tomcat_native_apr_library_dir }}"
+              args:
+                creates: "{{ tomcat_native_apr_library_dir }}/{{ item }}"
+              loop:  "{{ apr_files }}"
+              loop_control:
+                label: "{{ item | basename }}"
+              notify:
+                - restart tomcat
           vars:
             apr_files: >-
               {{ tomcat_apr_search_compiled_result.files
