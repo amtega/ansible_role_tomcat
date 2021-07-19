@@ -12,7 +12,7 @@
 
     - name: Check server1 instance home dir
       find:
-        path: /opt/apache-tomcat-8.0.9
+        path: /opt/apache-tomcat-9.0.44
         file_type: directory
       register: check_server1_home_result
 
