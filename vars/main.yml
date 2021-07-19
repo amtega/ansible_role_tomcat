@@ -21,6 +21,7 @@ tomcat_packages_os:
       openssl-devel: present
       procps-ng: present
       python-lxml: present
+      python3-lxml: present
     8:
       openssl-devel: present
       procps-ng: present
@@ -38,8 +39,7 @@ tomcat_packages_os:
 tomcat_packages_python:
   all:
     all:
-      - name: xmltodict
-        state: present
+      xmltodict: present
 
 # Version variables
 
