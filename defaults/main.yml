@@ -94,6 +94,11 @@ tomcat_server_ajp_port: 8009
 
 tomcat_server_ajp_max_threads: 400
 
+# AJP secret options
+
+tomcat_server_ajp_secret_required: no
+tomcat_server_ajp_secret: ""
+
 # Enable DNS lookups. Keep in mind that this must be true if you want to use
 # access control based on host names (see vars `tomcat_manager_hostnames_*`
 # below)
