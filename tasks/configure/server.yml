@@ -47,18 +47,22 @@
             attribute: port
             value: tomcat_server_port
             when: yes
+            
           - xpath: "{{ connector_xpath }}[@protocol='HTTP/1.1']"
             attribute: port
             value: tomcat_server_http_port
             when: yes
+
           - xpath: "{{ connector_xpath }}[@protocol='HTTP/1.1']"
             attribute: scheme
             value: http_scheme
             when: yes
+
           - xpath: "{{ connector_xpath }}[@protocol='HTTP/1.1']"
             attribute: redirectPort
             value: tomcat_server_https_port
             when: yes
+
           - xpath: "{{ connector_xpath }}[@SSLEnabled='true']"
             attribute: scheme
             value: https_scheme
@@ -68,26 +72,42 @@
                  | selectattr("@SSLEnabled", "defined")
                  | list
                  | length > 0 }}
+
           - xpath: "{{ connector_xpath }}[@protocol='HTTP/1.1']"
             attribute: enableLookups
             value: tomcat_server_enable_lookups
             when: yes
+
           - xpath: "{{ connector_xpath }}[@protocol='AJP/1.3']"
             attribute: port
             value: tomcat_server_ajp_port
             when: yes
+
           - xpath: "{{ connector_xpath }}[@protocol='AJP/1.3']"
             attribute: maxThreads
             value: tomcat_server_ajp_max_threads
             when: yes
+
           - xpath: "{{ connector_xpath }}[@protocol='AJP/1.3']"
             attribute: redirectPort
             value: tomcat_server_https_port
             when: yes
+
+          - xpath: "{{ connector_xpath }}[@protocol='AJP/1.3']"
+            attribute: secretRequired
+            value: tomcat_server_ajp_secret_required
+            when: yes
+
+          - xpath: "{{ connector_xpath }}[@protocol='AJP/1.3']"
+            attribute: secret
+            value: tomcat_server_ajp_secret
+            when: yes
+
           - xpath: "{{ host_xpath }}"
             attribute: autoDeploy
             value: tomcat_server_autodeploy
             when: yes
+
           - xpath: "{{ engine_xpath }}"
             attribute: jvmRoute
             value: tomcat_server_engine_jvm_route
