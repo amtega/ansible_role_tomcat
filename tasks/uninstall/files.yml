@@ -65,7 +65,7 @@
     - name: Check tomcat home symlink
       stat:
         path: "{{ tomcat_home_link }}"
-      register: tomcat_check_home_symlink
+      register: tomcat_check_home_symlink_result
       when: tomcat_home_link is not none
 
     - name: Remove tomcat home symlink
@@ -74,13 +74,13 @@
         state: absent
       when:
         - tomcat_home_link is not none
-        - tomcat_check_home_symlink.stat.lnk_source is defined
-        - tomcat_check_home_symlink.stat.lnk_source == tomcat_home
+        - tomcat_check_home_symlink_result.stat.lnk_source is defined
+        - tomcat_check_home_symlink_result.stat.lnk_source == tomcat_home
 
     - name: Check tomcat base symlink
       stat:
         path: "{{ tomcat_base_link }}"
-      register: tomcat_check_base_symlink
+      register: tomcat_check_base_symlink_result
       when: tomcat_base_link is not none
 
     - name: Remove tomcat base symlink
@@ -89,8 +89,8 @@
         state: absent
       when:
         - tomcat_base_link is not none
-        - tomcat_check_base_symlink.stat.lnk_source is defined
-        - tomcat_check_base_symlink.stat.lnk_source == tomcat_base
+        - tomcat_check_base_symlink_result.stat.lnk_source is defined
+        - tomcat_check_base_symlink_result.stat.lnk_source == tomcat_base
 
     - name: Remove tomcat server package if possible
       file:
