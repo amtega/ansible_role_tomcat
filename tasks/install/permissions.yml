@@ -34,9 +34,9 @@
     done
   args:
     warn: no
-  register: tomcat_setup_dir_permissions
+  register: tomcat_setup_dir_permissions_result
   changed_when: >-
-    tomcat_setup_dir_permissions.stdout_lines
+    tomcat_setup_dir_permissions_result.stdout_lines
     | select("search", "changed from .* to .*")
     | list
     | length > 0
