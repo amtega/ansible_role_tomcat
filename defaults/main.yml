@@ -88,7 +88,7 @@ tomcat_server_https_port: 8443
 
 # Server AJP address
 
-tomcat_server_ajp_address: ""
+tomcat_server_ajp_address: 0.0.0.0
 
 # Server AJP port
 
