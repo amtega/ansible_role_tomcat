@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.17.0] - 2022-01-20
+### Changed
+- Supported distros.
+
 ### [1.16.2] - 2021-11.02
 ### Fixed
 - Fixed default value of `tomcat_server_ajp_address` to 0.0.0.0. Related to ansible/playbooks/tomcat#111
